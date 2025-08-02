@@ -1,0 +1,83 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url(./element.less);
+@import url(./comp.less);
+@import url(./transition.less);
+@import url(./scroll.less);
+@import url(./font.less);
+@import url(./color.less);
+
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Open Sans"
+}
+
+
+html,
+body,
+#app {
+  @apply w-full h-full min-w-1256 min-h-600 tracking-wide select-none overflow-hidden;
+  @apply bg-gray-100 text-gray-800 dark:text-gray-100 dark:bg-night;
+}
+
+
+.btn,
+.icon {
+  cursor: pointer;
+}
+
+/* 消除高度塌陷等 */
+.clearfix::before,
+.clearfix::after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+a:hover {
+  @apply font-semibold;
+}
+
+input {
+  outline: none;
+  font-weight: 500 !important;
+}
+
+.excalidraw {
+
+  // 隐藏素材区侧边栏
+  .sidebar-trigger {
+    display: none !important;
+  }
+
+  // 隐藏工具栏
+  .HelpDialog__header {
+    display: none !important;
+  }
+
+  .context-menu-item__label {
+    font-size: 12px !important;
+  }
+
+  .context-menu-item__shortcut {
+    font-size: 12px !important;
+  }
+
+  .footer-center {
+    height: var(--lg-button-size);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .dropdown-menu-button.App-toolbar__extra-tools-trigger.zen-mode-transition {
+    div {
+      display: none !important;
+    }
+  }
+}

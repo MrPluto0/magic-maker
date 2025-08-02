@@ -1,0 +1,57 @@
+@import url(element-plus/theme-chalk/dark/css-vars.css);
+
+:root {
+    --el-color-primary: #1473e6 !important;
+}
+
+
+.el-collapse {
+    border-bottom: none;
+    border-top: none;
+}
+
+.el-tabs--border-card {
+    border: none !important;
+    @apply dark:bg-night-light;
+
+    .el-tabs__item {
+        border: none !important;
+    }
+}
+
+.el-tabs__item {
+    .my-text() !important
+}
+
+.el-scrollbar__view {
+    height: 100%;
+}
+
+.el-scrollbar__bar {
+    z-index: 99 !important;
+}
+
+.el-tabs__item {
+    font-size: 13px !important;
+}
+
+.el-message {
+    z-index: 3100 !important;
+}
+
+.el-popper.el-popover {
+    min-width: 80px !important;
+}
+
+.el-descriptions__cell {
+    @apply !pb-4;
+}
+
+.el-descriptions__label {
+    font-weight: 600;
+    flex-shrink: 0;
+}
+
+.el-divider__text {
+    @apply dark:bg-[#232323];
+}

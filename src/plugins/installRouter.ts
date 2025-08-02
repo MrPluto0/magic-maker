@@ -1,0 +1,46 @@
+// @ts-ignore
+import { routes as autoRoutes } from "vue-router/auto-routes";
+import { createRouter, createWebHistory } from "vue-router";
+import type { RouteRecordRaw } from "vue-router";
+import type { App } from "vue";
+import { useProjectState } from "@/stores/projectState";
+import { useUserState } from "@/stores/userState";
+
+const routes: Array<RouteRecordRaw> = [
+  // {
+  //   path: "/",
+  //   redirect: "/home",
+  // },
+];
+
+const installRouter = {
+  install(app: App) {
+    const router = createRouter({
+      history: createWebHistory(),
+      routes: routes.concat(autoRoutes),
+    });
+
+    router.beforeEach((to, from, next) => {
+      const projectStore = useProjectState();
+      const userStore = useUserState();
+      if (["/", "/home"].includes(to.path) || to.path.startsWith("/login")) {
+        next();
+        return;
+      }
+      if (!userStore.isLogin) {
+        ElMessage.warning("请先登录再继续操作");
+        next("/login");
+        return;
+      }
+
+      if (!projectStore.project) {
+        ElMessage.warning("请创建或选择现有项目后再继续操作");
+        return;
+      }
+      next();
+    });
+
+    app.use(router);
+  },
+};
+export default installRouter;

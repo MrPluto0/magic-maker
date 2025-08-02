@@ -1,0 +1,29 @@
+<template>
+  <div class="flex flex-col rounded overflow-hidden h-full">
+    <div
+      class="flex items-center text-xs pl-2 overflow-hidden h-6 leading-6 bg-red-900 bg-opacity-70 text-gray-300"
+    >
+      <el-icon size="18">
+        <TextIcon class="inline-block mr-2 shrink-0" />
+      </el-icon>
+      <span class="mr-4 shrink-0">{{ props.trackItem.text }}</span>
+    </div>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { TextTrack } from "@/class/TextTrack";
+import { PropType } from "vue";
+
+const props = defineProps({
+  trackItem: {
+    type: Object as PropType<TextTrack>,
+    default() {
+      return {
+        width: "0px",
+        left: "0px",
+      };
+    },
+  },
+});
+</script>

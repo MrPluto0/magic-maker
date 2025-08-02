@@ -1,0 +1,4 @@
+onlyBuiltDependencies:
+  - canvas
+  - esbuild
+  - vue-demi

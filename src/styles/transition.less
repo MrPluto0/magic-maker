@@ -1,0 +1,30 @@
+/*
+  进入和离开动画可以使用不同
+  持续时间和速度曲线。
+*/
+.slide-fade-enter-active,
+.slide-fade-leave-active {
+  transition: all 0.8s ease-in-out;
+}
+
+.slide-fade-enter-from {
+  position: absolute;
+  transform: translateX(-80%);
+  opacity: 0;
+}
+
+.slide-fade-leave-to {
+  position: absolute;
+  transform: translateX(80%);
+  opacity: 0;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity .5s;
+}
+
+.fade-enter,
+.fade-leave-to {
+  opacity: 0;
+}

@@ -1,0 +1,66 @@
+<template>
+  <el-dialog
+    v-model="userStore.showLogin"
+    width="500"
+    align-center
+    :before-close="handleClose"
+  >
+    <div class="text-center text-xl mb-16">欢迎登录</div>
+    <div class="flex justify-center">
+      <el-form
+        :model="form"
+        size="default"
+        label-width="auto"
+        style="width: 400px"
+      >
+        <el-form-item label="账号">
+          <el-input v-model="form.username" placeholder="输入账号" />
+        </el-form-item>
+        <el-form-item label="密码">
+          <el-input
+            v-model="form.password"
+            type="password"
+            placeholder="输入密码"
+          />
+        </el-form-item>
+        <div class="flex justify-center mt-16 mb-8">
+          <el-button class="px-6" color="#1473E6" @click="handleLogin">
+            登录
+          </el-button>
+          <el-button class="px-6" @click="handleRegister"> 注册 </el-button>
+        </div>
+      </el-form>
+    </div>
+  </el-dialog>
+</template>
+
+<script lang="ts" setup>
+import { login } from "@/api/user";
+import { useUserState } from "@/stores/userState";
+
+const userStore = useUserState();
+
+const form = reactive({
+  username: "",
+  password: "",
+});
+
+const handleClose = () => {
+  userStore.showLogin = false;
+};
+
+const handleLogin = async () => {
+  const res = await login(form);
+  userStore.authInfo = res;
+  userStore.isLogin = true;
+  userStore.showLogin = false;
+  ElMessage.success("登录成功");
+};
+
+const handleRegister = () => {
+  userStore.showLogin = false;
+  userStore.showRegister = true;
+};
+</script>
+
+<style scoped lang="less"></style>

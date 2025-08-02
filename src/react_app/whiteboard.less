@@ -1,0 +1,72 @@
+.btn {
+  min-width: var(--lg-button-size);
+
+  &:hover {
+    @apply dark:bg-[#31303b] bg-gray-400;
+  }
+}
+
+.grid-container {
+  display: grid;
+  grid-template-rows: auto auto auto auto;
+  /* 两行，每行高度自动调整 */
+  grid-template-columns: auto auto auto auto;
+  /* 三列，每列宽度自动调整 */
+  gap: 6px;
+  /* 列与列之间的间隙 */
+  bottom: 40px;
+  left: 200px;
+  width: 280px;
+  @apply dark:bg-[#232329] bg-gray-200;
+  padding: 8px;
+  border-radius: 5px;
+
+  .item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+
+    .text {
+      color: #a78585;
+      font-family: "Open Sans";
+      font-size: 10px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: 24px;
+      /* 240% */
+      letter-spacing: 0.5px;
+    }
+
+    .text.active {
+      @apply dark:text-purple;
+      font-weight: bold;
+    }
+  }
+}
+
+.color-container {
+  position: absolute;
+  display: flex;
+  flex-wrap: wrap;
+  bottom: 45px;
+  left: 275px;
+  width: 216px;
+  padding: 8px;
+  border-radius: 5px;
+  @apply dark:bg-[#232329] bg-gray-200;
+
+  .item {
+    cursor: pointer;
+  }
+
+  .item:hover {
+    transform: scale(1.1);
+    border: 2px solid white;
+  }
+
+  .item.active {
+    transform: scale(1.1);
+    border: 2px solid white;
+  }
+}
