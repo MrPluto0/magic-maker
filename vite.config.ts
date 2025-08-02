@@ -13,16 +13,11 @@ import veauryVitePlugins from "veaury/vite/index.js";
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  base: "./", // 设置基础路径
   plugins: [
     // Vue(),
     veauryVitePlugins({
       type: "vue",
-      // Configuration of @vitejs/plugin-vue
-      // vueOptions: {...},
-      // Configuration of @vitejs/plugin-react
-      // reactOptions: {...},
-      // Configuration of @vitejs/plugin-vue-jsx
-      // vueJsxOptions: {...}
     }),
     VitePluginVueDevtools(),
     VueRouter(),
