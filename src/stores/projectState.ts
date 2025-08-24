@@ -52,10 +52,10 @@ export const useProjectState = defineStore(
       const loading = ElLoading.service({ text: "正在加载资源" });
 
       // 加载生成区资源
-      if (pro.generateTextRecords) {
+      if (pro.textRecords) {
         resourceStore.textList = [];
         // 加载生成区的资源
-        pro.generateTextRecords.map((item) => {
+        pro.textRecords.map((item) => {
           resourceStore.textList.push({
             role: "user",
             content: item.prompt || item.promptFileUrl,
@@ -67,28 +67,16 @@ export const useProjectState = defineStore(
             meta: { recordId: item.id },
           });
         });
-        resourceStore.imageList = pro.generateImageRecords.map((item) =>
+        resourceStore.imageList = pro.imageRecords.map((item) =>
           formatResourceData(item)
         );
-        resourceStore.audioList = pro.generateMusicRecords.map((item) =>
+        resourceStore.audioList = pro.musicRecords.map((item) =>
           formatResourceData(item)
         );
-        resourceStore.speechList = pro.generateSpeechRecords.map((item) =>
+        resourceStore.speechList = pro.speechRecords.map((item) =>
           formatResourceData(item)
         );
-        resourceStore.videoList = pro.generateVideoRecords.map((item) =>
-          formatResourceData(item)
-        );
-        resourceStore.uploadImageList = pro.uploadImageRecords.map((item) =>
-          formatResourceData(item)
-        );
-        resourceStore.uploadAudioList = pro.uploadMusicRecords.map((item) =>
-          formatResourceData(item)
-        );
-        resourceStore.uploadSpeechList = pro.uploadSpeechRecords.map((item) =>
-          formatResourceData(item)
-        );
-        resourceStore.uploadVideoList = pro.uploadVideoRecords.map((item) =>
+        resourceStore.videoList = pro.videoRecords.map((item) =>
           formatResourceData(item)
         );
       }
@@ -211,10 +199,10 @@ export const useProjectState = defineStore(
     };
 
     const init = async () => {
-      if (userStore.isLogin && project.value?.id) {
-        const res = await getProjectInfo(project.value.id);
-        setProduct(res);
-      }
+      // if (userStore.isLogin && project.value?.id) {
+      //   const res = await getProjectInfo(project.value.id);
+      //   setProduct(res);
+      // }
     };
 
     return {

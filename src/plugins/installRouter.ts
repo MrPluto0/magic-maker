@@ -1,6 +1,6 @@
 // @ts-ignore
 import { routes as autoRoutes } from "vue-router/auto-routes";
-import { createRouter, createWebHistory } from "vue-router";
+import { createRouter, createWebHashHistory } from "vue-router";
 import type { RouteRecordRaw } from "vue-router";
 import type { App } from "vue";
 import { useProjectState } from "@/stores/projectState";
@@ -16,7 +16,7 @@ const routes: Array<RouteRecordRaw> = [
 const installRouter = {
   install(app: App) {
     const router = createRouter({
-      history: createWebHistory(),
+      history: createWebHashHistory(),
       routes: routes.concat(autoRoutes),
     });
 

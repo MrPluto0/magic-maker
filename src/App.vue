@@ -14,12 +14,10 @@
 
 <script setup lang="ts">
 import { Combinator } from "@webav/av-cliper";
-import HeaderContainer from "@/components/container/HeaderContainer.vue";
 import { useProjectState } from "./stores/projectState";
-import { useRoute } from "vue-router";
 import { useTrainState } from "./stores/trainState";
+import HeaderContainer from "./components/layout/HeaderContainer.vue";
 
-const route = useRoute();
 const projectStore = useProjectState();
 const trainStore = useTrainState();
 

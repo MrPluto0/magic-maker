@@ -10,23 +10,11 @@ export interface IProject {
   previewUrl: string;
   clipParam: TrackLineItem[];
   drawParam: ExcalidrawElement[];
-  analyzeUrl: string;
-  analyzeResult: string;
-  aiEngineModelName: string;
-  aiEngineTrigger: string;
-  aiEngineUploadPath: string;
-  aiEngineCaptions: any;
-  aiEngineChosenModel: string;
-  aiEngineDescription: string;
-  generateSpeechRecords: Record[];
-  generateTextRecords: Record[];
-  generateImageRecords: Record[];
-  generateMusicRecords: Record[];
-  generateVideoRecords: Record[];
-  uploadImageRecords: Record[];
-  uploadMusicRecords: Record[];
-  uploadSpeechRecords: Record[];
-  uploadVideoRecords: Record[];
+  speechRecords: Record[];
+  textRecords: Record[];
+  imageRecords: Record[];
+  musicRecords: Record[];
+  videoRecords: Record[];
 }
 
 export interface Record {

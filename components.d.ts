@@ -63,7 +63,7 @@ declare module 'vue' {
     HAnalyzeIcon: typeof import('./src/components/icons/HAnalyzeIcon.vue')['default']
     HClipIcon: typeof import('./src/components/icons/HClipIcon.vue')['default']
     HDrawIcon: typeof import('./src/components/icons/HDrawIcon.vue')['default']
-    HeaderContainer: typeof import('./src/components/container/HeaderContainer.vue')['default']
+    HeaderContainer: typeof import('./src/components/layout/HeaderContainer.vue')['default']
     HLayoutIcon: typeof import('./src/components/icons/HLayoutIcon.vue')['default']
     HowtouseIcon: typeof import('./src/components/icons/HowtouseIcon.vue')['default']
     HRdClipIcon: typeof import('./src/components/icons/HRdClipIcon.vue')['default']

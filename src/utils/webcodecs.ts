@@ -39,7 +39,7 @@ class VideoDecoder {
   >();
 
   // 解码视频
-  async decode(track:Track) {
+  async decode(track: Track) {
     if (this.#decoderMap.has(track.id)) {
       return this.#decoderMap.get(track.id);
     }
@@ -57,8 +57,8 @@ class VideoDecoder {
   }
 
   // 获取缩略图
-  async thumbnails(track:Track, scale:number, step = 1e6) {
-    const key = track.id+"-"+scale;
+  async thumbnails(track: Track, scale: number, step = 1e6) {
+    const key = track.id + "-" + scale;
     if (this.#thumbnailsMap.has(key)) {
       return this.#thumbnailsMap.get(key);
     }
@@ -89,10 +89,10 @@ class VideoDecoder {
     if (video) {
       lastFrame?.close();
       this.#lastVideoFrame.set(id, new VideoFrame(video));
-      return {video,audio};
+      return { video, audio };
     } else {
       this.#lastVideoFrame.set(id, new VideoFrame(lastFrame));
-      return {video:lastFrame, audio};
+      return { video: lastFrame, audio };
     }
   }
 }
@@ -109,7 +109,7 @@ class ImageDecoder {
     const stream = await file.stream()
 
     //@ts-ignore
-    const clip = new ImgClip({stream, type});
+    const clip = new ImgClip({ stream, type });
 
     // 存储解析后的帧
     this.#decoderMap.set(track.id, clip);
@@ -130,7 +130,7 @@ class AudioDecoder {
   #decoderMap = new Map<string, AudioClip>();
   #lastFrameMap = new Map<string, number>();
 
-  async decode(track:AudioTrack) {
+  async decode(track: AudioTrack) {
     if (this.#decoderMap.has(track.id)) {
       return this.#decoderMap.get(track.id);
     }
@@ -138,7 +138,7 @@ class AudioDecoder {
     const file = await writeFile(track.source.id, track.source.url);
     const stream = await file.stream();
 
-    const clip = new AudioClip(stream, {volume:track.volume});
+    const clip = new AudioClip(stream, { volume: track.volume });
 
     await clip.ready;
 
@@ -153,23 +153,23 @@ class AudioDecoder {
 
     // 记录上一次的帧数，如果跳越帧数，则提前重置
     if (frameIndex - lastFrame > 2) {
-      let time = (frameIndex-1) * UnitFrame2μs;
+      let time = (frameIndex - 1) * UnitFrame2μs;
       await clip.tick(time);
     }
 
     // 返回上次与当前时刻差对应的音频 PCM 数据；
     let time = frameIndex * UnitFrame2μs;
-    const {audio} = await clip.tick(time);
+    const { audio } = await clip.tick(time);
 
     this.#lastFrameMap.set(id, frameIndex);
 
     return audio;
   }
-  async updateVolume(track:AudioTrack, volume: number) {
+  async updateVolume(track: AudioTrack, volume: number) {
     const file = await writeFile(track.source.id);
     const stream = await file.stream();
 
-    const clip = new AudioClip(stream, {volume});
+    const clip = new AudioClip(stream, { volume });
 
     this.#decoderMap.set(track.id, clip);
   }
@@ -184,13 +184,13 @@ class SubtitleDecoder {
       await this.decode(track, undefined, true);
     } else {
       // 刷新全部
-      for(let [_, track] of this.#audioMap.entries()) {
+      for (let [_, track] of this.#audioMap.entries()) {
         await this.decode(track, undefined, true);
       }
     }
   }
 
-  async decode(track:AudioTrack, url?:string, force = false) {
+  async decode(track: AudioTrack, url?: string, force = false) {
     if (this.#decoderMap.has(track.id) && !force) {
       return this.#decoderMap.get(track.id);
     }
@@ -246,7 +246,7 @@ export const splitClip = async (
     frameCount,
   }: { offsetL: number; offsetR: number; frameCount: number }
 ) => {
-   if (offsetL === 0 && offsetR === 0) {
+  if (offsetL === 0 && offsetR === 0) {
     return source;
   }
   const start = offsetL * UnitFrame2μs;

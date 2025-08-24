@@ -366,23 +366,11 @@ export const mockProject: IProject = {
     previewUrl: "https://magicmaker.obs.cn-north-4.myhuaweicloud.com/projects/preview1.jpg",
     clipParam: [],
     drawParam: [],
-    analyzeUrl: "",
-    analyzeResult: "",
-    aiEngineModelName: "",
-    aiEngineTrigger: "",
-    aiEngineUploadPath: "",
-    aiEngineCaptions: {},
-    aiEngineChosenModel: "",
-    aiEngineDescription: "",
-    generateSpeechRecords: [],
-    generateTextRecords: [],
-    generateImageRecords: [],
-    generateMusicRecords: [],
-    generateVideoRecords: [],
-    uploadImageRecords: [],
-    uploadMusicRecords: [],
-    uploadSpeechRecords: [],
-    uploadVideoRecords: []
+    speechRecords: [],
+    textRecords: [],
+    imageRecords: [],
+    musicRecords: [],
+    videoRecords: [],
 };
 
 export const mockProjectList = {

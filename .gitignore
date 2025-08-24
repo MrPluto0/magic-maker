@@ -22,4 +22,5 @@ coverage
 *.njsproj
 *.sln
 *.sw?
+dist
 packages
