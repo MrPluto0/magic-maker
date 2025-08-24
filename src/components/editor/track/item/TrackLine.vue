@@ -19,7 +19,7 @@
 
 <script setup lang="ts">
 import { TrackHeightMap } from "@/data/trackConfig";
-import { useTrackState } from "@/stores/trackState";
+import { useTrackState } from "@/stores/track";
 import TrackItem from "./TrackItem.vue";
 
 const props = defineProps({

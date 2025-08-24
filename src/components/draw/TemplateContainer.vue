@@ -13,9 +13,16 @@
 </template>
 
 <script lang="ts" setup>
-import { getMaterialList, IPage } from "@/api/material";
+// Removed API imports for frontend-only mode
 import MaterialList from "./MaterialList.vue";
 import { Material } from "@/types/draw";
+
+interface IPage {
+  page: number;
+  pageSize: number;
+  total: number;
+  category?: string;
+}
 
 const loading = ref(false);
 const templateList = ref<Material[]>([]);
@@ -26,20 +33,12 @@ const page = reactive<IPage>({
   category: "template_psd",
 });
 
-const loadMore = async () => {
-  if (page.page * page.pageSize >= page.total) return;
-  try {
-    loading.value = true;
-    page.page += 1;
-    const res = await getMaterialList(page);
-    page.total = res.total;
-    templateList.value.push(...res.records);
-  } finally {
-    loading.value = false;
-  }
+const loadMore = () => {
+  // 前端模式下不加载模板
+  ElMessage.info("前端模式下暂无在线模板");
 };
 
-onMounted(async () => {
+onMounted(() => {
   loadMore();
 });
 </script>

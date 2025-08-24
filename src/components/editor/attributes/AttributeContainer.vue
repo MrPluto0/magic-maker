@@ -27,8 +27,8 @@
 </template>
 
 <script setup lang="ts">
-import { useTrackState } from "@/stores/trackState";
-import { usePageState } from "@/stores/pageState";
+import { useTrackState } from "@/stores/track";
+import { usePageState } from "@/stores/page";
 import { GeneralTrack } from "@/types/track";
 import VideoAttr from "./items/VideoAttr.vue";
 import ImageAttr from "./items/ImageAttr.vue";

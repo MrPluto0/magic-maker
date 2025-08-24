@@ -6,9 +6,9 @@
       <el-icon size="18">
         <VideoIcon class="inline-block mr-2 shrink-0" />
       </el-icon>
-      <span class="mr-4 shrink-0"
-        >[{{ trackItem.source.duration.toFixed(1) }}s]</span
-      >
+      <span class="mr-4 shrink-0" v-if="resource">
+        [{{ resource.duration.toFixed(1) }}s]
+      </span>
       <span class="shrink-0">{{
         `${trackItem.name}.${trackItem.format}`
       }}</span>
@@ -30,10 +30,10 @@
       />
     </div>
     <div
-      v-if="trackItem.source.meta.prompt"
+      v-if="resource?.prompt"
       class="pl-2 overflow-hidden h-4 flex items-center bg-gray-700 relative text-xs overflow-ellipsis whitespace-nowrap text-white"
     >
-      <span>{{ trackItem.source.meta.prompt }}</span>
+      <span>{{ resource.meta.prompt }}</span>
     </div>
     <Loading
       v-show="loading || trackItem.loading"
@@ -44,11 +44,11 @@
 
 <script setup lang="ts">
 import Loading from "@/components/Loading.vue";
-import { usePlayerState } from "@/stores/playerState";
+import { usePlayerState } from "@/stores/player";
 import { videoDecoder } from "@/utils/webcodecs";
 import { VideoTrack } from "@/class/VideoTrack";
 import { getGridPixel } from "@/utils/canvasUtil";
-import { useTrackState } from "@/stores/trackState";
+import { useTrackState } from "@/stores/track";
 
 const props = defineProps({
   trackItem: {
@@ -61,8 +61,14 @@ const trackStore = useTrackState();
 const container = ref();
 const loading = ref(true);
 const thumbnails = ref([]);
+const resource = computed(() => props.trackItem.resource);
 
 async function initVideo() {
+  if (!resource.value) {
+    console.error("Video resource not found");
+    return;
+  }
+
   try {
     store.ingLoadingCount++;
     loading.value = true;
@@ -72,7 +78,7 @@ async function initVideo() {
       props.trackItem.frameCount
     );
     const imgCount = Math.ceil(unitWidth / 50);
-    const step = Math.ceil((props.trackItem.source.duration * 1e6) / imgCount);
+    const step = Math.ceil((resource.value.duration * 1e6) / imgCount);
     const imgs = await videoDecoder.thumbnails(
       props.trackItem,
       trackStore.trackScale,
@@ -87,7 +93,7 @@ async function initVideo() {
   }
 }
 
-watch(() => [props.trackItem.source], initVideo, {
+watch(() => [props.trackItem, resource.value], initVideo, {
   immediate: true,
   flush: "post",
 });

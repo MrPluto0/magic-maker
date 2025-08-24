@@ -23,9 +23,9 @@
 </template>
 
 <script setup lang="ts">
-import { useTrackState } from "@/stores/trackState";
-import { usePlayerState } from "@/stores/playerState";
-import type { TrackItem } from "@/stores/trackState";
+import { useTrackState } from "@/stores/track";
+import { usePlayerState } from "@/stores/player";
+import type { TrackItem } from "@/stores/track";
 import { computed, toRefs } from "vue";
 import { getGridPixel } from "@/utils/canvasUtil";
 import { baseFps } from "@/data/trackConfig";

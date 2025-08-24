@@ -1,13 +1,10 @@
 import { useRef, useState } from "react";
 import { useClickAway } from "react-use";
-import { useDrawStore } from "@/stores/drawState";
+import { useDrawStore } from "@/stores/draw";
 import { ColorList, GenerateKeywords } from "@/data/constant";
-import { text2image } from "@/api/generate";
-import { useTrainState } from "@/stores/trainState";
 
 export function GenerateMood() {
   const store = useDrawStore();
-  const trainStore = useTrainState();
 
   const [prompt, setPrompt] = useState("");
   const [model, setModel] = useState("");
@@ -28,35 +25,23 @@ export function GenerateMood() {
     setShowColor(false);
   });
 
-  const onGenerate = async () => {
-    try {
-      store.loading = true;
-      const ele = store.getSelected();
-      if (
-        ele &&
-        ["image", "rectangle", "ellipse", "diamond"].includes(ele.type)
-      ) {
-        const res = await text2image({
-          prompt,
-          keywords,
-          color,
-          sizeStr: `(${ele.width.toFixed(0)}, ${ele.height.toFixed(0)})`,
-          samples: 1,
-          model: "kolor",
-        });
-        if (res[0].url) {
-          //@ts-ignore
-          store.replaceFile(res[0].url, ele);
-        }
-      } else {
-        store.api.setToast({
-          message: "请选择图片、矩形、菱形、椭圆形后重新操作",
-          closable: true,
-          duration: 1000,
-        });
-      }
-    } finally {
-      store.loading = false;
+  const onGenerate = () => {
+    const ele = store.getSelected();
+    if (
+      ele &&
+      ["image", "rectangle", "ellipse", "diamond"].includes(ele.type)
+    ) {
+      store.api.setToast({
+        message: "前端模式下暂不支持AI图片生成功能",
+        closable: true,
+        duration: 3000,
+      });
+    } else {
+      store.api.setToast({
+        message: "请选择图片、矩形、菱形、椭圆形后重新操作",
+        closable: true,
+        duration: 1000,
+      });
     }
   };
 
@@ -67,16 +52,9 @@ export function GenerateMood() {
         value={model}
         onChange={(e) => setModel(e.target.value)}
       >
-        {trainStore.savedModelList.map((m) => (
-          <option
-            className="!bg-red !text-sm"
-            style={{ appearance: "none" }}
-            key={m.modelUuid}
-            value={m.modelUuid}
-          >
-            {m.modelName}
-          </option>
-        ))}
+        <option className="!bg-red !text-sm" style={{ appearance: "none" }}>
+          即梦
+        </option>
       </select>
 
       <div className="flex h-full relative">

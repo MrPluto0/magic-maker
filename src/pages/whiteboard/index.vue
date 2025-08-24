@@ -45,8 +45,8 @@ import DrawAIMenu from "@/components/draw/DrawAIMenu.vue";
 import MaterialContainer from "@/components/draw/MaterialContainer.vue";
 import TemplateContainer from "@/components/draw/TemplateContainer.vue";
 import Whiteboard from "@/react_app/whiteboard";
-import { useDrawStore } from "@/stores/drawState";
-import { useProjectState } from "@/stores/projectState";
+import { useDrawStore } from "@/stores/draw";
+import { useProjectState } from "@/stores/project";
 import { applyPureReactInVue } from "veaury";
 
 const VWhiteboard = applyPureReactInVue(Whiteboard);

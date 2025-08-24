@@ -1,20 +1,16 @@
-import { ExcalidrawElement } from "@pkg/excalidraw/types/element/types";
+import { Resource } from "./resource";
+import { TrackLineItem } from "./track";
 
 export interface IProject {
-  id: number;
+  id?: string;
+  name: string;
+  description?: string;
   createdAt: string;
   updatedAt: string;
-  userId: number;
-  description: string;
-  projectName: string;
-  previewUrl: string;
-  clipParam: TrackLineItem[];
-  drawParam: ExcalidrawElement[];
-  speechRecords: Record[];
-  textRecords: Record[];
-  imageRecords: Record[];
-  musicRecords: Record[];
-  videoRecords: Record[];
+  resources: Resource[];
+  trackData: TrackLineItem[];
+  drawData?: any[];
+  version: string;
 }
 
 export interface Record {

@@ -190,7 +190,6 @@ export const drawTimeLine = (
    * 5. 长间隔和文字
    * 长间隔和短间隔需分开两次绘制，才可以完成不同颜色的设置；
    * 分开放到两个for循环是为了节省性能，因为如果放到一个for循环的话，每次循环都会重新绘制操作dom
-   *
    * */
   for (
     let value = startValueB, count = 0;

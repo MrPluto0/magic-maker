@@ -106,8 +106,8 @@
 
 <script lang="ts" setup>
 import { ImageSizeList, ResourceStyleList } from "@/data/constant";
-import { image2video, uploadFile, text2video } from "@/api/generate";
-import { useResourceState } from "@/stores/resourceState";
+// Removed API imports for frontend-only mode
+import { useResourceState } from "@/stores/resource";
 
 const resourceStore = useResourceState();
 const loading = ref(false);
@@ -125,32 +125,25 @@ const triggerFileInput = () => {
   fileInputRef.value?.click();
 };
 
-const handleFileChange = async (event: Event) => {
+const handleFileChange = (event: Event) => {
   const target = event.target as HTMLInputElement;
   const file = target.files?.[0];
   if (file) {
-    const res = await uploadFile(file);
     uploadFileName.value = file.name;
-    form.imageUrl = res.url;
+    form.imageUrl = URL.createObjectURL(file);
   }
 };
 
-const handleSubmit = async () => {
+const handleSubmit = () => {
   if (!form.prompt) {
     ElMessage.error("请输入文字描述");
     return;
   }
-  loading.value = true;
-  try {
-    let res;
-    if (form.imageUrl) {
-      res = await image2video(form);
-    } else {
-      res = await text2video(form);
-    }
-    resourceStore.videoList.push(res);
-  } finally {
-    loading.value = false;
+
+  if (form.imageUrl) {
+    ElMessage.info("前端模式下暂不支持图片生成视频功能");
+  } else {
+    ElMessage.info("前端模式下暂不支持文字生成视频功能");
   }
 };
 </script>

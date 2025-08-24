@@ -29,7 +29,7 @@ import AudioItem from "../template/AudioItem.vue";
 import TextItem from "../template/TextItem.vue";
 import ImageItem from "../template/ImageItem.vue";
 import { TrackHeightMap } from "@/data/trackConfig";
-import { useTrackState } from "@/stores/trackState";
+import { useTrackState } from "@/stores/track";
 import { computed } from "vue";
 
 const props = defineProps({

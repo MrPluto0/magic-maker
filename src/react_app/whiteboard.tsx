@@ -1,4 +1,4 @@
-import { useDrawStore } from "@/stores/drawState";
+import { useDrawStore } from "@/stores/draw";
 import { selectFile } from "@/utils/file";
 import { psdToJson } from "@/utils/psd";
 import { Excalidraw, MainMenu, WelcomeScreen, Footer } from "@pkg/excalidraw";
@@ -11,19 +11,12 @@ import { actionPartRedraw } from "./actions/partRedraw";
 import { actionExtendDraw } from "./actions/extendDraw";
 import { ExcalidrawImperativeAPI } from "@pkg/excalidraw/types/types";
 import { actionStyleRedraw } from "./actions/styleRedraw";
-import { uploadFile } from "@/api/generate";
 import { ChineseFonts, EnglishFonts } from "@/data/fonts";
 
 export default function () {
   const store = useDrawStore();
 
   const initAPI = (e: ExcalidrawImperativeAPI) => {
-    // 这会导致拖拽过程卡顿
-    // e.onChange((eles) => {
-    // store.eles = eles.filter((item) => !item.isDeleted);
-    // store.files = e.getFiles();
-    // });
-
     // 添加文件store.files
     const files: any[] = [];
     for (let file in store.files) {
@@ -68,9 +61,10 @@ export default function () {
         accept: ".ttf,.woff,.woff2",
         multiple: false,
       });
-      const res = await uploadFile(files[0]);
+      // 前端模式下使用本地字体文件
+      const localUrl = URL.createObjectURL(files[0]);
       const family = files[0].name.split(".")[0];
-      store.api.setFontFamily(family, [{ url: res.url }]);
+      store.api.setFontFamily(family, [{ url: localUrl }]);
     } finally {
       store.loading = false;
     }

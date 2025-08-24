@@ -30,7 +30,7 @@
 
 <script setup lang="ts">
 import { MoreFilled } from "@element-plus/icons-vue";
-import { usePageState } from "@/stores/pageState";
+import { usePageState } from "@/stores/page";
 import { computed, ref } from "vue";
 
 const props = defineProps({

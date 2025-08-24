@@ -1,7 +1,7 @@
 import { AudioTrack } from "@/class/AudioTrack";
 import { baseFps } from "@/data/trackConfig";
-import { usePlayerState } from "@/stores/playerState";
-import { useTrackState } from "@/stores/trackState";
+import { usePlayerState } from "@/stores/player";
+import { useTrackState } from "@/stores/track";
 import { Track } from "@/types/track";
 import { preciseInterval } from "@/utils/common";
 import { watch, reactive } from "vue";
@@ -60,7 +60,6 @@ export class CanvasPlayer {
     const audioList: AudioTrack[] = [];
 
     this.playerStore.playingTracks.forEach(async (trackItem) => {
-      // TODO: Video也有Audio数据
       if (trackItem instanceof AudioTrack) {
         audioList.push(trackItem);
       } else {
@@ -133,6 +132,7 @@ export class CanvasPlayer {
     }
     this.audioPlayAt = curAudioTime + addTime;
   }
+
   #play() {
     if (this.playerStore.playStartFrame >= this.trackState.frameCount) {
       this.playerStore.playStartFrame = 0;
@@ -146,6 +146,7 @@ export class CanvasPlayer {
       }
     }, 1000 / baseFps);
   }
+
   #pause() {
     this.playerTimer?.cancel();
     this.audioContext.suspend();

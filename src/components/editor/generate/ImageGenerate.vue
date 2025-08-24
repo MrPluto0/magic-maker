@@ -1,18 +1,16 @@
 <template>
   <div class="w-full h-full overflow-hidden flex flex-col items-center gap-4">
     <div class="flex-1 w-full overflow-auto">
-      <ResourceList :list-data="resourceStore.imageList" type="image" />
+      <ResourceList
+        :list-data="getResourcesByType('image').value"
+        type="image"
+      />
     </div>
 
     <div v-loading="loading" class="flex items-center w-full gap-2">
       <div class="w-32">
         <el-select v-model="form.model" placeholder="">
-          <el-option
-            v-for="model in trainStore.savedModelList"
-            :key="model.modelUuid"
-            :value="model.modelUuid"
-            :label="model.modelName"
-          />
+          <el-option value="即梦" label="doubao" />
         </el-select>
       </div>
 
@@ -60,12 +58,12 @@
                   v-for="(item, index) in ImageSizeList"
                   :key="index"
                   class="item"
-                  @click="form.sizeStr = item.value"
+                  @click="form.size = item.text"
                 >
                   <img class="icon" :src="item.img" />
                   <span
                     class="text"
-                    :class="{ active: item.value == form.sizeStr }"
+                    :class="{ active: item.text == form.size }"
                     >{{ item.text }}</span
                   >
                 </div>
@@ -85,38 +83,35 @@
 <script lang="ts" setup>
 import { reactive, ref } from "vue";
 import { GenerateKeywords, ImageSizeList } from "@/data/constant";
-import { IText2Image, text2image } from "@/api/generate";
-import { useResourceState } from "@/stores/resourceState";
-import { useTrainState } from "@/stores/trainState";
+import { useResourceState } from "@/stores/resource";
 import ResourceList from "../resource/ResourceList.vue";
 
+interface IText2Image {
+  prompt: string;
+  keywords: string[];
+  model: string;
+  size: string;
+}
+
 const resourceStore = useResourceState();
-const trainStore = useTrainState();
+const { getResourcesByType } = resourceStore;
 
 const loading = ref(false);
 
 const form = reactive<IText2Image>({
   prompt: "",
-  sizeStr: "(768, 1344)",
-  samples: 1,
-  color: "",
   keywords: [],
-  model: "kolor",
+  model: "doubao",
+  size: "",
 });
 
-const handleSubmit = async () => {
+const handleSubmit = () => {
   if (!form.prompt) {
     ElMessage.error("请输入文字描述");
     return;
   }
-  loading.value = true;
-  try {
-    const res = await text2image(form);
-    // @ts-ignore
-    resourceStore.imageList.push(...res);
-  } finally {
-    loading.value = false;
-  }
+
+  ElMessage.info("前端模式下暂不支持AI图片生成功能");
 };
 
 const addKeyword = (kw: string) => {

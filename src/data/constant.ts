@@ -136,32 +136,26 @@ export const ImageSizeList = [
   {
     text: "9:16",
     img: Size9_16Icon,
-    value: "(768, 1344)",
   },
   {
     text: "3:4",
     img: Size3_4Icon,
-    value: "(832, 1152)",
   },
   {
     text: "1:1",
     img: Size1_1Icon,
-    value: "(1024, 1024)",
   },
   {
     text: "4:3",
     img: Size4_3Icon,
-    value: "(1152, 896)",
   },
   {
     text: "16:9",
     img: Size16_9Icon,
-    value: "(1344, 768)",
   },
   {
     text: "21:9",
     img: Size21_9Icon,
-    value: "(1536, 640)",
   },
 ];
 
@@ -234,7 +228,6 @@ export const ColorList = [
   { value: "#bedadc", label: "浅蓝绿色" },
   { value: "#c4def6", label: "浅蓝色" },
   { value: "#bed3f3", label: "浅蓝紫色" },
-  // { value: "#d4c4fb", label: "浅紫色" },
 ];
 
 export const GenerateKeywords = [

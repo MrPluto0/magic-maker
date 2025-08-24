@@ -1,8 +1,8 @@
 import { uniqueId } from "lodash-es";
-import type { BaseTrackItem, TrackType } from "./Base";
 import { getTextRect } from "@/utils/common";
 import { ImgClip, OffscreenSprite } from "@webav/av-cliper";
 import { baseFps, UnitFrame2μs } from "@/data/trackConfig";
+import { BaseTrack } from "@/types/track";
 
 export interface TextResource {
   text: string;
@@ -16,16 +16,16 @@ export interface TextResource {
   [k: string]: any;
 }
 
-export class TextTrack implements BaseTrackItem {
+export class TextTrack implements BaseTrack {
   id: string;
+  type: TrackType = "text";
+  resource: TextResource;
   name: string;
   frameCount: number;
   start: number;
   end: number;
   format: string;
-  source: TextResource;
   // 绘制信息
-  type: TrackType = "text";
   centerX = 0;
   centerY = 0;
   scale = 100;
@@ -43,8 +43,8 @@ export class TextTrack implements BaseTrackItem {
   constructor(source: TextResource, curFrame: number) {
     // 设置ID
     this.id = uniqueId();
+    this.resource = source;
 
-    this.source = source;
     // 设置文字信息
     this.text = source.text;
     this.fill = source.fill;
@@ -53,8 +53,6 @@ export class TextTrack implements BaseTrackItem {
     this.fontSize = source.fontSize;
     this.fontFamily = source.fontFamily;
     this.name = source.name;
-    // 对于文本意义不大
-    this.source.type = "text";
     this.format = "text";
     // 设置轨道信息
     this.frameCount = 2 * baseFps;

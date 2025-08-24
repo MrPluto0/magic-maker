@@ -13,9 +13,7 @@
       <AttrCol name="类型">
         <el-tag size="small">{{ track.type }}</el-tag>
       </AttrCol>
-      <AttrCol name="分辨率">
-        {{ track.source.width }} × {{ track.source.height }}
-      </AttrCol>
+      <AttrCol name="分辨率"> {{ track.width }} × {{ track.height }} </AttrCol>
     </div>
     <AttrCol name="位置">
       <div class="w-full grid grid-cols-2 gap-4">
@@ -44,14 +42,14 @@
     </AttrCol>
     <AttrCol name="描述">
       <el-input
-        v-model="track.source.meta.prompt"
+        v-model="track.name"
         type="textarea"
         :autosize="{ minRows: 1, maxRows: 6 }"
         resize="none"
       >
       </el-input>
     </AttrCol>
-    <AttrCol v-if="track.source.meta.model !== 'upload'" name="操作">
+    <AttrCol name="操作">
       <el-button type="primary" @click="handleReGenerate">重新生成</el-button>
       <el-button type="primary" @click="handleGenVideo">图生视频</el-button>
     </AttrCol>
@@ -59,51 +57,21 @@
 </template>
 
 <script lang="ts" setup>
-import { image2video, text2image, text2video } from "@/api/generate";
+// Removed API imports for frontend-only mode
 import { baseFps } from "@/data/trackConfig";
-import { useTrackState } from "@/stores/trackState";
+import { useTrackState } from "@/stores/track";
 import AttrCol from "./AttrCol.vue";
 import { ImageTrack } from "@/class/ImageTrack";
 
 const trackStore = useTrackState();
 const track = computed(() => trackStore.selectResource as ImageTrack);
 
-const handleReGenerate = async () => {
-  const oldTrack = track.value;
-  track.value.loading = true;
-  const meta = oldTrack.source.meta;
-  const resources = await text2image({
-    ...meta,
-    samples: 1,
-  });
-  const newTrack = await trackStore.createTrack(resources[0], oldTrack.start);
-  if (newTrack.end > oldTrack.end) {
-    newTrack.offsetR = newTrack.end - oldTrack.end;
-    newTrack.end = oldTrack.end;
-  }
-
-  trackStore.selectTrackById(oldTrack.id);
-  const { line, index } = trackStore.selectTrackItem;
-  trackStore.trackList[line].list.splice(index, 1, newTrack);
+const handleReGenerate = () => {
+  ElMessage.info("前端模式下暂不支持重新生成功能");
 };
 
-const handleGenVideo = async () => {
-  const oldTrack = track.value;
-  track.value.loading = true;
-  const meta = oldTrack.source.meta;
-  const resource = await image2video({
-    prompt: meta.prompt,
-    imageUrl: oldTrack.source.url,
-  });
-  const newTrack = await trackStore.createTrack(resource, oldTrack.start);
-  if (newTrack.end > oldTrack.end) {
-    newTrack.offsetR = newTrack.end - oldTrack.end;
-    newTrack.end = oldTrack.end;
-  }
-
-  trackStore.selectTrackById(oldTrack.id);
-  const { line, index } = trackStore.selectTrackItem;
-  trackStore.trackList[line].list.splice(index, 1, newTrack);
+const handleGenVideo = () => {
+  ElMessage.info("前端模式下暂不支持图片生成视频功能");
 };
 </script>
 

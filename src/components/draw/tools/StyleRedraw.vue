@@ -13,8 +13,7 @@
 </template>
 
 <script lang="ts" setup>
-import { uploadFile } from "@/api/generate";
-import { transferImage } from "@/api/tools";
+// Removed API imports for frontend-only mode
 
 const props = defineProps<{
   dataUrl: string;
@@ -25,20 +24,9 @@ const loading = ref(false);
 const show = ref(true);
 const prompt = ref("");
 
-const onGenerate = async () => {
-  try {
-    loading.value = true;
-    // 上传文件;
-    const blob = await (await fetch(props.dataUrl)).blob();
-    const file = new File([blob], "redraw.png");
-    const res = await uploadFile(file);
-    // 风格重绘
-    const res2 = await transferImage(res.url, prompt.value);
-    show.value = false;
-    emits("finish", res2);
-  } finally {
-    loading.value = false;
-  }
+const onGenerate = () => {
+  ElMessage.info("前端模式下暂不支持风格迁移功能");
+  show.value = false;
 };
 </script>
 

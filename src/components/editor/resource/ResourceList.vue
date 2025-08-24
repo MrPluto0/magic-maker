@@ -3,10 +3,10 @@
     <ul class="flex flex-row flex-wrap gap-4 w-full">
       <li
         v-for="(item, idnex) of listData"
-        :key="`${item.name}${item.cover}${idnex}`"
+        :key="`${item.name}${'cover' in item ? item.cover : ''}${idnex}`"
         class="flex flex-col max-w-full"
       >
-        <ResourceItem :data="item" :type="type" :no-action="noAction" />
+        <ResourceItem :resource="item" :type="type" :no-action="noAction" />
       </li>
     </ul>
   </div>
@@ -15,9 +15,9 @@
 <script setup lang="ts">
 import { Resource } from "@/types/resource";
 import ResourceItem from "../resource/ResourceItem.vue";
-import { TrackType } from "@/class/Base";
+import { TrackType } from "@/types/track";
 
-const props = defineProps<{
+defineProps<{
   listData: Resource[];
   type: TrackType;
   noAction?: boolean;

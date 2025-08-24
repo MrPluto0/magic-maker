@@ -37,8 +37,8 @@
 </template>
 
 <script lang="ts" setup>
-import { generateProductBoard } from "@/api/material";
-import { useDrawStore } from "@/stores/drawState";
+// Removed API imports for frontend-only mode
+import { useDrawStore } from "@/stores/draw";
 import { UploadUserFile } from "element-plus";
 
 const store = useDrawStore();
@@ -51,23 +51,17 @@ const form = reactive({
   keyword: "",
 });
 
-const onGenerateTpl = async () => {
-  try {
-    loading.value = true;
-    if (fileList.value.length === 0) {
-      ElMessage.error("请选择图片压缩包再上传");
-      return;
-    }
-    const file = fileList.value[0].raw;
-    const res = await generateProductBoard(file, form);
-    loading.value = false;
-
-    store.loading = true;
-    await store.addTemplate(res);
-  } finally {
-    store.loading = false;
-    loading.value = false;
+const onGenerateTpl = () => {
+  if (!form.productName || !form.keyword) {
+    ElMessage.error("请填写产品名称和关键词");
+    return;
   }
+  if (fileList.value.length === 0) {
+    ElMessage.error("请选择图片压缩包再上传");
+    return;
+  }
+
+  ElMessage.info("前端模式下暂不支持AI布局功能");
 };
 </script>
 

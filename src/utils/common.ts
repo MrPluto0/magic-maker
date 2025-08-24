@@ -42,7 +42,9 @@ export function getTextRect({
   fontFamily: string;
 }) {
   const padding = 4;
-  const canvas = new OffscreenCanvas(1000, 1000);
+  const canvas = (typeof OffscreenCanvas !== 'undefined' 
+    ? new OffscreenCanvas(1000, 1000) 
+    : document.createElement('canvas')) as any;
   const ctx = canvas.getContext("2d");
 
   if (!ctx) {

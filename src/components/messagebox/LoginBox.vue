@@ -35,8 +35,7 @@
 </template>
 
 <script lang="ts" setup>
-import { login } from "@/api/user";
-import { useUserState } from "@/stores/userState";
+import { useUserState } from "@/stores/user";
 
 const userStore = useUserState();
 
@@ -49,12 +48,18 @@ const handleClose = () => {
   userStore.showLogin = false;
 };
 
-const handleLogin = async () => {
-  const res = await login(form);
-  userStore.authInfo = res;
-  userStore.isLogin = true;
-  userStore.showLogin = false;
-  ElMessage.success("登录成功");
+const handleLogin = () => {
+  if (!form.username || !form.password) {
+    ElMessage.error("请输入账号和密码");
+    return;
+  }
+
+  const success = userStore.login(form.username, form.password);
+  if (success) {
+    ElMessage.success("登录成功");
+  } else {
+    ElMessage.error("登录失败");
+  }
 };
 
 const handleRegister = () => {

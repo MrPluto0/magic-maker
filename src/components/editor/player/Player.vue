@@ -42,11 +42,11 @@
 <script setup lang="ts">
 import PlayerMoveable from "./item/PlayerMoveable.vue";
 import PlayerControl from "./item/PlayerControl.vue";
-import { usePlayerState } from "@/stores/playerState";
+import { usePlayerState } from "@/stores/player";
 import { CanvasPlayer } from "@/class/CanvasPlayer";
 import { storeToRefs } from "pinia";
 import { VideoCameraFilled } from "@element-plus/icons-vue";
-import { useTrackState } from "@/stores/trackState";
+import { useTrackState } from "@/stores/track";
 
 const props = defineProps({
   containerSize: {

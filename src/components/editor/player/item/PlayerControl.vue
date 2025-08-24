@@ -41,8 +41,8 @@
 
 <script setup lang="ts">
 import { formatPlayerTime } from "@/utils/common";
-import { usePlayerState } from "@/stores/playerState";
-import { useTrackState } from "@/stores/trackState";
+import { usePlayerState } from "@/stores/player";
+import { useTrackState } from "@/stores/track";
 
 const store = usePlayerState();
 const trackStore = useTrackState();

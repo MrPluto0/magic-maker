@@ -3,14 +3,14 @@ import { routes as autoRoutes } from "vue-router/auto-routes";
 import { createRouter, createWebHashHistory } from "vue-router";
 import type { RouteRecordRaw } from "vue-router";
 import type { App } from "vue";
-import { useProjectState } from "@/stores/projectState";
-import { useUserState } from "@/stores/userState";
+import { useProjectState } from "@/stores/project";
+import { useUserState } from "@/stores/user";
 
 const routes: Array<RouteRecordRaw> = [
-  // {
-  //   path: "/",
-  //   redirect: "/home",
-  // },
+  {
+    path: "/",
+    redirect: "/home",
+  },
 ];
 
 const installRouter = {

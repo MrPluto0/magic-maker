@@ -48,7 +48,7 @@
             v-if="item.role === 'system'"
             class="flex items-center mt-2 gap-3"
           >
-            <button @click="() => handleCopyButton(item.content)">
+            <button @click="() => handleCopy(item.content)">
               <el-icon color="white">
                 <CopyDocument />
               </el-icon>
@@ -140,8 +140,7 @@
 import { reactive, ref } from "vue";
 import useClipboard from "vue-clipboard3";
 import { ElMessage } from "element-plus";
-import { analyzeFile, textExpand, textSplit } from "@/api/generate";
-import { useResourceState } from "@/stores/resourceState";
+import { useResourceState } from "@/stores/resource";
 import { CopyDocument, Refresh, Scissor } from "@element-plus/icons-vue";
 
 const { toClipboard } = useClipboard();
@@ -156,7 +155,7 @@ const uploadFileName = ref("");
 
 const form = reactive({
   style: "Promotional video",
-  messages: resourceStore.textList,
+  messages: [],
 });
 
 const triggerFileInput = () => {
@@ -172,78 +171,51 @@ const handleFileChange = (event: Event) => {
   }
 };
 
-const handleTextExpand = async () => {
+const handleTextExpand = () => {
   if (!uploadFile.value && !inputText.value) {
     ElMessage.warning("请输入文字或上传文件");
     return;
   }
 
-  loading.value = true;
-  try {
-    if (inputText.value) {
-      form.messages.push({
-        role: "user",
-        content: inputText.value,
-      });
-    } else {
-      form.messages.push({
-        role: "user",
-        content: "请解析该文件并扩写",
-      });
-    }
-
-    form.messages.push({
-      role: "system",
-      content: "生成中...",
-      loading: 1,
-    });
-
-    let res;
-    if (inputText.value) {
-      res = await textExpand({
-        style: form.style,
-        prompt: inputText.value,
-      });
-    } else {
-      res = await analyzeFile(uploadFile.value);
-    }
-
-    form.messages.pop();
-    form.messages.push({
-      role: "system",
-      content: res,
-    });
-  } finally {
-    uploadFile.value = null;
-    inputText.value = "";
-    loading.value = false;
-  }
-};
-
-const handleTextSplit = async (text: string) => {
-  loading.value = true;
-  try {
+  if (inputText.value) {
     form.messages.push({
       role: "user",
-      content: "请输出分镜头脚本",
+      content: inputText.value,
     });
+  } else {
     form.messages.push({
-      role: "system",
-      content: "生成中...",
-      loading: 1,
+      role: "user",
+      content: "请解析该文件并扩写",
     });
-    const res: any = await textSplit(text);
-    form.messages.pop();
-    form.messages.push({
-      role: "system",
-      content: res,
-    });
-  } finally {
-    loading.value = false;
   }
+
+  // 模拟生成文本
+  form.messages.push({
+    role: "system",
+    content: "这是一个扩写后的文本内容示例。在前端模式下，暂不支持AI生成功能。",
+    loading: 0,
+  });
+
+  inputText.value = "";
+  uploadFile.value = null;
+  uploadFileName.value = "";
 };
 
-const handleCopyButton = async (text: string) => {
+const handleTextSplit = (text: string) => {
+  form.messages.push({
+    role: "user",
+    content: "请输出分镜头脚本",
+  });
+
+  form.messages.push({
+    role: "system",
+    content:
+      "这是一个分镜头脚本示例。在前端模式下，暂不支持AI分镜头脚本生成功能。",
+    loading: 0,
+  });
+};
+
+const handleCopy = async (text: string) => {
   try {
     await toClipboard(text);
     ElMessage.success("复制成功");
@@ -256,14 +228,6 @@ const handleRegenerate = () => {
   form.messages.pop();
   handleTextExpand();
 };
-
-watch(
-  () => resourceStore.textList,
-  () => {
-    form.messages = resourceStore.textList;
-  },
-  { deep: true }
-);
 </script>
 
 <style scoped lang="less">

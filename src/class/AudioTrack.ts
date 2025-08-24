@@ -1,9 +1,9 @@
 import { uniqueId } from "lodash-es";
-import type { BaseTrackItem, TrackType } from "./Base";
 import { baseFps, UnitFrame2μs } from "@/data/trackConfig";
 import { audioDecoder, splitClip, subtitleDecoder } from "@/utils/webcodecs";
 import { IClip, OffscreenSprite } from "@webav/av-cliper";
-import { Resource } from "@/types/resource";
+import { AudioResource } from "@/types/resource";
+import { BaseTrack } from "@/types/track";
 
 /**
  * 默认的音频设置，⚠️ 不要变更它的值 ⚠️
@@ -22,10 +22,10 @@ export interface ISubtitle {
   bottomOffset: number;
 }
 
-export class AudioTrack implements BaseTrackItem {
+export class AudioTrack implements BaseTrack {
   id: string;
+  resource: AudioResource;
   type: TrackType = "audio";
-  source: Resource;
   name: string;
   format: string;
   frameCount: number;
@@ -46,20 +46,18 @@ export class AudioTrack implements BaseTrackItem {
     bottomOffset: 30,
   };
 
-  constructor(source: Resource, curFrame: number, volume: number = 1) {
-    // 设置ID
+
+  constructor(resource: AudioResource, curFrame: number, volume: number = 1) {
     this.id = uniqueId();
-    // 设置音频信息
-    this.source = source;
-    // 获取文件名称
-    this.name = source.name;
-    // 获取文件类型
-    this.format = source.format;
-    // 音频配置
+    this.resource = resource;
+
+    // 获取文件信息
+    this.name = resource.name;
+    this.format = resource.format;
     this.volume = volume;
 
     // 获取音频时长，转换为frameCount
-    this.frameCount = source.duration * baseFps;
+    this.frameCount = resource.duration * baseFps;
     this.start = curFrame;
     this.end = this.start + this.frameCount;
 
@@ -67,20 +65,21 @@ export class AudioTrack implements BaseTrackItem {
     this.offsetL = 0;
     this.offsetR = 0;
   }
+
   async draw(
     ctx: OffscreenCanvasRenderingContext2D,
     width: number,
     height: number,
     frameIndex: number
   ) {
-    if (!this.source.subtitle || !this.drawSub) return;
-    const frame = Math.max(frameIndex - this.start + this.offsetL, 1); // 默认展示首帧
+    const frame = Math.max(frameIndex - this.start + this.offsetL, 1);
     const vf = await subtitleDecoder.getFrame(this.id, frame);
     if (vf) {
       ctx.drawImage(vf, 0, 0, width, height, 0, 0, width, height);
       vf?.close();
     }
   }
+
   async render(ctx: AudioContext, frameIndex: number) {
     if (this.mute) {
       return null;
@@ -96,12 +95,15 @@ export class AudioTrack implements BaseTrackItem {
       chan0Buf.length,
       DEFAULT_AUDIO_CONF.sampleRate
     );
+    // @ts-expect-error
     buf.copyToChannel(chan0Buf, 0);
+    // @ts-expect-error
     buf.copyToChannel(chan1Buf ?? chan0Buf, 1);
     const audioSource = ctx.createBufferSource();
     audioSource.buffer = buf;
     return audioSource;
   }
+
   // 生成合成对象
   async combine(target: "audio" | "subtitle" = "audio") {
     let clip: IClip;
@@ -119,7 +121,6 @@ export class AudioTrack implements BaseTrackItem {
       throw new Error("clip is not ready");
     }
     const spr = new OffscreenSprite(clip);
-    // TODO：需要支持裁剪
     spr.time = {
       offset: this.start * UnitFrame2μs,
       duration: (this.end - this.start) * UnitFrame2μs,

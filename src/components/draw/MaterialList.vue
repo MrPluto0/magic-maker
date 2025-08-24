@@ -38,7 +38,7 @@
 </template>
 
 <script lang="ts" setup>
-import { useDrawStore } from "@/stores/drawState";
+import { useDrawStore } from "@/stores/draw";
 import { Material } from "@/types/draw";
 
 defineProps<{

@@ -36,8 +36,8 @@
 </template>
 
 <script setup lang="ts">
-import { useTrackState } from "@/stores/trackState";
-import { usePlayerState } from "@/stores/playerState";
+import { useTrackState } from "@/stores/track";
+import { usePlayerState } from "@/stores/player";
 import { ref, reactive, computed } from "vue";
 
 const props = defineProps({

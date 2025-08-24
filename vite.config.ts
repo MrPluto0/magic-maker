@@ -69,24 +69,7 @@ export default defineConfig({
       // "Cross-Origin-Embedder-Policy": "require-corp",
       // "Cross-Origin-Opener-Policy": "same-origin",
     },
-    proxy: {
-      "/api": {
-        target: "http://40.162.219.120:8010", //后端接口地址
-        changeOrigin: true, //是否允许跨越
-        rewrite: (path) => path.replace(/^\/api/, ""),
-      },
-      "/zhipu": {
-        target: "https://aigc-files.bigmodel.cn", //后端接口地址
-        changeOrigin: true, //是否允许跨越
-        rewrite: (path) => path.replace(/^\/zhipu/, ""),
-      },
-      "/obs": {
-        // target: "http://www.zoomad.net", //后端接口地址
-        target: "https://magicmaker.obs.cn-north-4.myhuaweicloud.com",
-        changeOrigin: true, //是否允许跨越
-        rewrite: (path) => path.replace(/^\/obs/, ""),
-      },
-    },
+    // Removed API proxy configuration for frontend-only mode
   },
   optimizeDeps: {
     exclude: ["@ffmpeg/ffmpeg", "@ffmpeg/util"],

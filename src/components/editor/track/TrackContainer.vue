@@ -11,8 +11,8 @@
 <script setup lang="ts">
 import TrackControl from "./item/TrackControl.vue";
 import TrackList from "./TrackList.vue";
-import { useTrackState } from "@/stores/trackState";
-import { usePageState } from "@/stores/pageState";
+import { useTrackState } from "@/stores/track";
+import { usePageState } from "@/stores/page";
 
 const page = usePageState();
 const store = useTrackState();

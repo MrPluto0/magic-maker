@@ -14,8 +14,8 @@
 <script setup lang="ts">
 import { getGridPixel, getSelectFrame } from "@/utils/canvasUtil";
 import { computed } from "vue";
-import { useTrackState } from "@/stores/trackState";
-import { usePlayerState } from "@/stores/playerState";
+import { useTrackState } from "@/stores/track";
+import { usePlayerState } from "@/stores/player";
 const offsetLine = {
   left: 10,
 };

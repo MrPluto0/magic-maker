@@ -16,10 +16,10 @@
     </div>
 
     <div
-      v-if="trackItem.source.meta.prompt"
+      v-if="resource?.meta?.prompt"
       class="pl-2 overflow-hidden h-4 bg-gray-600 relative text-xs text-white"
     >
-      <span>{{ trackItem.source.meta.prompt }}</span>
+      <span>{{ resource.meta.prompt }}</span>
     </div>
     <Loading
       v-show="loading || trackItem.loading"
@@ -30,11 +30,10 @@
 
 <script setup lang="ts">
 import Loading from "@/components/Loading.vue";
-import { usePlayerState } from "@/stores/playerState";
+import { usePlayerState } from "@/stores/player";
 import WaveSurfer from "wavesurfer.js";
 import { WaveOptions } from "@/data/trackConfig";
 import { AudioTrack } from "@/class/AudioTrack";
-import { proxyUrl } from "@/utils/file";
 
 const props = defineProps({
   trackItem: {
@@ -50,6 +49,9 @@ const props = defineProps({
 
 const store = usePlayerState();
 
+// 获取关联的资源
+const resource = computed(() => props.trackItem.resource);
+
 const waveStyle = computed(() => {
   const { start, end, offsetL, offsetR, frameCount } = props.trackItem;
   const showFrameCount = end - start;
@@ -64,13 +66,17 @@ const loading = ref(true);
 const waveRef = ref();
 
 async function initAudio() {
+  if (!resource.value?.url) {
+    console.error("Audio resource URL not found");
+    return;
+  }
+
   store.ingLoadingCount++;
   try {
-    const url = proxyUrl(props.trackItem.source.url);
     // @ts-ignore
     WaveSurfer.create({
       container: waveRef.value,
-      url,
+      url: resource.value.url,
       ...WaveOptions,
     });
   } finally {
@@ -81,7 +87,7 @@ async function initAudio() {
 
 watch(
   () => {
-    return props.trackItem.source && waveRef.value;
+    return resource.value && waveRef.value;
   },
   () => {
     waveRef.value && initAudio();

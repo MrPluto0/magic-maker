@@ -1,5 +1,5 @@
 import StyleRedraw from "@/components/draw/tools/StyleRedraw.vue";
-import { useDrawStore } from "@/stores/drawState";
+import { useDrawStore } from "@/stores/draw";
 import { ExcalidrawImageElement } from "@pkg/excalidraw/types/element/types";
 import { ExcalidrawImperativeAPI } from "@pkg/excalidraw/types/types";
 import { createApp } from "vue";

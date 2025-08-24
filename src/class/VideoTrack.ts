@@ -1,14 +1,14 @@
 import { uniqueId } from "lodash-es";
-import type { BaseTrackItem, TrackType } from "./Base";
 import { videoDecoder, splitClip } from "@/utils/webcodecs";
 import { OffscreenSprite } from "@webav/av-cliper";
 import { baseFps, UnitFrame2μs } from "@/data/trackConfig";
-import { Resource } from "@/types/resource";
+import { VideoResource } from "@/types/resource";
+import { BaseTrack } from "@/types/track";
 
-export class VideoTrack implements BaseTrackItem {
+export class VideoTrack implements BaseTrack {
   id: string;
   type: TrackType = "video";
-  source: Resource;
+  resource: VideoResource;
   name: string;
   format: string;
   frameCount: number;
@@ -33,39 +33,40 @@ export class VideoTrack implements BaseTrackItem {
     return (this.width * this.scale) / 100;
   }
 
-  constructor(source: Resource, curFrame: number) {
+  constructor(resource: VideoResource, curFrame: number) {
     // 设置ID
-
     this.id = uniqueId();
-    // 设置视频信息
-    this.source = source;
-    // 获取文件名称
-    this.name = source.name;
-    // 获取文件类型
-    this.format = source.format;
+    this.resource = resource
+
+    // 获取文件信息
+    this.name = resource.name;
+    this.format = resource.format;
+
     // 设置轨道信息
-    this.frameCount = source.duration * baseFps;
+    this.frameCount = resource.duration * baseFps;
     this.start = curFrame;
     this.end = this.start + this.frameCount;
-    this.fps = source.fps ?? baseFps;
+    this.fps = (resource as any).fps ?? baseFps;
 
     // 设置绘制信息
     this.centerX = 0;
     this.centerY = 0;
     this.scale = 100;
-    this.height = source.height;
-    this.width = source.width;
+    this.height = resource.height;
+    this.width = resource.width;
 
     // 设置裁剪信息
     this.offsetL = 0;
     this.offsetR = 0;
   }
+
   getDrawX(width: number) {
     return width / 2 - this.drawWidth / 2 + this.centerX;
   }
   getDrawY(height: number) {
     return height / 2 - this.drawHeight / 2 + this.centerY;
   }
+
   /**
    * 渲染需要优化
    * TODO: 不需要没一次都去解码
@@ -84,8 +85,8 @@ export class VideoTrack implements BaseTrackItem {
         vf,
         0,
         0,
-        this.source.width,
-        this.source.height,
+        this.width,
+        this.height,
         this.getDrawX(width),
         this.getDrawY(height),
         this.drawWidth,
@@ -94,6 +95,7 @@ export class VideoTrack implements BaseTrackItem {
       vf?.close();
     }
   }
+
   // 生成合成对象
   async combine(width: number, height: number, outputRatio: number) {
     const video = await videoDecoder.decode(this);

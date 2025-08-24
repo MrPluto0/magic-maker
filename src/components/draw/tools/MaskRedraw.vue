@@ -39,8 +39,7 @@
 </template>
 
 <script lang="ts" setup>
-import { uploadFile } from "@/api/generate";
-import { partialDraw } from "@/api/tools";
+// Removed API imports for frontend-only mode
 import { createStack } from "@/utils/stack";
 import hotkeys from "hotkeys-js";
 
@@ -103,21 +102,9 @@ const onReset = () => {
   canvasCtx.value.putImageData(imageData, 0, 0);
 };
 
-const onGenerate = async () => {
-  try {
-    loading.value = true;
-    // 上传文件;
-    const dataURL = canvasRef.value.toDataURL("image/png");
-    const blob = await (await fetch(dataURL)).blob();
-    const file = new File([blob], "redraw.png");
-    const res = await uploadFile(file);
-    // 局部重绘
-    const res2 = await partialDraw(res.url, prompt.value);
-    show.value = false;
-    emits("finish", res2);
-  } finally {
-    loading.value = false;
-  }
+const onGenerate = () => {
+  ElMessage.info("前端模式下暂不支持局部重绘功能");
+  show.value = false;
 };
 
 onMounted(async () => {

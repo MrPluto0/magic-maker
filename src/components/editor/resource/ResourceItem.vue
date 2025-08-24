@@ -12,30 +12,40 @@
         v-if="type === 'image'"
         class="max-h-full max-w-full"
         preview-teleported
-        :src="data.cover"
-        :preview-src-list="[props.data.cover]"
+        :src="'url' in resource ? resource.url : ''"
+        :preview-src-list="['url' in resource ? resource.url : '']"
       />
-      <img @click="showVideo = true" v-else :src="props.data.cover" alt="" />
+      <img
+        @click="showVideo = true"
+        v-else
+        :src="
+          'cover' in resource
+            ? resource.cover
+            : 'url' in resource
+            ? resource.url
+            : ''
+        "
+        alt=""
+      />
       <el-dialog v-if="showVideo" title="原始视频" center v-model="showVideo">
-        <video controls :src="props.data.url"></video>
+        <video controls :src="'url' in resource ? resource.url : ''"></video>
       </el-dialog>
     </div>
 
     <span
-      v-show="data.duration"
+      v-show="'duration' in resource && resource.duration"
       class="h-5 absolute bottom-1 right-2 text-xs text-gray-400"
-      >{{ data?.duration?.toFixed(1) }} s</span
+      >{{
+        "duration" in resource && resource.duration
+          ? resource.duration.toFixed(1)
+          : 0
+      }}
+      s</span
     >
 
     <div
-      class="absolute top-2 right-1 bg-red-500 rounded-full w-6 h-6 opacity-0 hover:opacity-100 transition-opacity duration-150"
-      @click="
-        resourceStore.removeResource(
-          type,
-          data.meta.recordId,
-          data.meta.model === 'upload'
-        )
-      "
+      class="absolute top-2 right-2 bg-red-500 rounded-full w-6 h-6 opacity-0 hover:opacity-100 transition-opacity duration-150"
+      @click="resourceStore.removeResource(resource.id)"
     >
       <ElIcon :size="16" color="#fff" class="cursor-pointer p-1 box-content">
         <Minus />
@@ -54,7 +64,7 @@
   </div>
 
   <div
-    v-else-if="['audio', 'music', 'speech'].includes(type)"
+    v-else-if="type === 'audio'"
     class="relative w-full h-10 flex items-center py-1 px-2 gap-2 overflow-hidden"
     draggable="true"
     @dragstart="dragStart"
@@ -66,22 +76,16 @@
             class="h-10"
             controls
             preload="metadata"
-            :src="data.url"
+            :src="'url' in resource ? resource.url : ''"
           ></audio>
         </template>
-        <div>{{ data.meta?.prompt }}</div>
+        <div>{{ resource.meta?.prompt }}</div>
       </el-popover>
     </div>
 
     <div
       class="bg-red-500 rounded-full w-6 h-6"
-      @click="
-        resourceStore.removeResource(
-          type,
-          data.meta.recordId,
-          data.meta.model === 'upload'
-        )
-      "
+      @click="resourceStore.removeResource(resource.id)"
     >
       <ElIcon :size="16" color="#fff" class="cursor-pointer p-1 box-content">
         <Minus />
@@ -109,16 +113,16 @@
           <div
             class="w-20 text-center text-ellipsis overflow-hidden whitespace-nowrap"
           >
-            {{ data.meta?.prompt }}
+            {{ resource.meta?.prompt }}
           </div>
         </div>
       </template>
       <div class="whitespace-pre overflow-auto max-h-[600px] select-text">
-        {{ data.result }}
+        {{ getResultContent(resource) }}
       </div>
       <button
         class="absolute top-4 right-6 bg-night-light"
-        @click="() => handleCopyButton(data.result)"
+        @click="() => handleCopyButton(getResultContent(resource))"
       >
         <el-icon size="18" color="#1473e6">
           <CopyDocument />
@@ -128,7 +132,7 @@
 
     <div
       class="absolute top-2 right-1 bg-red-500 rounded-full w-6 h-6 opacity-0 hover:opacity-100 transition-opacity duration-150"
-      @click="resourceStore.removeResource(type, data.meta.recordId)"
+      @click="resourceStore.removeResource(resource.id)"
     >
       <ElIcon :size="16" color="#fff" class="cursor-pointer p-1 box-content">
         <Minus />
@@ -144,14 +148,14 @@ import {
   CopyDocument,
   FolderOpened,
 } from "@element-plus/icons-vue";
-import { useTrackState } from "@/stores/trackState";
+import { useTrackState } from "@/stores/track";
 import { Resource } from "@/types/resource";
-import { useResourceState } from "@/stores/resourceState";
-import { TrackType } from "@/class/Base";
+import { TrackType } from "@/types/track";
+import { useResourceState } from "@/stores/resource";
 import useClipboard from "vue-clipboard3";
 
 const props = defineProps<{
-  data: Resource;
+  resource: Resource;
   type: TrackType;
   noAction?: boolean;
 }>();
@@ -163,7 +167,7 @@ const showVideo = ref(false);
 
 async function dragStart(event: DragEvent) {
   event.stopPropagation();
-  trackStore.dragData.dataInfo = props.data;
+  trackStore.dragData.dataInfo = props.resource;
   trackStore.dragData.dragType = props.type;
   trackStore.dragData.dragPoint.x = event.offsetX;
   trackStore.dragData.dragPoint.y = event.offsetY;
@@ -174,10 +178,21 @@ async function dragStart(event: DragEvent) {
 async function addTrack(event: MouseEvent) {
   event.stopPropagation();
 
-  const track = await trackStore.createTrack(props.data);
+  const track = await trackStore.createTrack(props.resource);
 
   trackStore.addTrack(track);
 }
+
+const getResultContent = (resource: Resource): string => {
+  // 如果resource有result属性，返回result，否则根据类型返回相应内容
+  if ((resource as any).result) {
+    return (resource as any).result;
+  }
+  if (resource.type === "text") {
+    return resource.content;
+  }
+  return "";
+};
 
 const handleCopyButton = async (text: string) => {
   try {

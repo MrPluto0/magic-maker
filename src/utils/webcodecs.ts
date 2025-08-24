@@ -6,15 +6,14 @@ import { file, write } from "opfs-tools";
 import { UnitFrame2μs } from "@/data/trackConfig";
 import { Track } from "@/types/track";
 import { AudioTrack } from "@/class/AudioTrack";
-import { fetch2Stream } from "./file";
-import { usePlayerState } from "@/stores/playerState";
 import { trimPunctuation } from "./common";
+import { usePlayerState } from "@/stores/player";
 
 async function writeFile(id: string, url?: string) {
   // 从URL读取并写入opfs
   if (url) {
-    const stream = await fetch2Stream(url);
-    await write(id, stream);
+    const data = await fetch(url);
+    await write(id, data.body);
     return file(id)
   }
 
@@ -44,7 +43,7 @@ class VideoDecoder {
       return this.#decoderMap.get(track.id);
     }
 
-    const file = await writeFile(track.source.id, track.source.url);
+    const file = await writeFile(track.resource.id, track.resource.url);
     const stream = await file.stream();
 
     const clip = new MP4Clip(stream);
@@ -53,6 +52,19 @@ class VideoDecoder {
 
     this.#decoderMap.set(track.id, clip);
 
+    return clip;
+  }
+
+  // 直接从文件流解码，用于资源创建
+  async decodeFromStream(stream: ReadableStream, id: string) {
+    if (this.#decoderMap.has(id)) {
+      return this.#decoderMap.get(id);
+    }
+
+    const clip = new MP4Clip(stream);
+    await clip.ready;
+
+    this.#decoderMap.set(id, clip);
     return clip;
   }
 
@@ -105,7 +117,7 @@ class ImageDecoder {
       return this.#decoderMap.get(track.id);
     }
 
-    const file = await writeFile(track.source.id, track.source.url);
+    const file = await writeFile(track.resource.id, track.resource.url);
     const stream = await file.stream()
 
     //@ts-ignore
@@ -116,12 +128,26 @@ class ImageDecoder {
 
     return clip;
   }
+
+  // 直接从文件流解码，用于资源创建
+  async decodeFromStream(stream: ReadableStream, id: string, type?: string) {
+    if (this.#decoderMap.has(id)) {
+      return this.#decoderMap.get(id);
+    }
+
+    //@ts-ignore
+    const clip = new ImgClip({ stream, type });
+    await clip.ready;
+
+    this.#decoderMap.set(id, clip);
+    return clip;
+  }
+
   async getFrame(id: string, frameIndex: number) {
     let clip = this.#decoderMap.get(id);
     let time = frameIndex * UnitFrame2μs;
 
     const frame = await clip.tick(time);
-
     return frame.video;
   }
 }
@@ -135,7 +161,7 @@ class AudioDecoder {
       return this.#decoderMap.get(track.id);
     }
 
-    const file = await writeFile(track.source.id, track.source.url);
+    const file = await writeFile(track.resource.id, track.resource.url);
     const stream = await file.stream();
 
     const clip = new AudioClip(stream, { volume: track.volume });
@@ -145,6 +171,20 @@ class AudioDecoder {
     this.#decoderMap.set(track.id, clip);
     this.#lastFrameMap.set(track.id, 0);
 
+    return clip;
+  }
+
+  // 直接从文件流解码，用于资源创建
+  async decodeFromStream(stream: ReadableStream, id: string) {
+    if (this.#decoderMap.has(id)) {
+      return this.#decoderMap.get(id);
+    }
+
+    const clip = new AudioClip(stream);
+    await clip.ready;
+
+    this.#decoderMap.set(id, clip);
+    this.#lastFrameMap.set(id, 0);
     return clip;
   }
   async getPCM(id: string, frameIndex: number) {
@@ -166,7 +206,7 @@ class AudioDecoder {
     return audio;
   }
   async updateVolume(track: AudioTrack, volume: number) {
-    const file = await writeFile(track.source.id);
+    const file = await writeFile(track.resource.id);
     const stream = await file.stream();
 
     const clip = new AudioClip(stream, { volume });
@@ -195,7 +235,7 @@ class SubtitleDecoder {
       return this.#decoderMap.get(track.id);
     }
 
-    const file = await writeFile(track.source.id, url)
+    const file = await writeFile(track.resource.id, url)
     const text = await file.text()
     const playerStore = usePlayerState();
     const trimedText = trimPunctuation(text);

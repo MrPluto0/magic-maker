@@ -1,7 +1,10 @@
 <template>
   <div class="w-full flex-1 overflow-hidden flex flex-col items-center gap-4">
     <div class="flex-1 w-full overflow-auto">
-      <ResourceList :list-data="resourceStore.audioList" type="music" />
+      <ResourceList
+        :list-data="getResourcesByType('audio').value"
+        type="audio"
+      />
     </div>
 
     <div v-loading="loading" class="flex items-center w-full gap-2">
@@ -66,30 +69,25 @@
 <script lang="ts" setup>
 import { reactive, ref } from "vue";
 import { MusicStyleList, TimeIntervalList } from "@/data/constant";
-import { IText2Audio, text2audio } from "@/api/generate";
-import { useResourceState } from "@/stores/resourceState";
+// Removed API imports for frontend-only mode
+import { useResourceState } from "@/stores/resource";
 
 const resourceStore = useResourceState();
+const { getResourcesByType } = resourceStore;
 const loading = ref(false);
-const form = reactive<IText2Audio>({
+const form = reactive({
   prompt: "",
   style: "Electronic music",
   len: 4,
 });
 
-const handleSubmit = async () => {
+const handleSubmit = () => {
   if (!form.prompt) {
     ElMessage.error("请输入文字描述");
     return;
   }
-  loading.value = true;
-  try {
-    const res = await text2audio(form);
-    // @ts-ignore
-    resourceStore.audioList.push(res);
-  } finally {
-    loading.value = false;
-  }
+
+  ElMessage.info("前端模式下暂不支持AI音乐生成功能");
 };
 </script>
 

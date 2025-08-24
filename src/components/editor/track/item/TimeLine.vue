@@ -14,7 +14,7 @@
 
 <script setup lang="ts">
 import { baseFps } from "@/data/trackConfig";
-import { usePageState } from "@/stores/pageState";
+import { usePageState } from "@/stores/page";
 import { drawTimeLine, getSelectFrame } from "@/utils/canvasUtil";
 import type { UserConfig, CanvasConfig } from "@/utils/canvasUtil";
 import {

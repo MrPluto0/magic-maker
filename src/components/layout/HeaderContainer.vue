@@ -3,12 +3,11 @@
     class="pt-2 w-full flex flex-nowrap flex-row items-center justify-between"
   >
     <div class="flex w-2/5 pl-2 items-center">
-      <div class="w20 cursor-pointer flex items-center gap-2" @click="$router.push('/')">
-        <img
-          class="h-10 rounded-[20px]"
-          src="@/assets/logo.png"
-          alt=""
-        />
+      <div
+        class="w20 cursor-pointer flex items-center gap-2"
+        @click="router.push('/')"
+      >
+        <img class="h-10 rounded-[20px]" src="@/assets/logo.png" alt="" />
         <span class="font-bold text-lg">Magic Maker</span>
       </div>
       <div class="w-fit flex h-8">
@@ -16,26 +15,23 @@
           v-for="(item, i) in menu"
           :key="i"
           class="menu text-sm ml-4 router flex items-center border-b-2 border-transparent cursor-pointer"
-          :class="{ active: $route.path.includes(item.to) }"
-          @click="$router.push(item.to)"
+          :class="{ active: route.path.includes(item.to) }"
+          @click="router.push(item.to)"
         >
           <span class="my-text">{{ item.name }}</span>
-          <el-icon v-if="item.icon" class="icon ml-1" size="15">
-            <component :is="item.icon" />
-          </el-icon>
         </div>
       </div>
     </div>
 
     <div class="flex w-1/5 items-center justify-center">
-      {{ projectStore.project?.projectName }}
+      {{ projectStore.project?.name }}
     </div>
     <div class="flex w-2/5 flex-row-reverse">
       <div class="flex items-center gap-4">
         <template
           v-if="
             userStore.isLogin &&
-            ['/editor', '/whiteboard'].includes($route.path) &&
+            ['/editor', '/whiteboard'].includes(route.path) &&
             projectStore.project?.id
           "
         >
@@ -49,21 +45,21 @@
             <template #dropdown>
               <el-dropdown-menu>
                 <el-dropdown-item
-                  v-if="$route.path === '/editor'"
+                  v-if="route.path === '/editor'"
                   @click="handleSave"
                   :icon="Upload"
                 >
                   保存剪辑
                 </el-dropdown-item>
                 <el-dropdown-item
-                  v-if="$route.path === '/whiteboard'"
+                  v-if="route.path === '/whiteboard'"
                   @click="handleSave"
                   :icon="Upload"
                 >
                   保存画板
                 </el-dropdown-item>
                 <el-dropdown-item
-                  v-if="$route.path === '/editor'"
+                  v-if="route.path === '/editor'"
                   @click="handleExport"
                   :icon="Download"
                 >
@@ -116,10 +112,10 @@ import {
   Moon,
   UserFilled,
 } from "@element-plus/icons-vue";
-import { usePageState } from "@/stores/pageState";
-import { useRouter } from "vue-router";
-import { useUserState } from "@/stores/userState";
-import { useProjectState } from "@/stores/projectState";
+import { usePageState } from "@/stores/page";
+import { useUserState } from "@/stores/user";
+import { useProjectState } from "@/stores/project";
+import { useRouter, useRoute } from "vue-router";
 import LoginBox from "../messagebox/LoginBox.vue";
 import RegisterBox from "../messagebox/RegisterBox.vue";
 import UserBox from "../messagebox/UserBox.vue";
@@ -127,28 +123,23 @@ import UserBox from "../messagebox/UserBox.vue";
 const pageStore = usePageState();
 const userStore = useUserState();
 const projectStore = useProjectState();
+const router = useRouter();
+const route = useRoute();
 
 const showUserInfo = ref(false);
 
 const menu = [
   {
     name: "主页",
-    to: "/",
-  },
-  {
-    name: "模型训练",
-    to: "/train",
-    icon: "HTrainIcon",
+    to: "/home",
   },
   {
     name: "白板绘图",
     to: "/whiteboard",
-    icon: "HDrawIcon",
   },
   {
     name: "流程剪辑",
     to: "/editor",
-    icon: "HClipIcon",
   },
 ];
 
@@ -169,17 +160,5 @@ const handleExport = async () => {
 
 .switch {
   --el-switch-on-color: #805dff;
-}
-
-.menu:nth-of-type(3) {
-  .icon {
-    margin-top: 5px;
-  }
-}
-
-.menu:nth-of-type(4) {
-  img {
-    margin-top: 2px !important;
-  }
 }
 </style>

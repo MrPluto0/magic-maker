@@ -14,7 +14,7 @@
         style="width: 400px"
       >
         <el-form-item label="项目名称">
-          <el-input v-model="form.projectName" />
+          <el-input v-model="form.name" />
         </el-form-item>
         <el-form-item label="项目描述">
           <el-input type="textarea" :rows="5" v-model="form.description" />
@@ -31,8 +31,8 @@
 </template>
 
 <script lang="ts" setup>
-import { createProject } from "@/api/workflow";
-import { useProjectState } from "@/stores/projectState";
+// Removed API imports for frontend-only mode
+import { useProjectState } from "@/stores/project";
 
 const props = defineProps<{
   show: boolean;
@@ -42,7 +42,7 @@ const emits = defineEmits(["update:show"]);
 const projectStore = useProjectState();
 
 const form = reactive({
-  projectName: "",
+  name: "",
   description: "",
 });
 
@@ -50,9 +50,17 @@ const handleClose = () => {
   emits("update:show", false);
 };
 
-const handleCreate = async () => {
-  await createProject(form);
-  projectStore.refreshFlag++;
+const handleCreate = () => {
+  if (!form.name) {
+    ElMessage.error("请输入项目名称");
+    return;
+  }
+
+  projectStore.createProject({
+    name: form.name,
+    description: form.description || "",
+  });
+
   emits("update:show", false);
   ElMessage.success("创建成功");
 };

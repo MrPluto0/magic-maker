@@ -31,9 +31,8 @@
 import { UploadFilled } from "@element-plus/icons-vue";
 import MenuList from "@/components/MenuList.vue";
 import { EditorMaterialMenu } from "@/data/menu";
-import { useResourceState } from "@/stores/resourceState";
+import { useResourceState } from "@/stores/resource";
 import { UploadUserFile } from "element-plus";
-import { uploadMaterial } from "@/api/generate";
 
 const resourceStore = useResourceState();
 const fileList = ref<UploadUserFile[]>([]);
@@ -41,7 +40,7 @@ const loading = ref(false);
 const activeIndex = ref(0);
 
 const list = computed(
-  () => resourceStore.getTypeList(activeItem.value.key, true).value
+  () => resourceStore.getResourcesByType(activeItem.value.key).value || []
 );
 
 const activeItem = computed(
@@ -53,12 +52,22 @@ const uploadFile = async () => {
     ElMessage.error("请选择文件再上传");
     return;
   }
+
   loading.value = true;
   try {
     const file = fileList.value[0].raw;
-    const resource = await uploadMaterial(activeItem.value.key, file);
-    resourceStore.addResource(resource, true);
+    if (!file) {
+      ElMessage.error("文件无效");
+      return;
+    }
+
+    // 使用前端文件解析替代API调用
+    await resourceStore.createResource(file);
+    ElMessage.success("文件上传成功");
     fileList.value = [];
+  } catch (error) {
+    console.error("Upload error:", error);
+    ElMessage.error("文件上传失败");
   } finally {
     loading.value = false;
   }

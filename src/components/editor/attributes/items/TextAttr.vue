@@ -67,7 +67,7 @@
 
 <script lang="ts" setup>
 import { baseFps } from "@/data/trackConfig";
-import { useTrackState } from "@/stores/trackState";
+import { useTrackState } from "@/stores/track";
 import AttrCol from "./AttrCol.vue";
 import { TextTrack } from "@/class/TextTrack";
 import ColorPicker from "../color/ColorPicker.vue";

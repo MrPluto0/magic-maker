@@ -35,8 +35,8 @@
 import { defaultMoveOptions } from "@/data/constant";
 import Moveable from "vue3-moveable";
 import { ref, nextTick, reactive, computed, watch } from "vue";
-import { usePlayerState } from "@/stores/playerState";
-import { useTrackState } from "@/stores/trackState";
+import { usePlayerState } from "@/stores/player";
+import { useTrackState } from "@/stores/track";
 import type { VideoTrack } from "@/class/VideoTrack";
 import type { TextTrack } from "@/class/TextTrack";
 import type { ImageTrack } from "@/class/ImageTrack";

@@ -10,10 +10,10 @@
 
 <script setup lang="ts">
 import Player from "./Player.vue";
-import { usePlayerState } from "@/stores/playerState";
-import { usePageState } from "@/stores/pageState";
+import { usePlayerState } from "@/stores/player";
+import { usePageState } from "@/stores/page";
 import { watch, ref, onMounted, reactive } from "vue";
-import { useTrackState } from "@/stores/trackState";
+import { useTrackState } from "@/stores/track";
 
 const pageStore = usePageState();
 const store = usePlayerState();

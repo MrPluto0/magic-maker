@@ -8,9 +8,6 @@
         <el-tab-pane class="h-full" label="上传区">
           <UploadContainer />
         </el-tab-pane>
-        <el-tab-pane class="h-full" label="工具区">
-          <ClipAIMenu />
-        </el-tab-pane>
       </el-tabs>
     </div>
 
@@ -40,11 +37,10 @@ import CanvasPlayer from "@/components/editor/player/CanvasPlayer.vue";
 import TrackContainer from "@/components/editor/track/TrackContainer.vue";
 import SplitLine from "@/components/SplitLine.vue";
 import GenerateContainer from "@/components/editor/generate/GenerateContainer.vue";
-import { usePageState } from "@/stores/pageState";
+import { usePageState } from "@/stores/page";
 import { clearHotKey, initEditorHotKey } from "@/plugins/installHotKey";
-import { useProjectState } from "@/stores/projectState";
+import { useProjectState } from "@/stores/project";
 import UploadContainer from "@/components/editor/resource/UploadContainer.vue";
-import ClipAIMenu from "@/components/editor/tools/ClipAIMenu.vue";
 
 const page = usePageState();
 const projectStore = useProjectState();

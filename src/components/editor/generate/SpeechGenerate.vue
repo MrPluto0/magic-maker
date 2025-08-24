@@ -68,14 +68,8 @@
 
 <script lang="ts" setup>
 import { reactive, ref } from "vue";
-import {
-  cloneVoice,
-  getSpeechList,
-  IText2Speech,
-  IVoice,
-  text2speech,
-} from "@/api/generate";
-import { useResourceState } from "@/stores/resourceState";
+// Removed API imports for frontend-only mode
+import { useResourceState } from "@/stores/resource";
 import Recorder from "recorder-core";
 import "recorder-core/src/engine/mp3";
 import "recorder-core/src/engine/mp3-engine";
@@ -85,8 +79,8 @@ const resourceStore = useResourceState();
 
 // 输入表单
 const loading = ref(false);
-const speechList = ref<IVoice[]>([]);
-const form = reactive<IText2Speech>({
+const speechList = ref([]);
+const form = reactive({
   prompt: "",
   voiceUrl: "",
 });
@@ -158,35 +152,30 @@ const handleRecPlay = () => {
   }, 5000);
 };
 
-const handleClone = async () => {
+const handleClone = () => {
   if (!voiceName.value) {
     ElMessage.error("请先填写音色名称");
     return;
   }
-  loading.value = true;
-  await cloneVoice(voiceName.value, recBlob.value);
-  updateSpeechList();
-  ElMessage("旁白已生成，请选择对应音色");
-  loading.value = false;
+
+  ElMessage.info("前端模式下暂不支持音色克隆功能");
 };
 
-const handleSubmit = async () => {
+const handleSubmit = () => {
   if (!form.prompt) {
     ElMessage.error("请输入文字描述");
     return;
   }
-  loading.value = true;
-  try {
-    const res = await text2speech(form);
-    // @ts-ignore
-    resourceStore.speechList.push(res);
-  } finally {
-    loading.value = false;
-  }
+
+  ElMessage.info("前端模式下暂不支持AI语音生成功能");
 };
 
-const updateSpeechList = async () => {
-  speechList.value = await getSpeechList();
+const updateSpeechList = () => {
+  // 前端模式下使用默认音色列表
+  speechList.value = [
+    { voiceName: "默认音色1", voiceUrl: "default1" },
+    { voiceName: "默认音色2", voiceUrl: "default2" },
+  ];
   speechList.value.push({
     voiceName: "自定义",
     voiceUrl: "custom",
@@ -194,7 +183,7 @@ const updateSpeechList = async () => {
   form.voiceUrl = speechList.value[0].voiceUrl;
 };
 
-onMounted(async () => {
+onMounted(() => {
   updateSpeechList();
 });
 </script>

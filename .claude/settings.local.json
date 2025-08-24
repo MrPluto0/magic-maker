@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:github.com)",
+      "mcp__grep__searchGitHub",
+      "mcp__spec-workflow-mcp__specs-workflow",
+      "Bash(pnpm run lint)",
+      "Bash(pnpm run lint-fix)",
+      "Bash(pnpm run typecheck)",
+      "Bash(grep:*)",
+      "Bash(pnpm typecheck)",
+      "Bash(npx vue-tsc --noEmit)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

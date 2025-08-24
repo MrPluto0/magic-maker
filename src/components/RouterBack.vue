@@ -1,10 +1,18 @@
 <template>
-  <div @click="$router.back()" class="icon">
+  <div @click="handleBack" class="icon">
     <img src="@/assets/svg/back.svg" alt="" />
   </div>
 </template>
 
-<script lang="ts" setup></script>
+<script lang="ts" setup>
+import { useRouter } from "vue-router";
+
+const router = useRouter();
+
+const handleBack = () => {
+  router.back();
+};
+</script>
 
 <style scoped lang="less">
 .icon {

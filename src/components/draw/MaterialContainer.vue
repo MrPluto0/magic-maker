@@ -71,9 +71,17 @@
 </template>
 
 <script lang="ts" setup>
-import { getCategoryList, getMaterialList, IPage } from "@/api/material";
+// Removed API imports for frontend-only mode
 import MaterialList from "./MaterialList.vue";
 import { Material } from "@/types/draw";
+
+interface IPage {
+  page: number;
+  pageSize: number;
+  total: number;
+  content?: string;
+  category?: string;
+}
 
 const loading1 = ref(false);
 const categoryList = ref<{ category: string; records: Material[] }[]>([]);
@@ -102,33 +110,14 @@ const loadCategoryDetail = async (category: string, ms: Material[]) => {
   loadMoreMaterial();
 };
 
-const loadMoreMaterial = async () => {
-  if (
-    materialPage.page == 0 ||
-    materialPage.page * materialPage.pageSize >= materialPage.total
-  )
-    return;
-  try {
-    loading2.value = true;
-    materialPage.page += 1;
-    const res = await getMaterialList(materialPage);
-    materialPage.total = res.total;
-    materialList.value.push(...res.records);
-  } finally {
-    loading2.value = false;
-  }
+const loadMoreMaterial = () => {
+  // 前端模式下不加载更多素材
+  ElMessage.info("前端模式下暂无在线素材");
 };
 
-const loadMoreCategory = async () => {
-  if (categoryPage.page * categoryPage.pageSize >= categoryPage.total) return;
-  try {
-    loading1.value = true;
-    categoryPage.page += 1;
-    const res = await getCategoryList(categoryPage);
-    categoryList.value.push(...res);
-  } finally {
-    loading1.value = false;
-  }
+const loadMoreCategory = () => {
+  // 前端模式下不加载更多分类
+  ElMessage.info("前端模式下暂无在线分类");
 };
 
 const refreshCategory = (reset: boolean) => {

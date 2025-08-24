@@ -33,10 +33,8 @@
 
 <script lang="ts" setup>
 import { Resource } from "@/types/resource";
-import { getRecords, IPagination } from "@/api/record";
 import ResourceList from "../resource/ResourceList.vue";
-import { formatResourceData } from "@/utils/storeUtil";
-import { useProjectState } from "@/stores/projectState";
+import { useResourceState } from "@/stores/resource";
 
 const MenuList = [
   {
@@ -61,42 +59,34 @@ const MenuList = [
   },
 ];
 
-const projectState = useProjectState();
-const pagination = reactive<IPagination>({
+const resourceState = useResourceState();
+const pagination = reactive({
   page: 1,
   pageSize: 20,
-  sort: "desc",
-  sortBy: "created_at",
   type: "text",
 });
 const total = ref(0);
 
-const list = ref<Resource[]>([]);
-
-const loadMore = async (page: number) => {
-  pagination.page = page;
-  const res = await getRecords({ ...pagination });
-  list.value = res.records.map((item) => formatResourceData(item));
-  total.value = res.total;
-};
-
-watch(
-  () => [pagination.type, projectState.refreshFlag2],
-  () => {
-    loadMore(1);
+const list = computed(() => {
+  const allResources = resourceState.getResourcesByType(
+    pagination.type as any
+  ).value;
+  if (!Array.isArray(allResources)) {
+    total.value = 0;
+    return [];
   }
-);
-
-watch(
-  () => [pagination.page, pagination.pageSize],
-  () => {
-    loadMore(pagination.page);
-  }
-);
-
-onMounted(() => {
-  loadMore(1);
+  const start = (pagination.page - 1) * pagination.pageSize;
+  const end = start + pagination.pageSize;
+  total.value = allResources.length;
+  return allResources.slice(start, end);
 });
+
+watch(
+  () => pagination.type,
+  () => {
+    pagination.page = 1;
+  }
+);
 </script>
 
 <style scoped lang="less">

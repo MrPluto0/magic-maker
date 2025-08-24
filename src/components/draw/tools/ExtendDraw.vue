@@ -128,8 +128,7 @@
 </template>
 
 <script lang="ts" setup>
-import { uploadFile } from "@/api/generate";
-import { extendImage } from "@/api/tools";
+// Removed API imports for frontend-only mode
 
 const props = defineProps<{
   dataUrl: string;
@@ -214,29 +213,9 @@ const onReset = () => {
   position.bottom = 0;
 };
 
-const onGenerate = async () => {
-  try {
-    loading.value = true;
-    const ratio = imgRef.value.naturalHeight / imgRef.value.height;
-
-    // 上传文件;
-    const blob = await (await fetch(props.dataUrl)).blob();
-    const file = new File([blob], "redraw.png");
-    const res = await uploadFile(file);
-    const formatNum = (num: number) => Math.floor(Math.abs(num) * ratio);
-
-    // 扩图
-    const res2 = await extendImage(res.url, prompt.value, {
-      left: formatNum(position.left),
-      right: formatNum(position.right),
-      top: formatNum(position.top),
-      bottom: formatNum(position.bottom),
-    });
-    show.value = false;
-    emits("finish", res2);
-  } finally {
-    loading.value = false;
-  }
+const onGenerate = () => {
+  ElMessage.info("前端模式下暂不支持图像扩图功能");
+  show.value = false;
 };
 </script>
 
