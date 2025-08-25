@@ -40,7 +40,7 @@ import { useUserState } from "@/stores/user";
 const userStore = useUserState();
 
 const form = reactive({
-  username: "",
+  username: "任意输入账号密码即可",
   password: "",
 });
 

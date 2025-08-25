@@ -95,6 +95,7 @@ import { ElMessage } from "element-plus";
 import { onMounted, ref } from "vue";
 import { useUserState } from "@/stores/user";
 import { useProjectState } from "@/stores/project";
+import { IUser } from "@/types/user";
 
 const props = defineProps<{
   show: boolean;

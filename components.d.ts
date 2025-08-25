@@ -9,7 +9,6 @@ declare module 'vue' {
   export interface GlobalComponents {
     AddIcon: typeof import('./src/components/icons/AddIcon.vue')['default']
     AddTextIcon: typeof import('./src/components/icons/AddTextIcon.vue')['default']
-    AILayout: typeof import('./src/components/draw/tools/AILayout.vue')['default']
     ArrowDownIcon: typeof import('./src/components/icons/ArrowDownIcon.vue')['default']
     AttrCol: typeof import('./src/components/editor/attributes/items/AttrCol.vue')['default']
     AttributeContainer: typeof import('./src/components/editor/attributes/AttributeContainer.vue')['default']
@@ -22,7 +21,6 @@ declare module 'vue' {
     ColorPicker: typeof import('./src/components/editor/attributes/color/ColorPicker.vue')['default']
     ContactIcon: typeof import('./src/components/icons/ContactIcon.vue')['default']
     DeleteIcon: typeof import('./src/components/icons/DeleteIcon.vue')['default']
-    DrawAIMenu: typeof import('./src/components/draw/DrawAIMenu.vue')['default']
     ElButton: typeof import('element-plus/es')['ElButton']
     ElButtonGroup: typeof import('element-plus/es')['ElButtonGroup']
     ElColorPicker: typeof import('element-plus/es')['ElColorPicker']

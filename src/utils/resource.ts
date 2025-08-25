@@ -114,29 +114,13 @@ export class ResourceFactory {
     file: File,
     baseResource: any
   ): Promise<TextResource> {
-    const content = await this.parseTextContent(file);
+    const content = await file.text();
 
     return {
       ...baseResource,
       type: "text",
       content,
     };
-  }
-
-  private static async parseTextContent(file: File): Promise<string> {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-
-      reader.onload = () => {
-        resolve(reader.result as string);
-      };
-
-      reader.onerror = () => {
-        reject(new Error("无法读取文本文件"));
-      };
-
-      reader.readAsText(file, "utf-8");
-    });
   }
 
   private static async genVideoCover(clip: any): Promise<string> {

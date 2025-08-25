@@ -50,6 +50,7 @@
     "@types/react": "^19.0.1",
     "@types/react-dom": "^19.0.2",
     "@types/webpack-env": "^1.18.0",
+    "@types/wicg-file-system-access": "^2023.10.6",
     "@vitejs/plugin-basic-ssl": "^1.0.1",
     "@vitejs/plugin-vue": "^4.6.2",
     "@vue-hooks-plus/resolvers": "^1.2.1",

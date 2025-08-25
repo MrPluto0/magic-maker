@@ -2,7 +2,7 @@ import { file, write } from "opfs-tools";
 
 interface FileUploadOptions {
   accept: string;
-  multiple: boolean;
+  multiple?: boolean;
   max?: string;
 }
 
@@ -40,8 +40,7 @@ export const selectFile = (options: FileUploadOptions): Promise<File[]> => {
 // 创建文件写入流
 export async function createFileWriter(
   name = `${new Date().toLocaleString()}.mp4`
-): Promise<WritableStream> {
-  // @ts-ignore - File System Access API
+) {
   const fileHandle = await window.showSaveFilePicker({
     suggestedName: name,
   });

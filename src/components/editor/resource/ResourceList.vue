@@ -13,6 +13,7 @@
 </template>
 
 <script setup lang="ts">
+import { Resource } from "@/types/resource";
 import ResourceItem from "../resource/ResourceItem.vue";
 
 defineProps<{

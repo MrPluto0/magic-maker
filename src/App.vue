@@ -1,6 +1,6 @@
 <template>
   <div class="w-full h-full flex flex-col overflow-hidden">
-    <ElConfigProvider size="small" :z-index="3000">
+    <ElConfigProvider :z-index="3000">
       <HeaderContainer />
 
       <router-view v-slot="{ Component }">

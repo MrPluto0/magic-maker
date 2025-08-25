@@ -9,8 +9,10 @@ import { usePlayerState } from "./player";
 import { Resource } from "@/types/resource";
 import { Track, TrackLineItem } from "@/types/track";
 import { baseFps } from "@/data/trackConfig";
-import { createFileWriter } from "@/utils/file";
+import { createFileWriter, selectFile } from "@/utils/file";
 import { useDrawStore } from "./draw";
+import { ResourceFactory } from "@/utils/resource";
+import { nanoid } from "nanoid";
 
 // 项目数据接口
 interface ProjectData {
@@ -111,7 +113,7 @@ export const useProjectState = defineStore(
       description?: string;
     }): ProjectData => {
       const newProject: ProjectData = {
-        id: `project_${Date.now()}`,
+        id: nanoid(),
         name: params.name,
         description: params.description,
         createdAt: new Date().toISOString(),
@@ -261,6 +263,45 @@ export const useProjectState = defineStore(
       }
     };
 
+    // 导入本地项目文件
+    const importProject = async () => {
+      const file = await selectFile({ accept: ".json" });
+      const text = await file?.[0]?.text();
+      try {
+        const importedProject = JSON.parse(text) as ProjectData;
+        importedProject.id = nanoid();
+        projectList.value.unshift(importedProject);
+        if (importedProject && importedProject.id) {
+          await loadProject(importedProject);
+          ElMessage.success("项目导入成功");
+        } else {
+          ElMessage.error("无效的项目文件");
+        }
+      } catch (error) {
+        console.error("Import project error:", error);
+        ElMessage.error("项目导入失败");
+      }
+    };
+
+    // 导出项目为文件
+    const exportProject = async (project: ProjectData) => {
+      if (!project) {
+        ElMessage.error("当前无项目可导出");
+        return;
+      }
+      try {
+        const writer = await createFileWriter(
+          `${project.name || "Project"}-${new Date().toLocaleString()}.json`
+        );
+        await writer.write(JSON.stringify(project, null, 2));
+        await writer.close();
+        ElMessage.success("项目导出成功");
+      } catch (error) {
+        console.error("Export project error:", error);
+        ElMessage.error("项目导出失败");
+      }
+    };
+
     const init = async () => {
       if (project.value) {
         loadProject(project.value);
@@ -283,6 +324,8 @@ export const useProjectState = defineStore(
       createProject,
       deleteProject,
       exportVideo,
+      importProject,
+      exportProject,
     };
   },
   {
