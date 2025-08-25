@@ -51,12 +51,5 @@ for (const path in attributeFiles) {
   ).Options;
 }
 
-const trackConfig = computed(() => {
-  const optionsConfig =
-    trackStore.selectResource &&
-    TrackOptionsConfig[trackStore.selectResource.type];
-  return optionsConfig ? optionsConfig.attributes : [];
-});
-
-const track = computed(() => trackStore.selectResource as GeneralTrack);
+const track = computed(() => trackStore.selectTrack as GeneralTrack);
 </script>

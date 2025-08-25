@@ -46,21 +46,21 @@
               <el-dropdown-menu>
                 <el-dropdown-item
                   v-if="route.path === '/editor'"
-                  @click="handleSave"
+                  @click="projectStore.saveProject"
                   :icon="Upload"
                 >
                   保存剪辑
                 </el-dropdown-item>
                 <el-dropdown-item
                   v-if="route.path === '/whiteboard'"
-                  @click="handleSave"
+                  @click="projectStore.saveProject"
                   :icon="Upload"
                 >
                   保存画板
                 </el-dropdown-item>
                 <el-dropdown-item
                   v-if="route.path === '/editor'"
-                  @click="handleExport"
+                  @click="projectStore.exportVideo"
                   :icon="Download"
                 >
                   导出视频
@@ -142,15 +142,6 @@ const menu = [
     to: "/editor",
   },
 ];
-
-const handleSave = async () => {
-  await projectStore.saveProject();
-  ElMessage.success("保存成功");
-};
-
-const handleExport = async () => {
-  await projectStore.exportVideo();
-};
 </script>
 
 <style lang="less" scoped>

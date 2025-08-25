@@ -47,7 +47,7 @@ export const usePlayerState = defineStore("player", () => {
       if (firstVA) {
         // 通过resourceId获取资源的宽高
         const resourceStore = useResourceState();
-        const resource = resourceStore.getResourceById(firstVA.resourceId);
+        const resource = resourceStore.getResourceById(firstVA.resource.id);
         if (
           resource &&
           (resource.type === "video" || resource.type === "image")

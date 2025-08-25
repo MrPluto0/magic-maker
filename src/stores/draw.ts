@@ -287,6 +287,7 @@ export const useDrawStore = defineStore(
           exportWithDarkMode: isDark,
         };
         api.value?.updateScene({
+          // @ts-expect-error
           appState: state.value,
         });
       }

@@ -2,8 +2,8 @@
   <div class="w-full flex flex-col mt-2">
     <ul class="flex flex-row flex-wrap gap-4 w-full">
       <li
-        v-for="(item, idnex) of listData"
-        :key="`${item.name}${'cover' in item ? item.cover : ''}${idnex}`"
+        v-for="(item, index) of listData"
+        :key="`${item.name}-${index}`"
         class="flex flex-col max-w-full"
       >
         <ResourceItem :resource="item" :type="type" :no-action="noAction" />
@@ -13,9 +13,7 @@
 </template>
 
 <script setup lang="ts">
-import { Resource } from "@/types/resource";
 import ResourceItem from "../resource/ResourceItem.vue";
-import { TrackType } from "@/types/track";
 
 defineProps<{
   listData: Resource[];

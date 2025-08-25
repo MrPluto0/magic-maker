@@ -7,7 +7,7 @@
       {{ track.name }}
     </AttrCol>
     <div class="flex" v-if="track">
-      <AttrCol name="初始时间"> {{ track.duration.toFixed(2) }} s </AttrCol>
+      <AttrCol name="初始时间"> {{ resource.duration.toFixed(2) }} s </AttrCol>
       <AttrCol name="当前时间">
         {{ ((track.end - track.start) / baseFps).toFixed(2) }} s
       </AttrCol>
@@ -45,7 +45,7 @@
         <div class="flex-shrink-0">{{ track.scale }} %</div>
       </div>
     </AttrCol>
-    <AttrCol name="描述" v-if="resource?.meta?.prompt !== undefined">
+    <AttrCol name="描述" v-if="resource.meta?.prompt !== undefined">
       <el-input
         v-model="resource.meta.prompt"
         type="textarea"
@@ -54,7 +54,7 @@
       >
       </el-input>
     </AttrCol>
-    <AttrCol v-if="resource?.meta?.model !== 'upload'" name="操作">
+    <AttrCol v-if="resource.meta?.model !== 'upload'" name="操作">
       <el-button type="primary" @click="handleReGenerate">重新生成</el-button>
     </AttrCol>
   </div>
@@ -65,10 +65,15 @@ import { VideoTrack } from "@/class/VideoTrack";
 import { baseFps } from "@/data/trackConfig";
 import { useTrackState } from "@/stores/track";
 import AttrCol from "./AttrCol.vue";
+import { VideoResource } from "@/types/resource";
 
 const trackStore = useTrackState();
 
-const track = computed(() => trackStore.selectResource as VideoTrack);
+const track = computed(() => trackStore.selectTrack as VideoTrack);
+
+const resource = computed(
+  () => trackStore.selectTrack.resource as VideoResource
+);
 
 const handleReGenerate = async () => {
   if (!track.value) {

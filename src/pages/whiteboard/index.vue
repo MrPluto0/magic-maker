@@ -12,9 +12,6 @@
           <el-tab-pane class="h-full" label="模板区">
             <TemplateContainer />
           </el-tab-pane>
-          <el-tab-pane class="h-full" label="AI工具">
-            <DrawAIMenu />
-          </el-tab-pane>
         </el-tabs>
       </div>
     </Transition>
@@ -41,7 +38,6 @@
 </template>
 
 <script lang="ts" setup>
-import DrawAIMenu from "@/components/draw/DrawAIMenu.vue";
 import MaterialContainer from "@/components/draw/MaterialContainer.vue";
 import TemplateContainer from "@/components/draw/TemplateContainer.vue";
 import Whiteboard from "@/react_app/whiteboard";

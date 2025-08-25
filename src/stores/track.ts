@@ -92,7 +92,7 @@ export const useTrackState = defineStore(
     });
 
     // 选中元素
-    const selectResource = computed<Track>(() => {
+    const selectTrack = computed<Track>(() => {
       if (selectTrackItem.line === -1) {
         return null;
       }
@@ -114,13 +114,13 @@ export const useTrackState = defineStore(
 
     // 删除元素
     function removeTrack() {
-      if (!selectResource.value) {
+      if (!selectTrack.value) {
         return;
       }
       const lineIndex = selectTrackItem.line;
       const itemIndex = selectTrackItem.index;
       // @ts-ignore
-      selectResource.value?.pause && selectResource.value?.pause();
+      selectTrack.value?.pause && selectTrack.value?.pause();
       trackList.value[lineIndex].list.splice(itemIndex, 1);
       if (
         trackList.value[lineIndex].list.length === 0 &&
@@ -151,9 +151,6 @@ export const useTrackState = defineStore(
 
     /**
      * 创建轨道
-     * @param resource 资源对象
-     * @param startFrame 起始帧
-     * @param volume 音量（仅音频）
      */
     const createTrack = async (
       resource: Resource,
@@ -203,38 +200,8 @@ export const useTrackState = defineStore(
       throw new Error(`不支持的资源类型: ${resource.type}`);
     };
 
-    /**
-     * 从资源ID创建轨道
-     */
-    const createTrackFromResourceId = async (
-      resourceId: string,
-      startFrame: number = playStore.playStartFrame,
-      volume = 1
-    ): Promise<Track | null> => {
-      const resource = resourceStore.getResourceById(resourceId);
-      if (!resource) {
-        console.error(`Resource not found: ${resourceId}`);
-        return null;
-      }
-
-      return createTrack(resource, startFrame, volume);
-    };
-
     const copyTrack = async (item: Track) => {
-      // 通过resourceId获取原始资源
-      let resource: Resource;
-      if ("resourceId" in item && item.resourceId) {
-        resource = resourceStore.getResourceById(item.resourceId);
-        if (!resource) {
-          console.error(`Resource not found: ${item.resourceId}`);
-          return null;
-        }
-      } else {
-        console.error("Track missing resource reference");
-        return null;
-      }
-
-      let newTrack = await createTrack(resource, item.start);
+      let newTrack = await createTrack(item.resource as Resource, item.start);
       const id = newTrack.id;
       Object.assign(newTrack, item);
       newTrack.id = id;
@@ -285,24 +252,6 @@ export const useTrackState = defineStore(
     }
 
     /**
-     * 从资源添加轨道
-     */
-    async function addTrackFromResource(
-      resource: Resource,
-      startFrame?: number
-    ) {
-      try {
-        const track = await createTrack(resource, startFrame);
-        addTrack(track);
-        return track;
-      } catch (error) {
-        console.error("Failed to create track from resource:", error);
-        ElMessage.error("创建轨道失败");
-        return null;
-      }
-    }
-
-    /**
      * 添加文本轨道
      */
     function addText() {
@@ -341,13 +290,13 @@ export const useTrackState = defineStore(
     }
 
     async function splitTrack() {
-      if (!selectResource.value) {
+      if (!selectTrack.value) {
         return;
       }
       // 判断分割时间是否在视频内
       const { line, index } = selectTrackItem;
       let splitFrame = playStore.playStartFrame;
-      let target = selectResource.value;
+      let target = selectTrack.value;
 
       if (splitFrame > target.start && splitFrame < target.end) {
         const originEnd = target.end;
@@ -367,34 +316,75 @@ export const useTrackState = defineStore(
       }
     }
 
+    /**
+     * 加载轨道数据
+     */
+    const loadTrackData = async (trackData: TrackLineItem[]) => {
+      const newTrackList: TrackLineItem[] = [];
+
+      for (let i = 0; i < trackData.length; i++) {
+        const trackLine = trackData[i];
+        const trackLineList: Track[] = [];
+
+        if (trackLine.list.length === 0) {
+          continue;
+        }
+
+        for (let j = 0; j < trackLine.list.length; j++) {
+          const item = trackLine.list[j];
+
+          const track = await createTrack(
+            item.resource as Resource,
+            item.start,
+            "volume" in item ? item.volume : 1
+          );
+
+          const id = track.id;
+          Object.assign(track, item); // 复制其他属性
+
+          // 重新加载资源，例如本地文件的URL会重新构建
+          const resource = resourceStore.getResourceById(item.resource.id);
+          track.resource = resource as any;
+          track.id = id; // 保持新生成的ID
+
+          trackLineList.push(track);
+        }
+
+        newTrackList.push({
+          main: trackLine.main,
+          type: trackLine.type,
+          list: trackLineList,
+        });
+      }
+
+      trackList.value.splice(0, trackList.value.length, ...newTrackList);
+    };
+
     return {
       moveTrackData,
       copyData,
       frameCount,
       dragData,
       selectTrackItem,
-      selectResource,
+      selectTrack,
       trackScale,
       trackList,
 
       // 轨道操作
       createTrack,
-      createTrackFromResourceId,
       copyTrack,
       addTrack,
-      addTrackFromResource,
       addText,
       removeTrack,
       leftLink,
       splitTrack,
-
-      // 轨道选择
       selectTrackById,
+      loadTrackData,
     };
   },
   {
     undo: {
-      watch: ["trackList"],
+      watch: ["trackList", "trackScale"],
     },
   }
 );

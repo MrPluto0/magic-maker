@@ -74,7 +74,7 @@ import ColorPicker from "../color/ColorPicker.vue";
 
 const loading = ref(false);
 const trackStore = useTrackState();
-const track = computed(() => trackStore.selectResource as TextTrack);
+const track = computed(() => trackStore.selectTrack as TextTrack);
 </script>
 
 <style scoped lang="less"></style>

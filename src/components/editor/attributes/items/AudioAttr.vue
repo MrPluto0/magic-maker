@@ -95,7 +95,7 @@ import { usePlayerState } from "@/stores/player";
 
 const playerStore = usePlayerState();
 const trackStore = useTrackState();
-const track = computed(() => trackStore.selectResource as AudioTrack);
+const track = computed(() => trackStore.selectTrack as AudioTrack);
 
 const handleReGenerate = () => {
   ElMessage.info("前端模式下暂不支持重新生成功能");

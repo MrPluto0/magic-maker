@@ -1,14 +1,4 @@
-
-import { nanoid } from "nanoid";
-import {
-  Resource,
-  AudioResource,
-  ImageResource,
-  VideoResource,
-  TextResource,
-} from "@/types/resource";
-import { videoDecoder, audioDecoder, imageDecoder } from "./webcodecs";
-import { FILE_SIZE_LIMITS, SUPPORTED_FILE_TYPES } from "@/data/file";
+import { file, write } from "opfs-tools";
 
 interface FileUploadOptions {
   accept: string;
@@ -36,17 +26,18 @@ export const selectFile = (options: FileUploadOptions): Promise<File[]> => {
       if (files) {
         resolve(files);
       } else {
-        reject(new Error("No files selected"));
+        reject(new Error("未选择文件"));
       }
     };
 
     input.oncancel = function () {
-      reject(new Error("No files selected"));
+      reject(new Error("未选择文件"));
     };
     input.click();
   });
 };
 
+// 创建文件写入流
 export async function createFileWriter(
   name = `${new Date().toLocaleString()}.mp4`
 ): Promise<WritableStream> {
@@ -85,6 +76,7 @@ export function blobToFile(blob: Blob, fileName: string) {
   return file;
 }
 
+// 通过URL获取Base64数据
 export const fetch2Base64 = async (url: string): Promise<string> => {
   const data = await fetch(url);
   const blob = await data.blob();
@@ -99,243 +91,26 @@ export const fetch2Base64 = async (url: string): Promise<string> => {
   });
 };
 
-
-/**
- * 文件解析错误类
- */
-export class FileParseError extends Error {
-  constructor(
-    message: string,
-    public fileType: string,
-    public fileName: string
-  ) {
-    super(message);
-    this.name = "FileParseError";
+export async function writeFileToOPFS(id: string, url: string) {
+  // 从URL读取并写入opfs
+  if (url) {
+    const data = await fetch(url);
+    await write(id, data.body);
+    return file(id);
   }
+
+  throw new Error(`resource not found: ${url}`);
 }
 
-/**
- * 资源工厂类
- */
-export class FileParser {
-  /**
-   * 从文件创建资源对象
-   */
-  static async createFromFile(file: File): Promise<Resource> {
-    this.validateFile(file);
-
-    const baseResource = {
-      id: nanoid(),
-      name: file.name,
-      createdAt: new Date().toISOString(),
-      file,
-    };
-
-    try {
-      if (file.type.startsWith("video/")) {
-        return await this.createVideoResource(file, baseResource);
-      } else if (file.type.startsWith("audio/")) {
-        return await this.createAudioResource(file, baseResource);
-      } else if (file.type.startsWith("image/")) {
-        return await this.createImageResource(file, baseResource);
-      } else if (file.type.startsWith("text/")) {
-        return await this.createTextResource(file, baseResource);
-      } else {
-        throw new FileParseError(
-          `不支持的文件类型: ${file.type}`,
-          file.type,
-          file.name
-        );
-      }
-    } catch (error) {
-      if (error instanceof Error) {
-        throw error;
-      }
-      throw new FileParseError("资源创建失败", file.type, file.name);
-    }
+export async function readFileFromOPFS(id: string, url?: string) {
+  // 尝试从opfs中获取
+  if (await file(id).exists()) {
+    return file(id);
   }
 
-  private static async createVideoResource(
-    file: File,
-    baseResource: any
-  ): Promise<VideoResource> {
-    const url = URL.createObjectURL(file);
-    const clip = await videoDecoder.decodeFromStream(file.stream(), baseResource.id);
-    const meta = clip.meta;
-
-    return {
-      ...baseResource,
-      type: "video",
-      url,
-      format: file.type,
-      duration: meta.duration / 1e6,
-      width: meta.width,
-      height: meta.height,
-      cover: await this.genVideoCover(clip),
-    };
+  if (url) {
+    return writeFileToOPFS(id, url);
   }
 
-  private static async createAudioResource(
-    file: File,
-    baseResource: any
-  ): Promise<AudioResource> {
-    const url = URL.createObjectURL(file);
-    const clip = await audioDecoder.decodeFromStream(file.stream(), baseResource.id);
-    const meta = clip.meta;
-
-    return {
-      ...baseResource,
-      type: "audio",
-      url,
-      format: file.type,
-      duration: meta.duration / 1e6,
-    };
-  }
-
-  private static async createImageResource(
-    file: File,
-    baseResource: any
-  ): Promise<ImageResource> {
-    const url = URL.createObjectURL(file);
-    const clip = await imageDecoder.decodeFromStream(file.stream(), baseResource.id, file.type);
-    const meta = clip.meta;
-
-    return {
-      ...baseResource,
-      type: "image",
-      url,
-      format: file.type,
-      width: meta.width,
-      height: meta.height,
-    };
-  }
-
-  private static async createTextResource(
-    file: File,
-    baseResource: any
-  ): Promise<TextResource> {
-    const content = await this.parseTextContent(file);
-
-    return {
-      ...baseResource,
-      type: "text",
-      content,
-    };
-  }
-
-  private static async parseTextContent(file: File): Promise<string> {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-
-      reader.onload = () => {
-        resolve(reader.result as string);
-      };
-
-      reader.onerror = () => {
-        reject(new FileParseError("无法读取文本文件", file.type, file.name));
-      };
-
-      reader.readAsText(file, "utf-8");
-    });
-  }
-
-  private static async genVideoCover(clip: any): Promise<string> {
-    try {
-      const { video } = await clip.tick(0);
-
-      if (!video) {
-        return "";
-      }
-
-      const canvas = document.createElement("canvas");
-      const ctx = canvas.getContext("2d");
-
-      canvas.width = video.displayWidth || video.codedWidth;
-      canvas.height = video.displayHeight || video.codedHeight;
-
-      ctx?.drawImage(video, 0, 0, canvas.width, canvas.height);
-      video.close();
-
-      return new Promise((resolve) => {
-        canvas.toBlob(
-          (blob) => {
-            canvas.remove();
-            if (blob) {
-              resolve(URL.createObjectURL(blob));
-            } else {
-              resolve("");
-            }
-          },
-          "image/jpeg",
-          0.8
-        );
-      });
-    } catch (error) {
-      console.error("Failed to generate thumbnail from WebCodecs:", error);
-      return "";
-    }
-  }
-
-  private static validateFile(file: File): void {
-    const fileType = this.getFileCategory(file.type);
-    const maxSize = FILE_SIZE_LIMITS[fileType as keyof typeof FILE_SIZE_LIMITS];
-
-    if (maxSize && file.size > maxSize) {
-      throw new FileParseError(
-        `文件大小超过限制 (${this.formatFileSize(maxSize)})`,
-        file.type,
-        file.name
-      );
-    }
-
-    const supportedTypes = this.getSupportedTypes();
-    if (!this.validateFileType(file, supportedTypes)) {
-      throw new FileParseError(
-        `不支持的文件格式: ${file.type}`,
-        file.type,
-        file.name
-      );
-    }
-  }
-
-  private static validateFileType(file: File, allowedTypes: string[]): boolean {
-    return allowedTypes.some((type) => {
-      if (type.endsWith("/*")) {
-        return file.type.startsWith(type.slice(0, -1));
-      }
-      return file.type === type;
-    });
-  }
-
-  private static getFileCategory(mimeType: string): string {
-    if (mimeType.startsWith("video/")) return "VIDEO";
-    if (mimeType.startsWith("audio/")) return "AUDIO";
-    if (mimeType.startsWith("image/")) return "IMAGE";
-    if (mimeType.startsWith("text/")) return "TEXT";
-    return "UNKNOWN";
-  }
-
-  private static getSupportedTypes(): string[] {
-    return [
-      ...SUPPORTED_FILE_TYPES.VIDEO,
-      ...SUPPORTED_FILE_TYPES.AUDIO,
-      ...SUPPORTED_FILE_TYPES.IMAGE,
-      ...SUPPORTED_FILE_TYPES.TEXT,
-    ];
-  }
-
-  private static formatFileSize(bytes: number): string {
-    const sizes = ["B", "KB", "MB", "GB"];
-    if (bytes === 0) return "0 B";
-    const i = Math.floor(Math.log(bytes) / Math.log(1024));
-    return Math.round((bytes / Math.pow(1024, i)) * 100) / 100 + " " + sizes[i];
-  }
-
-  static async duplicateResource(resource: Resource): Promise<Resource> {
-    if (!resource.file) {
-      throw new Error("无法复制资源：缺少原始文件");
-    }
-
-    return this.createFromFile(resource.file);
-  }
+  throw new Error(`resource not found: ${id}`);
 }

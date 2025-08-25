@@ -14,7 +14,7 @@
         :start="startX"
         :scale="trackScale"
         :step="baseFps"
-        :focusPosition="store.selectResource"
+        :focusPosition="store.selectTrack"
         @selectFrame="handlerSelectFrame"
       />
       <div

@@ -3,6 +3,9 @@ import { ImageTrack } from "@/class/ImageTrack";
 import { TextTrack } from "@/class/TextTrack";
 import { VideoTrack } from "@/class/VideoTrack";
 
+// 轨道类型
+export type TrackType = "video" | "audio" | "text" | "image";
+
 // 基础轨道接口
 export interface BaseTrack {
   id: string;
@@ -14,10 +17,6 @@ export interface BaseTrack {
   [k: string]: any;
 }
 
-
-// 轨道类型
-export type TrackType = "video" | "audio" | "text" | "image";
-
 // 具体轨道类型实现
 export type GeneralTrack = AudioTrack | ImageTrack | VideoTrack;
 export type DrawTrack = VideoTrack | ImageTrack | TextTrack;
@@ -25,7 +24,7 @@ export type Track = GeneralTrack | TextTrack;
 
 // 轨道线项目接口
 export interface TrackLineItem {
-  type: Track["type"];
+  type: TrackType;
   main?: boolean;
   list: Track[];
 }

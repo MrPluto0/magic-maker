@@ -43,8 +43,8 @@ export const initEditorHotKey = () => {
   });
   // 复制素材
   hotkeys("ctrl+c", (event, handler) => {
-    if (trackStore.selectResource) {
-      trackStore.copyData = trackStore.selectResource;
+    if (trackStore.selectTrack) {
+      trackStore.copyData = trackStore.selectTrack;
       event.preventDefault();
     }
   });

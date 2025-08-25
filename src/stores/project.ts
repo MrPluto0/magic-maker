@@ -50,13 +50,16 @@ export const useProjectState = defineStore(
         const projectData: ProjectData = {
           ...project.value,
           updatedAt: new Date().toISOString(),
-          resources: resourceStore.getAllResources(),
+          resources: resourceStore.resources,
           trackData: trackStore.trackList,
-          drawData: route.path === '/draw' ? await drawStore.saveDrawData() : []
+          drawData:
+            route.path === "/draw" ? await drawStore.saveDrawData() : [],
         };
 
         // 更新projectList中的项目
-        const index = projectList.value.findIndex(p => p.id === projectData.id);
+        const index = projectList.value.findIndex(
+          (p) => p.id === projectData.id
+        );
         if (index >= 0) {
           projectList.value[index] = projectData;
         } else {
@@ -67,8 +70,6 @@ export const useProjectState = defineStore(
         project.value = projectData;
         lastSaveTime.value = new Date().toLocaleString();
         ElMessage.success("项目已保存");
-
-        console.log("Project saved:", projectData);
       } catch (error) {
         console.error("Save project error:", error);
         ElMessage.error("项目保存失败");
@@ -85,17 +86,15 @@ export const useProjectState = defineStore(
         project.value = projectData;
 
         // 加载资源
-        resourceStore.loadResources(projectData.resources || []);
+        await resourceStore.loadResources(projectData.resources || []);
 
         // 加载轨道数据
-        if (projectData.trackData) {
-          await loadTrackData(projectData.trackData);
-        }
+        await trackStore.loadTrackData(projectData.trackData || []);
 
         // 加载画板数据
-        if (projectData.drawData) {
-          await drawStore.initContent(projectData.drawData);
-        }
+        await drawStore.initContent(projectData.drawData || []);
+
+        console.log("Loaded project", project.value);
       } catch (error) {
         console.error("Load project error:", error);
         ElMessage.error("项目加载失败");
@@ -105,59 +104,12 @@ export const useProjectState = defineStore(
     };
 
     /**
-     * 加载轨道数据
-     */
-    const loadTrackData = async (trackData: TrackLineItem[]) => {
-      const trackList: TrackLineItem[] = [];
-
-      for (let i = 0; i < trackData.length; i++) {
-        const trackLine = trackData[i];
-        const trackLineList: Track[] = [];
-
-        for (let j = 0; j < trackLine.list.length; j++) {
-          const item = trackLine.list[j];
-
-          // 获取关联的资源
-          let resource: Resource;
-          if ("resourceId" in item && item.resourceId) {
-            // 通过resourceId引用
-            resource = resourceStore.getResourceById(item.resourceId);
-            if (!resource) {
-              console.warn(`Resource not found: ${item.resourceId}`);
-              continue;
-            }
-          } else {
-            console.warn("Track item missing resource reference");
-            continue;
-          }
-
-          const track = await trackStore.createTrack(
-            resource,
-            item.start,
-            "volume" in item ? item.volume : 1
-          );
-
-          const id = track.id;
-          Object.assign(track, item); // 复制其他属性
-          track.id = id; // 保持新生成的ID
-
-          trackLineList.push(track);
-        }
-
-        trackList.push({
-          main: trackLine.main,
-          type: trackLine.type,
-          list: trackLineList,
-        });
-      }
-
-      trackStore.trackList.splice(0, trackStore.trackList.length, ...trackList);
-    };
-
-    /**
      * 创建新项目
      */
-    const createProject = (params: { name: string; description?: string }): ProjectData => {
+    const createProject = (params: {
+      name: string;
+      description?: string;
+    }): ProjectData => {
       const newProject: ProjectData = {
         id: `project_${Date.now()}`,
         name: params.name,
@@ -166,28 +118,29 @@ export const useProjectState = defineStore(
         updatedAt: new Date().toISOString(),
         resources: [],
         trackData: [],
-        version: "2.0.0",
+        version: "1.0.0",
       };
 
       project.value = newProject;
       projectList.value.push(newProject);
-
-      console.log("Project created:", newProject);
       return newProject;
     };
 
     /**
      * 更新项目信息
      */
-    const updateProject = (projectId: string, updates: Partial<ProjectData>) => {
+    const updateProject = (
+      projectId: string,
+      updates: Partial<ProjectData>
+    ) => {
       try {
         // 更新projectList中的项目
-        const index = projectList.value.findIndex(p => p.id === projectId);
+        const index = projectList.value.findIndex((p) => p.id === projectId);
         if (index >= 0) {
           const updatedProject = {
             ...projectList.value[index],
             ...updates,
-            updatedAt: new Date().toISOString()
+            updatedAt: new Date().toISOString(),
           };
           projectList.value[index] = updatedProject;
 
@@ -197,7 +150,6 @@ export const useProjectState = defineStore(
           }
 
           ElMessage.success("项目信息已更新");
-          console.log("Project updated:", updatedProject);
           return updatedProject;
         } else {
           ElMessage.error("项目不存在");
@@ -215,7 +167,7 @@ export const useProjectState = defineStore(
      */
     const deleteProject = (projectId: string) => {
       try {
-        const index = projectList.value.findIndex(p => p.id === projectId);
+        const index = projectList.value.findIndex((p) => p.id === projectId);
         if (index >= 0) {
           projectList.value.splice(index, 1);
           ElMessage.success("项目已删除");
@@ -309,6 +261,14 @@ export const useProjectState = defineStore(
       }
     };
 
+    const init = async () => {
+      if (project.value) {
+        loadProject(project.value);
+      } else if (projectList.value.length > 0) {
+        loadProject(projectList.value[0]);
+      }
+    };
+
     return {
       // 状态
       project,
@@ -316,6 +276,7 @@ export const useProjectState = defineStore(
       lastSaveTime,
 
       // 方法
+      init,
       loadProject,
       updateProject,
       saveProject,
@@ -327,7 +288,7 @@ export const useProjectState = defineStore(
   {
     persist: {
       storage: localStorage,
-      pick: ["projectList", "project"],
+      pick: ["projectList", "project", "lastSaveTime"],
     },
   }
 );

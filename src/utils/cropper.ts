@@ -4,6 +4,7 @@ export interface CropParams {
   width: number;
   height: number;
 }
+
 export async function cropShape(params: CropParams) {
   switch (params.shape) {
     // 图片或者矩形，无需裁剪

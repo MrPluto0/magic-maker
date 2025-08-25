@@ -1,29 +1,17 @@
-/* eslint-disable */
-
 import { baseFps } from "@/data/trackConfig";
-import { MP4Clip, AudioClip, ImgClip, IClip, EmbedSubtitlesClip } from "@webav/av-cliper";
-import { file, write } from "opfs-tools";
+import {
+  MP4Clip,
+  AudioClip,
+  ImgClip,
+  IClip,
+  EmbedSubtitlesClip,
+} from "@webav/av-cliper";
 import { UnitFrame2μs } from "@/data/trackConfig";
 import { Track } from "@/types/track";
 import { AudioTrack } from "@/class/AudioTrack";
 import { trimPunctuation } from "./common";
 import { usePlayerState } from "@/stores/player";
-
-async function writeFile(id: string, url?: string) {
-  // 从URL读取并写入opfs
-  if (url) {
-    const data = await fetch(url);
-    await write(id, data.body);
-    return file(id)
-  }
-
-  // 尝试从opfs中获取
-  if (await file(id).exists()) {
-    return file(id);
-  }
-
-  throw new Error(`resource not found: ${url}`);
-}
+import { readFileFromOPFS } from "./file";
 
 class VideoDecoder {
   #decoderMap = new Map<string, MP4Clip>();
@@ -43,7 +31,7 @@ class VideoDecoder {
       return this.#decoderMap.get(track.id);
     }
 
-    const file = await writeFile(track.resource.id, track.resource.url);
+    const file = await readFileFromOPFS(track.resource.id);
     const stream = await file.stream();
 
     const clip = new MP4Clip(stream);
@@ -117,8 +105,8 @@ class ImageDecoder {
       return this.#decoderMap.get(track.id);
     }
 
-    const file = await writeFile(track.resource.id, track.resource.url);
-    const stream = await file.stream()
+    const file = await readFileFromOPFS(track.resource.id);
+    const stream = await file.stream();
 
     //@ts-ignore
     const clip = new ImgClip({ stream, type });
@@ -161,7 +149,7 @@ class AudioDecoder {
       return this.#decoderMap.get(track.id);
     }
 
-    const file = await writeFile(track.resource.id, track.resource.url);
+    const file = await readFileFromOPFS(track.resource.id);
     const stream = await file.stream();
 
     const clip = new AudioClip(stream, { volume: track.volume });
@@ -206,7 +194,7 @@ class AudioDecoder {
     return audio;
   }
   async updateVolume(track: AudioTrack, volume: number) {
-    const file = await writeFile(track.resource.id);
+    const file = await readFileFromOPFS(track.resource.id);
     const stream = await file.stream();
 
     const clip = new AudioClip(stream, { volume });
@@ -235,8 +223,8 @@ class SubtitleDecoder {
       return this.#decoderMap.get(track.id);
     }
 
-    const file = await writeFile(track.resource.id, url)
-    const text = await file.text()
+    const file = await readFileFromOPFS(track.resource.id, url);
+    const text = await file.text();
     const playerStore = usePlayerState();
     const trimedText = trimPunctuation(text);
 
@@ -244,10 +232,9 @@ class SubtitleDecoder {
       videoWidth: playerStore.playerWidth,
       videoHeight: playerStore.playerHeight,
       fontSize: track.subtitle.fontSize,
-      fontFamily: 'Noto Sans SC',
+      fontFamily: "Noto Sans SC",
       color: track.subtitle.fontColor,
       strokeStyle: track.subtitle.strokeColor,
-      // textBgColor: track.subtitle.bgColor,
       bottomOffset: track.subtitle.bottomOffset,
       lineWidth: track.subtitle.strokeSize,
     });
@@ -295,6 +282,5 @@ export const splitClip = async (
   const end = (frameCount - offsetR - offsetL) * UnitFrame2μs;
 
   // return offsetR === 0 ? clip : (await clip.split(end))[0];
-  return clip
+  return clip;
 };
-

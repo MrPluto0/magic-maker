@@ -9,23 +9,12 @@
       class="h-24 cursor-pointer center bg-night hover:border-2 hover:border-purple box-border overflow-hidden"
     >
       <el-image
-        v-if="type === 'image'"
         class="max-h-full max-w-full"
         preview-teleported
-        :src="'url' in resource ? resource.url : ''"
-        :preview-src-list="['url' in resource ? resource.url : '']"
-      />
-      <img
-        @click="showVideo = true"
-        v-else
-        :src="
-          'cover' in resource
-            ? resource.cover
-            : 'url' in resource
-            ? resource.url
-            : ''
-        "
-        alt=""
+        :src="'cover' in resource ? resource.cover : resource.url"
+        :preview-src-list="[
+          'cover' in resource ? resource.cover : resource.url,
+        ]"
       />
       <el-dialog v-if="showVideo" title="原始视频" center v-model="showVideo">
         <video controls :src="'url' in resource ? resource.url : ''"></video>
@@ -103,7 +92,7 @@
     </div>
   </div>
 
-  <div v-else class="relative w-24">
+  <div v-else-if="type === 'text'" class="relative w-24">
     <el-popover trigger="click" placement="right" :width="400">
       <template #reference>
         <div
@@ -153,6 +142,8 @@ import { Resource } from "@/types/resource";
 import { TrackType } from "@/types/track";
 import { useResourceState } from "@/stores/resource";
 import useClipboard from "vue-clipboard3";
+import { ElMessage } from "element-plus";
+import { ref } from "vue";
 
 const props = defineProps<{
   resource: Resource;
@@ -196,7 +187,7 @@ const getResultContent = (resource: Resource): string => {
 
 const handleCopyButton = async (text: string) => {
   try {
-    const selection = window.getSelection().toString();
+    const selection = window.getSelection()?.toString() || "";
     await toClipboard(selection === "" ? text : selection);
     ElMessage.success("复制成功");
   } catch (error) {

@@ -90,14 +90,16 @@
 </template>
 
 <script lang="ts" setup>
-import { useUserState } from "@/stores/user";
-import { IUser } from "@/types/user";
 import { useRouter } from "vue-router";
+import { ElMessage } from "element-plus";
+import { onMounted, ref } from "vue";
+import { useUserState } from "@/stores/user";
 import { useProjectState } from "@/stores/project";
 
 const props = defineProps<{
   show: boolean;
 }>();
+
 const emits = defineEmits(["update:show"]);
 const userStore = useUserState();
 const proStore = useProjectState();

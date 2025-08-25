@@ -4,7 +4,7 @@
       class="flex items-center text-xs pl-2 overflow-hidden h-full leading-6 bg-yellow-700 bg-opacity-70 text-white"
     >
       <img
-        :src="imageResource?.url"
+        :src="resource?.url"
         class="h-full inline-block mr-2 shrink-0"
         alt=""
         draggable="false"
@@ -12,9 +12,6 @@
       <div class="mr-4 shrink-0 flex flex-col gap-1">
         <div class="text-xs h-4">
           {{ trackItem.name }}
-        </div>
-        <div class="overflow-hidden h-4 relative text-xs text-white">
-          <span>{{ imageResource?.name || "图片" }}</span>
         </div>
       </div>
     </div>
@@ -38,5 +35,5 @@ const props = defineProps({
   },
 });
 
-const imageResource = computed(() => props.trackItem.resource);
+const resource = computed(() => props.trackItem.resource);
 </script>

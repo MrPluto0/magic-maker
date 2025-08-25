@@ -1,19 +1,20 @@
+import { TrackType } from "./track";
+
 // 基础资源接口
 export interface BaseResource {
   id: string;
   name: string;
-  type: "audio" | "image" | "video" | "text";
+  type: TrackType;
   createdAt: string;
-  file?: File; // 原始文件对象
+  url: string;
   meta?: {
     [key: string]: any;
-  }
+  };
 }
 
 // 音频资源
 export interface AudioResource extends BaseResource {
   type: "audio";
-  url: string;
   format: string;
   duration: number;
   subtitle?: string; // 字幕URL或文本内容
@@ -22,7 +23,6 @@ export interface AudioResource extends BaseResource {
 // 图片资源
 export interface ImageResource extends BaseResource {
   type: "image";
-  url: string;
   format: string;
   width: number;
   height: number;
@@ -31,7 +31,6 @@ export interface ImageResource extends BaseResource {
 // 视频资源
 export interface VideoResource extends BaseResource {
   type: "video";
-  url: string;
   format: string;
   duration: number;
   width: number;
@@ -52,13 +51,3 @@ export type Resource =
   | ImageResource
   | VideoResource
   | TextResource;
-
-// 文件元信息接口
-export interface FileMetaInfo {
-  name: string;
-  size: number;
-  type: string;
-  duration?: number;
-  width?: number;
-  height?: number;
-}

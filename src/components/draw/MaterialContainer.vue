@@ -71,7 +71,6 @@
 </template>
 
 <script lang="ts" setup>
-// Removed API imports for frontend-only mode
 import MaterialList from "./MaterialList.vue";
 import { Material } from "@/types/draw";
 

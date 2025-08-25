@@ -18,6 +18,7 @@ export interface CanvasConfig {
   focusColor: string; // 选中元素区间
   lineColor: string; // 底线颜色
 }
+
 export interface UserConfig {
   start: number; // 开始坐标
   step: number; // 步进，与视频fps同步
@@ -29,6 +30,7 @@ export interface UserConfig {
     frameCount: number; // 总帧数
   };
 }
+
 // 标尺中每小格代表的宽度(根据scale的不同实时变化)
 const getGridSize = (scale: number): number => {
   const scaleNum = new Map([

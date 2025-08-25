@@ -37,7 +37,7 @@ export default function () {
       e.setFontFamily(fontFamily, EnglishFonts[fontFamily], false);
     }
     // @ts-ignore 刷新字体集合
-    e.setFontFamily("BebasNeue", EnglishFonts["BebasNeue"], true);
+    e.setFontFamily("BebasNeue", EnglishFonts["Bellefair"], true);
 
     store.api = e;
   };

@@ -64,7 +64,7 @@ import AttrCol from "./AttrCol.vue";
 import { ImageTrack } from "@/class/ImageTrack";
 
 const trackStore = useTrackState();
-const track = computed(() => trackStore.selectResource as ImageTrack);
+const track = computed(() => trackStore.selectTrack as ImageTrack);
 
 const handleReGenerate = () => {
   ElMessage.info("前端模式下暂不支持重新生成功能");

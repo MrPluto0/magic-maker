@@ -30,7 +30,7 @@
       />
     </div>
     <div
-      v-if="resource?.prompt"
+      v-if="resource.meta?.prompt"
       class="pl-2 overflow-hidden h-4 flex items-center bg-gray-700 relative text-xs overflow-ellipsis whitespace-nowrap text-white"
     >
       <span>{{ resource.meta.prompt }}</span>
