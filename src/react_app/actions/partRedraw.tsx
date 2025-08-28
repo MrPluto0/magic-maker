@@ -1,4 +1,4 @@
-import MaskRedraw from "@/components/draw/tools/MaskRedraw.vue";
+import MaskRedraw from "@/pages/draw/components/tools/MaskRedraw.vue";
 import { useDrawStore } from "@/stores/draw";
 import { ExcalidrawImageElement } from "@pkg/excalidraw/types/element/types";
 import { ExcalidrawImperativeAPI } from "@pkg/excalidraw/types/types";

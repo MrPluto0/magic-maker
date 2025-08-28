@@ -8,14 +8,6 @@
     </div>
 
     <div v-loading="loading" class="flex items-center w-full gap-2">
-      <!-- <div class="w-22">
-        <el-select v-model="form.style" placeholder="风格">
-          <el-option value="music" label="音乐" />
-          <el-option value="audio" label="音效" />
-          <el-option value="narration" label="旁白" />
-        </el-select>
-      </div> -->
-
       <div class="w-20">
         <el-select v-model="form.style" placeholder="风格">
           <el-option

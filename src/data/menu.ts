@@ -2,7 +2,7 @@ import { TrackType } from "@/types/track";
 import type { Component } from "vue";
 import TextGenerate from "@/pages/editor/components/generate/TextGenerate.vue";
 import ImageGenerate from "@/pages/editor/components/generate/ImageGenerate.vue";
-import MusicGenerate from "@/pages/editor/components/generate/MusicGenerate.vue";
+import AudioGenerate from "@/pages/editor/components/generate/AudioGenerate.vue";
 import VideoGenerate from "@/pages/editor/components/generate/VideoGenerate.vue";
 import SpeechGenerate from "@/pages/editor/components/generate/SpeechGenerate.vue";
 
@@ -34,7 +34,7 @@ export const EditorGenerateMenu: MenuItem[] = [
     key: "audio",
     fileType: "audio/*",
     icon: "AudioIcon",
-    component: MusicGenerate,
+    component: AudioGenerate,
   },
   {
     title: "旁白",
@@ -66,7 +66,7 @@ export const EditorMaterialMenu: MenuItem[] = [
     key: "audio",
     fileType: "audio/*",
     icon: "AudioIcon",
-    component: MusicGenerate,
+    component: AudioGenerate,
   },
   {
     title: "视频",

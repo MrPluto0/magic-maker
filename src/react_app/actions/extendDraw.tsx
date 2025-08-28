@@ -1,4 +1,4 @@
-import ExtendDraw from "@/components/draw/tools/ExtendDraw.vue";
+import ExtendDraw from "@/pages/draw/components/tools/ExtendDraw.vue";
 import { useDrawStore } from "@/stores/draw";
 import { ExcalidrawImageElement } from "@pkg/excalidraw/types/element/types";
 import { ExcalidrawImperativeAPI } from "@pkg/excalidraw/types/types";

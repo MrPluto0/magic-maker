@@ -134,11 +134,11 @@ const menu = [
     to: "/home",
   },
   {
-    name: "白板绘图",
-    to: "/whiteboard",
+    name: "图像编辑",
+    to: "/draw",
   },
   {
-    name: "流程剪辑",
+    name: "视频剪辑",
     to: "/editor",
   },
 ];

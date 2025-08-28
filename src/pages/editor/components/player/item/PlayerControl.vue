@@ -2,6 +2,7 @@
   <div class="flex items-center justify-center h-8 my-2">
     <div class="m-auto flex items-center gap-4">
       <span class="text-xs text-purple inline-block">{{ playTime }}</span>
+
       <el-tooltip
         v-for="(control, i) in controls"
         :key="i"
@@ -17,23 +18,7 @@
           <component :is="control.icon" />
         </el-icon>
       </el-tooltip>
-      <!-- <el-icon
-        :size="18"
-        class="cursor-pointer box-content"
 
-      >
-        <PauseIcon
-          v-show="store.isPause"
-          @click="store.isPause = !store.isPause"
-        />
-        <PlayIcon
-          v-show="!store.isPause"
-          @click="store.isPause = !store.isPause"
-        />
-      </el-icon>
-      <el-icon :size="18" class="cursor-pointer box-content">
-        <ForwardIcon @click="store.forward()" />
-      </el-icon> -->
       <span class="text-xs">{{ allTime }}</span>
     </div>
   </div>
@@ -46,6 +31,7 @@ import { useTrackState } from "@/stores/track";
 
 const store = usePlayerState();
 const trackStore = useTrackState();
+
 const playTime = computed(() => {
   return formatPlayerTime(store.playStartFrame);
 });

@@ -8,69 +8,11 @@
     </div>
 
     <div v-loading="loading" class="flex items-center w-full gap-2">
-      <div class="w-32">
-        <el-select v-model="form.model" placeholder="">
-          <el-option value="即梦" label="doubao" />
-        </el-select>
-      </div>
-
       <el-input
         v-model="form.prompt"
         placeholder="请输入提示词"
         @keyup.enter="handleSubmit"
       >
-        <template #suffix>
-          <el-popover trigger="click" width="280">
-            <!-- 风格选择区域 -->
-            <template #reference>
-              <el-icon :size="18" class="cursor-pointer mr-2">
-                <ColorPanelIcon />
-              </el-icon>
-            </template>
-            <template #default>
-              <div class="grid-container2">
-                <div
-                  v-for="(kw, index) in GenerateKeywords"
-                  :key="index"
-                  class="item"
-                  @click="addKeyword(kw)"
-                >
-                  <span
-                    class="text"
-                    :class="{ active: form.keywords.includes(kw) }"
-                    >{{ kw }}</span
-                  >
-                </div>
-              </div>
-            </template>
-          </el-popover>
-
-          <el-popover trigger="click">
-            <!-- 尺寸选择区域 -->
-            <template #reference>
-              <el-icon :size="18" class="cursor-pointer">
-                <SizePanelIcon />
-              </el-icon>
-            </template>
-            <template #default>
-              <div class="grid-container">
-                <div
-                  v-for="(item, index) in ImageSizeList"
-                  :key="index"
-                  class="item"
-                  @click="form.size = item.text"
-                >
-                  <img class="icon" :src="item.img" />
-                  <span
-                    class="text"
-                    :class="{ active: item.text == form.size }"
-                    >{{ item.text }}</span
-                  >
-                </div>
-              </div>
-            </template>
-          </el-popover>
-        </template>
       </el-input>
 
       <el-button class="dark:bg-purple-heavy" circle @click="handleSubmit">
@@ -82,26 +24,18 @@
 
 <script lang="ts" setup>
 import { reactive, ref } from "vue";
-import { GenerateKeywords, ImageSizeList } from "@/data/constant";
 import { useResourceState } from "@/stores/resource";
 import ResourceList from "../resource/ResourceList.vue";
-
-interface IText2Image {
-  prompt: string;
-  keywords: string[];
-  model: string;
-  size: string;
-}
 
 const resourceStore = useResourceState();
 const { getResourcesByType } = resourceStore;
 
 const loading = ref(false);
 
-const form = reactive<IText2Image>({
+const form = reactive({
   prompt: "",
   keywords: [],
-  model: "doubao",
+  model: "",
   size: "",
 });
 
@@ -112,14 +46,6 @@ const handleSubmit = () => {
   }
 
   ElMessage.info("前端模式下暂不支持AI图片生成功能");
-};
-
-const addKeyword = (kw: string) => {
-  if (form.keywords.includes(kw)) {
-    form.keywords = form.keywords.filter((k) => k != kw);
-  } else {
-    form.keywords.push(kw);
-  }
 };
 </script>
 

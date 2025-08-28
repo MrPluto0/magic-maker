@@ -37,11 +37,9 @@ import Moveable from "vue3-moveable";
 import { ref, nextTick, reactive, computed, watch } from "vue";
 import { usePlayerState } from "@/stores/player";
 import { useTrackState } from "@/stores/track";
-import type { VideoTrack } from "@/class/VideoTrack";
-import type { TextTrack } from "@/class/TextTrack";
-import type { ImageTrack } from "@/class/ImageTrack";
+import { DrawTrack } from "@/types/track";
 
-const props = defineProps({
+defineProps({
   canvasSize: {
     type: Object,
     default() {
@@ -52,11 +50,13 @@ const props = defineProps({
     },
   },
 });
+
 const store = usePlayerState();
 const trackStore = useTrackState();
 const moveContainer = ref();
 const moveable = ref();
 const moveTarget = ref();
+
 interface TargetItem {
   id: string;
   lineIndex: number;
@@ -69,6 +69,7 @@ interface TargetItem {
   left: number;
   top: number;
 }
+
 const targetList = computed(() => {
   if (store.playerHeight === 0 && store.playerWidth === 0) {
     return [];
@@ -90,7 +91,7 @@ const targetList = computed(() => {
       }
       return false;
     });
-    const trackItem: VideoTrack | ImageTrack | TextTrack = list[index];
+    const trackItem = list[index] as DrawTrack;
     if (trackItem) {
       layerArr.unshift({
         lineIndex,
@@ -124,17 +125,21 @@ function onDrag(params: Record<string, any>) {
   let { target, transform, translate } = params;
   const { lineindex, itemindex } = target.dataset;
   const [x, y] = translate;
-  trackStore.trackList[lineindex].list[itemindex].centerX = x;
-  trackStore.trackList[lineindex].list[itemindex].centerY = y;
+  const track = trackStore.trackList[lineindex].list[itemindex] as DrawTrack;
+  track.centerX = x;
+  track.centerY = y;
   target.style.transform = transform;
 }
+
 function onScale(params: Record<string, any>) {
   let { target, scale, transform } = params;
   const { lineindex, itemindex } = target.dataset;
   const newScale = Math.max(Math.round(scale[0] * 100), 1);
-  trackStore.trackList[lineindex].list[itemindex].scale = newScale;
+  const track = trackStore.trackList[lineindex].list[itemindex] as DrawTrack;
+  track.scale = newScale;
   target.style.transform = transform;
 }
+
 function mousedown(event: MouseEvent, eleid: string) {
   event.stopPropagation();
   store.isPause = true;
@@ -144,6 +149,7 @@ function mousedown(event: MouseEvent, eleid: string) {
     moveable.value.dragStart(event);
   });
 }
+
 watch(
   [trackStore.selectTrackItem, targetList],
   () => {
