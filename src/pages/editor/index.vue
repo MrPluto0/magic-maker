@@ -32,15 +32,15 @@
 </template>
 
 <script setup lang="ts">
-import AttributeContainer from "@/components/editor/attributes/AttributeContainer.vue";
-import CanvasPlayer from "@/components/editor/player/CanvasPlayer.vue";
-import TrackContainer from "@/components/editor/track/TrackContainer.vue";
-import SplitLine from "@/components/SplitLine.vue";
-import GenerateContainer from "@/components/editor/generate/GenerateContainer.vue";
 import { usePageState } from "@/stores/page";
-import { clearHotKey, initEditorHotKey } from "@/plugins/installHotKey";
 import { useProjectState } from "@/stores/project";
-import UploadContainer from "@/components/editor/resource/UploadContainer.vue";
+import { clearHotKey, initEditorHotKey } from "@/plugins/installHotKey";
+import AttributeContainer from "@/pages/editor/components/attributes/AttributeContainer.vue";
+import SplitLine from "@/components/SplitLine.vue";
+import CanvasPlayer from "./components/player/CanvasPlayer.vue";
+import TrackContainer from "./components/track/TrackContainer.vue";
+import GenerateContainer from "./components/generate/GenerateContainer.vue";
+import UploadContainer from "./components/resource/UploadContainer.vue";
 
 const page = usePageState();
 const projectStore = useProjectState();

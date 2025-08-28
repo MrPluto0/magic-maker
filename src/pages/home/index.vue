@@ -54,10 +54,11 @@
 </template>
 
 <script lang="ts" setup>
-import NewProject from "@/components/messagebox/NewProject.vue";
-import UsageBox from "@/components/messagebox/UsageBox.vue";
-import { useProjectState } from "@/stores/project";
 import { useUserState } from "@/stores/user";
+import { useProjectState } from "@/stores/project";
+import UsageBox from "@/components/messagebox/UsageBox.vue";
+import NewProject from "./components/NewProject.vue";
+import ProjectList from "./components/ProjectList.vue";
 
 const userStore = useUserState();
 const projectStore = useProjectState();

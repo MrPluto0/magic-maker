@@ -1,5 +1,5 @@
 import { AudioTrack } from "@/class/AudioTrack";
-import { baseFps } from "@/data/trackConfig";
+import { baseFps } from "@/data/track";
 import { usePlayerState } from "@/stores/player";
 import { useTrackState } from "@/stores/track";
 import { Track } from "@/types/track";

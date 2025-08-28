@@ -1,4 +1,4 @@
-import { baseFps } from "@/data/trackConfig";
+import { baseFps } from "@/data/track";
 
 /**
  *  时间格式化
@@ -42,9 +42,11 @@ export function getTextRect({
   fontFamily: string;
 }) {
   const padding = 4;
-  const canvas = (typeof OffscreenCanvas !== 'undefined' 
-    ? new OffscreenCanvas(1000, 1000) 
-    : document.createElement('canvas')) as any;
+  const canvas = (
+    typeof OffscreenCanvas !== "undefined"
+      ? new OffscreenCanvas(1000, 1000)
+      : document.createElement("canvas")
+  ) as any;
   const ctx = canvas.getContext("2d");
 
   if (!ctx) {

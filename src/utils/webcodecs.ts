@@ -1,4 +1,4 @@
-import { baseFps } from "@/data/trackConfig";
+import { baseFps } from "@/data/track";
 import {
   MP4Clip,
   AudioClip,
@@ -6,7 +6,7 @@ import {
   IClip,
   EmbedSubtitlesClip,
 } from "@webav/av-cliper";
-import { UnitFrame2μs } from "@/data/trackConfig";
+import { UnitFrame2μs } from "@/data/track";
 import { Track } from "@/types/track";
 import { AudioTrack } from "@/class/AudioTrack";
 import { trimPunctuation } from "./common";

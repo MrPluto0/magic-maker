@@ -1,5 +1,5 @@
 import { uniqueId } from "lodash-es";
-import { baseFps, UnitFrame2μs } from "@/data/trackConfig";
+import { baseFps, UnitFrame2μs } from "@/data/track";
 import { audioDecoder, splitClip, subtitleDecoder } from "@/utils/webcodecs";
 import { IClip, OffscreenSprite } from "@webav/av-cliper";
 import { AudioResource } from "@/types/resource";
@@ -45,7 +45,6 @@ export class AudioTrack implements BaseTrack {
     strokeColor: "#fffff00",
     bottomOffset: 30,
   };
-
 
   constructor(resource: AudioResource, curFrame: number, volume: number = 1) {
     this.id = uniqueId();

@@ -62,7 +62,7 @@
 
 <script lang="ts" setup>
 import { VideoTrack } from "@/class/VideoTrack";
-import { baseFps } from "@/data/trackConfig";
+import { baseFps } from "@/data/track";
 import { useTrackState } from "@/stores/track";
 import AttrCol from "./AttrCol.vue";
 import { VideoResource } from "@/types/resource";

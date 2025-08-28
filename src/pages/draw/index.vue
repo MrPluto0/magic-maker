@@ -38,8 +38,8 @@
 </template>
 
 <script lang="ts" setup>
-import MaterialContainer from "@/components/draw/MaterialContainer.vue";
-import TemplateContainer from "@/components/draw/TemplateContainer.vue";
+import MaterialContainer from "./components/MaterialContainer.vue";
+import TemplateContainer from "./components/TemplateContainer.vue";
 import Whiteboard from "@/react_app/whiteboard";
 import { useDrawStore } from "@/stores/draw";
 import { useProjectState } from "@/stores/project";

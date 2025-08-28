@@ -2,7 +2,7 @@ import { ref, toRefs, reactive } from "vue";
 import { defineStore } from "pinia";
 import { useTrackState } from "./track";
 import { useResourceState } from "./resource";
-import { baseFps } from "@/data/trackConfig";
+import { baseFps } from "@/data/track";
 import { Track } from "@/types/track";
 import { subtitleDecoder } from "@/utils/webcodecs";
 

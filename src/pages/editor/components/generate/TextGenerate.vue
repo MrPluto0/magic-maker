@@ -83,16 +83,6 @@
       </el-tag>
 
       <div v-loading="loading" class="flex items-center w-full gap-2">
-        <div class="w-22">
-          <el-select v-model="form.style" placeholder="风格">
-            <el-option value="Promotional video" label="宣传片" />
-            <el-option value="Movie" label="电影" />
-            <el-option value="Ad" label="广告" />
-            <el-option value="E-commerce" label="电商" />
-            <el-option value="Custom" label="自定义" />
-          </el-select>
-        </div>
-
         <div class="flex-1">
           <el-input
             v-model="inputText"

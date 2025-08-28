@@ -1,19 +1,10 @@
-import type { Component } from "vue";
-import TextGenerate from "@/components/editor/generate/TextGenerate.vue";
-import ImageGenerate from "@/components/editor/generate/ImageGenerate.vue";
-import MusicGenerate from "@/components/editor/generate/MusicGenerate.vue";
-import VideoGenerate from "@/components/editor/generate/VideoGenerate.vue";
-import SpeechGenerate from "@/components/editor/generate/SpeechGenerate.vue";
-
-import HomeIcon from "@/assets/svg/header/home.svg";
-import ProjectIcon from "@/assets/svg/header/project.svg";
-import TextIcon from "@/assets/svg/header/text.svg";
-import ImageIcon from "@/assets/svg/header/image.svg";
-import AudioIcon from "@/assets/svg/header/audio.svg";
-import SpeechIcon from "@/assets/svg/header/speech.svg";
-import VideoIcon from "@/assets/svg/header/video.svg";
-import ClipIcon from "@/assets/svg/header/clip.svg";
 import { TrackType } from "@/types/track";
+import type { Component } from "vue";
+import TextGenerate from "@/pages/editor/components/generate/TextGenerate.vue";
+import ImageGenerate from "@/pages/editor/components/generate/ImageGenerate.vue";
+import MusicGenerate from "@/pages/editor/components/generate/MusicGenerate.vue";
+import VideoGenerate from "@/pages/editor/components/generate/VideoGenerate.vue";
+import SpeechGenerate from "@/pages/editor/components/generate/SpeechGenerate.vue";
 
 export interface MenuItem {
   title: string;
@@ -86,10 +77,6 @@ export const EditorMaterialMenu: MenuItem[] = [
   },
 ];
 
-export const EditorAIMenu: MenuItem[] = [
+export const EditorAIMenu: MenuItem[] = [];
 
-];
-
-export const DrawAIMenu: MenuItem[] = [
-
-];
+export const DrawAIMenu: MenuItem[] = [];

@@ -32,7 +32,7 @@ import AudioIcon from "@/components/icons/AudioIcon.vue";
 import TextIcon from "@/components/icons/TextIcon.vue";
 import ImageIcon from "@/components/icons/ImageIcon.vue";
 
-import { TrackHeightMap } from "@/data/trackConfig";
+import { TrackHeightMap } from "@/data/track";
 const props = defineProps({
   listData: {
     type: Array as PropType<TrackLineItem[]>,

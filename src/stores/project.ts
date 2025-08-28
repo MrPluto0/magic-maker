@@ -8,7 +8,7 @@ import { AudioTrack } from "@/class/AudioTrack";
 import { usePlayerState } from "./player";
 import { Resource } from "@/types/resource";
 import { Track, TrackLineItem } from "@/types/track";
-import { baseFps } from "@/data/trackConfig";
+import { baseFps } from "@/data/track";
 import { createFileWriter, selectFile } from "@/utils/file";
 import { useDrawStore } from "./draw";
 import { ResourceFactory } from "@/utils/resource";

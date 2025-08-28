@@ -13,7 +13,7 @@
 </template>
 
 <script setup lang="ts">
-import { baseFps } from "@/data/trackConfig";
+import { baseFps } from "@/data/track";
 import { usePageState } from "@/stores/page";
 import { drawTimeLine, getSelectFrame } from "@/utils/canvasUtil";
 import type { UserConfig, CanvasConfig } from "@/utils/canvasUtil";

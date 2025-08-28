@@ -28,7 +28,7 @@ import VideoItem from "../template/VideoItem.vue";
 import AudioItem from "../template/AudioItem.vue";
 import TextItem from "../template/TextItem.vue";
 import ImageItem from "../template/ImageItem.vue";
-import { TrackHeightMap } from "@/data/trackConfig";
+import { TrackHeightMap } from "@/data/track";
 import { useTrackState } from "@/stores/track";
 import { computed } from "vue";
 

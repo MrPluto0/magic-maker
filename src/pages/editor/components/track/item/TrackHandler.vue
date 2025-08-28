@@ -28,7 +28,7 @@ import { usePlayerState } from "@/stores/player";
 import type { TrackItem } from "@/stores/track";
 import { computed, toRefs } from "vue";
 import { getGridPixel } from "@/utils/canvasUtil";
-import { baseFps } from "@/data/trackConfig";
+import { baseFps } from "@/data/track";
 
 const props = defineProps({
   isActive: {

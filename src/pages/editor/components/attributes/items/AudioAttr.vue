@@ -85,7 +85,7 @@
 </template>
 
 <script lang="ts" setup>
-import { baseFps } from "@/data/trackConfig";
+import { baseFps } from "@/data/track";
 import { useTrackState } from "@/stores/track";
 import AttrCol from "./AttrCol.vue";
 import { AudioTrack } from "@/class/AudioTrack";

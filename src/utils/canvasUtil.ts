@@ -1,4 +1,4 @@
-import { baseFps } from "@/data/trackConfig";
+import { baseFps } from "@/data/track";
 import { formatTime } from "@/utils/common";
 
 export interface CanvasConfig {

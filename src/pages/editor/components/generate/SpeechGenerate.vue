@@ -57,8 +57,7 @@
           <el-tooltip v-if="recBlob" content="克隆录音">
             <el-button type="primary" circle @click="handleClone">
               <ArrowDownIcon />
-              ></el-button
-            >
+            </el-button>
           </el-tooltip>
         </div>
       </template>

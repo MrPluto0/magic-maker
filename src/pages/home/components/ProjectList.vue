@@ -53,7 +53,7 @@ import { useProjectState } from "@/stores/project";
 import { IProject } from "@/types/project";
 import { useRouter } from "vue-router";
 import { Delete, Document, Edit } from "@element-plus/icons-vue";
-import UpdateProject from "./messagebox/UpdateProject.vue";
+import UpdateProject from "./UpdateProject.vue";
 
 const router = useRouter();
 const projectStore = useProjectState();

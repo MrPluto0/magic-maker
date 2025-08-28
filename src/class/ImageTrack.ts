@@ -1,7 +1,7 @@
 import { uniqueId } from "lodash-es";
 import { imageDecoder } from "@/utils/webcodecs";
 import { OffscreenSprite } from "@webav/av-cliper";
-import { baseFps, UnitFrame2μs } from "@/data/trackConfig";
+import { baseFps, UnitFrame2μs } from "@/data/track";
 import { ImageResource } from "@/types/resource";
 import { BaseTrack } from "@/types/track";
 

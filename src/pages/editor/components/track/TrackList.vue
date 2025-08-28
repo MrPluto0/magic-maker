@@ -101,7 +101,7 @@ import { useTrackState } from "@/stores/track";
 import { usePlayerState } from "@/stores/player";
 import { debounce, get, over } from "lodash-es";
 import { Resource } from "@/types/resource";
-import { baseFps } from "@/data/trackConfig";
+import { baseFps } from "@/data/track";
 import { Track } from "@/types/track";
 
 const store = useTrackState();

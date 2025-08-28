@@ -18,7 +18,7 @@
 </template>
 
 <script setup lang="ts">
-import { TrackHeightMap } from "@/data/trackConfig";
+import { TrackHeightMap } from "@/data/track";
 import { useTrackState } from "@/stores/track";
 import TrackItem from "./TrackItem.vue";
 

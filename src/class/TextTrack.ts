@@ -1,7 +1,7 @@
 import { uniqueId } from "lodash-es";
 import { getTextRect } from "@/utils/common";
 import { ImgClip, OffscreenSprite } from "@webav/av-cliper";
-import { baseFps, UnitFrame2μs } from "@/data/trackConfig";
+import { baseFps, UnitFrame2μs } from "@/data/track";
 import { BaseTrack } from "@/types/track";
 
 export interface TextResource {

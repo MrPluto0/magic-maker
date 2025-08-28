@@ -32,7 +32,7 @@
 import Loading from "@/components/Loading.vue";
 import { usePlayerState } from "@/stores/player";
 import WaveSurfer from "wavesurfer.js";
-import { WaveOptions } from "@/data/trackConfig";
+import { WaveOptions } from "@/data/track";
 import { AudioTrack } from "@/class/AudioTrack";
 
 const props = defineProps({
