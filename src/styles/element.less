@@ -1,7 +1,7 @@
 @import url(element-plus/theme-chalk/dark/css-vars.css);
 
 :root {
-    --el-color-primary: #1473e6 !important;
+    --el-color-primary: #7457ff !important;
 }
 
 .el-collapse {
@@ -9,18 +9,20 @@
     border-top: none;
 }
 
-.el-tabs--border-card {
+.el-tabs {
+    border-radius: 8px;
     border: none !important;
-    @apply dark:bg-night-light;
+    @apply dark:bg-night-lighter;
 
     .el-tabs__item {
         border: none !important;
     }
+
+    .el-tabs__nav-scroll {
+        @apply dark:bg-night-light overflow-hidden;
+    }
 }
 
-.el-tabs__item {
-    .my-text() !important
-}
 
 .el-scrollbar__view {
     height: 100%;
@@ -43,7 +45,7 @@
 }
 
 .el-descriptions__cell {
-    @apply !pb-4;
+    padding-bottom: 16px !important;
 }
 
 .el-descriptions__label {

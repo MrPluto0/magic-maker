@@ -6,12 +6,12 @@ export default defineConfig({
   theme: {
     colors: {
       night: {
-        DEFAULT: "#161616",
-        light: "#232323",
-        lighter: "#3E3E3E",
+        DEFAULT: "#141414",
+        light: "#303030",
+        lighter: "#262626",
       },
       purple: {
-        DEFAULT: "#8E84FF",
+        DEFAULT: "#7457ff",
         heavy: "#805DFF",
       },
     },

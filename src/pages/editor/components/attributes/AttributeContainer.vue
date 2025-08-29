@@ -1,8 +1,5 @@
 <template>
-  <div
-    class="select-none relative pl-2 dark:bg-night bg-gray-100"
-    :style="attrWidth"
-  >
+  <div class="select-none relative container-box" :style="attrWidth">
     <div
       v-if="!track"
       class="w-full h-full flex flex-col justify-center items-center"
@@ -10,18 +7,12 @@
       <el-empty description="点击轨道进行编辑" />
     </div>
 
-    <div
-      v-else
-      class="absolute top-0 left-3 right-2 bottom-0 pr-2 overflow-auto"
-    >
-      <el-tabs>
-        <el-tab-pane label="基本信息">
-          <VideoAttr v-if="track.type === 'video'" />
-          <ImageAttr v-else-if="track.type === 'image'" />
-          <AudioAttr v-else-if="track.type === 'audio'" />
-          <TextAttr v-else-if="track.type === 'text'" />
-        </el-tab-pane>
-      </el-tabs>
+    <div v-else class="pr-2 overflow-auto">
+      <div class="mb-4 border-b-purple border-b-2">基本信息</div>
+      <VideoAttr v-if="track.type === 'video'" />
+      <ImageAttr v-else-if="track.type === 'image'" />
+      <AudioAttr v-else-if="track.type === 'audio'" />
+      <TextAttr v-else-if="track.type === 'text'" />
     </div>
   </div>
 </template>

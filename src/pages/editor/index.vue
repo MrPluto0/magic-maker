@@ -12,7 +12,7 @@
     </div>
 
     <div class="flex flex-1 flex-col overflow-hidden gap-2">
-      <div class="flex flex-1 flex-row flex-nowrap container-box gap-2">
+      <div class="flex flex-1 flex-row flex-nowrap gap-2">
         <CanvasPlayer />
         <SplitLine
           v-model:new-width="page.attrWidth"

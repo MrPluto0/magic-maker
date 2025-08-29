@@ -1,5 +1,5 @@
 <template>
-  <div class="px-4 w-full h-10 border-b dark:border-night-light">
+  <div class="px-4 py-2 w-full dark:border-night-lighter">
     <div
       class="float-left h-9 w-32 flex flex-row gap-3 flex-nowrap items-center justify-around"
     >

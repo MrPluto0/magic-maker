@@ -7,21 +7,15 @@
         </div>
 
         <div>
-          <el-button
-            class="font-semibold"
-            color="#1473E6"
-            @click="showCreate = true"
-            >新建项目</el-button
-          >
+          <el-button class="font-semibold" @click="showCreate = true">
+            新建项目
+          </el-button>
           <NewProject v-model:show="showCreate" />
         </div>
         <div class="mt-4">
-          <el-button
-            class="font-semibold"
-            color="#3B3B3B"
-            @click="projectStore.importProject"
-            >导入项目</el-button
-          >
+          <el-button class="font-semibold" @click="projectStore.importProject">
+            导入项目
+          </el-button>
         </div>
       </div>
 

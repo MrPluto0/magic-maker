@@ -41,7 +41,7 @@ const userStore = useUserState();
 
 const form = reactive({
   username: "任意输入账号密码即可",
-  password: "",
+  password: "任意输入账号密码即可",
 });
 
 const handleClose = () => {

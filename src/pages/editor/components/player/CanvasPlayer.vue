@@ -1,7 +1,7 @@
 <template>
   <div
     ref="playerContent"
-    class="flex-1 overflow-hidden relative"
+    class="flex-1 overflow-hidden relative container-box"
     @click="cancelSelect"
   >
     <Player :container-size="containerSize" />

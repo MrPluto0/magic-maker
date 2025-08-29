@@ -14,7 +14,11 @@
   >
     <span
       class="absolute flex z-10 dark:bg-gray-800 bg-gray-200"
-      :class="isVertical ? 'h-8 w-4 flex-col' : 'w-8 h-4 flex-row'"
+      :class="
+        isVertical
+          ? 'h-8 w-4 flex-col  cursor-ew-resize'
+          : 'w-8 h-4 flex-row cursor-ns-resize'
+      "
     >
       <el-icon
         class="flex-auto"
@@ -24,7 +28,6 @@
         <MoreFilled />
       </el-icon>
     </span>
-    <!-- <i class="block dark:bg-gray-600 bg-gray-300" :class="isVertical ? 'w-px h-full' : 'w-full h-px'" /> -->
   </div>
 </template>
 

@@ -29,7 +29,7 @@ const installRouter = {
       }
       if (!userStore.isLogin) {
         ElMessage.warning("请先登录再继续操作");
-        next("/login");
+        userStore.showLogin = true;
         return;
       }
 

@@ -19,7 +19,7 @@
           :class="{ active: route.path.includes(item.to) }"
           @click="router.push(item.to)"
         >
-          <span class="my-text">{{ item.name }}</span>
+          <span>{{ item.name }}</span>
         </div>
       </div>
     </div>

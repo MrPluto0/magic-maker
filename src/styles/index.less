@@ -1,13 +1,18 @@
-@import url("https://chinese-fonts-cdn.deno.dev/packages/dymh/dist/DouyinSansBold/result.css");
+// 样式重置
 @import url('@unocss/reset/tailwind.css');
+// 字体：抖音美好体
+@import url("@chinese-fonts/dymh/dist/DouyinSansBold/result.css");
+// 组件库 Element Plus 样式
 @import url(./element.less);
-@import url(./comp.less);
+// 白板 Excalidraw 样式
+@import url(./excalidraw.less);
 @import url(./transition.less);
 @import url(./scroll.less);
 @import url(./color.less);
 
 html {
-  font-family: "Douyin Sans"
+  font-family: "Douyin Sans";
+  font-weight: 500
 }
 
 #app {
@@ -24,36 +29,7 @@ input {
   font-weight: 500 !important;
 }
 
-.excalidraw {
-
-  // 隐藏素材区侧边栏
-  .sidebar-trigger {
-    display: none !important;
-  }
-
-  // 隐藏工具栏
-  .HelpDialog__header {
-    display: none !important;
-  }
-
-  .context-menu-item__label {
-    font-size: 12px !important;
-  }
-
-  .context-menu-item__shortcut {
-    font-size: 12px !important;
-  }
-
-  .footer-center {
-    height: var(--lg-button-size);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  .dropdown-menu-button.App-toolbar__extra-tools-trigger.zen-mode-transition {
-    div {
-      display: none !important;
-    }
-  }
+.container-box {
+  border-radius: 8px;
+  @apply dark:bg-night-lighter bg-white p-4;
 }

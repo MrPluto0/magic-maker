@@ -1,6 +1,6 @@
 <template>
   <div
-    class="overflow-hidden select-none relative pt-2 flex flex-col dark:bg-night-light bg-white rounded"
+    class="container-box overflow-hidden select-none relative !p-0 flex flex-col"
     :style="trackHeight"
   >
     <TrackControl v-model="store.trackScale" />
