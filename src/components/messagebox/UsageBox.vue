@@ -315,7 +315,6 @@ kbd {
   display: inline-block;
   padding: 4px 8px;
   font-size: 12px;
-  font-family: monospace;
   background-color: #374151;
   border: 1px solid #4b5563;
   border-radius: 4px;

@@ -1,15 +1,16 @@
 <template>
   <header
-    class="pt-2 w-full flex flex-nowrap flex-row items-center justify-between"
+    class="pt-2 px-4 w-full flex flex-nowrap flex-row items-center justify-between"
   >
-    <div class="flex w-2/5 pl-2 items-center">
+    <div class="flex w-2/5 items-center">
       <div
-        class="w20 cursor-pointer flex items-center gap-2"
+        class="cursor-pointer flex items-center gap-2"
         @click="router.push('/')"
       >
         <img class="h-10 rounded-[20px]" src="@/assets/logo.png" alt="" />
         <span class="font-bold text-lg">Magic Maker</span>
       </div>
+
       <div class="w-fit flex h-8">
         <div
           v-for="(item, i) in menu"
@@ -38,10 +39,7 @@
           <div class="text-xs">自动保存：{{ projectStore.lastSaveTime }}</div>
 
           <el-dropdown class="outline-none">
-            <div class="flex items-center -mt-0.5 text-xs">
-              更多操作
-              <el-icon class="el-icon--right"><i-ep-arrow-down /></el-icon>
-            </div>
+            <div class="flex items-center -mt-0.5 text-xs">更多操作</div>
             <template #dropdown>
               <el-dropdown-menu>
                 <el-dropdown-item
@@ -79,7 +77,7 @@
           inline-prompt
         />
 
-        <div class="mr-4 flex items-center">
+        <div class="flex items-center">
           <el-button
             v-if="!userStore.isLogin"
             type="primary"

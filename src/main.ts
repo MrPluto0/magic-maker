@@ -1,7 +1,8 @@
 import { createApp } from "vue";
 import { createPinia } from "pinia";
 import App from "./App.vue";
-import "./styles/global.less";
+import "virtual:uno.css";
+import "./styles/index.less";
 
 import installIcon from "@/plugins/installIcon"; // icon 注册
 import installRouter from "@/plugins/installRouter"; // 路由注册

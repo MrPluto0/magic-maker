@@ -86,7 +86,6 @@ const handleSubmit = () => {
 <style scoped lang="less">
 .time-text {
   cursor: pointer;
-  font-family: "Open Sans";
   font-size: 13px;
   font-style: normal;
   font-weight: 400;

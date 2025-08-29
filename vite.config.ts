@@ -6,7 +6,7 @@ import Components from "unplugin-vue-components/vite";
 import { ElementPlusResolver } from "unplugin-vue-components/resolvers";
 import IconsResolver from "unplugin-icons/resolver";
 import Icons from "unplugin-icons/vite";
-import Vue from "@vitejs/plugin-vue";
+import UnoCSS from "unocss/vite";
 import VueRouter from "unplugin-vue-router/vite";
 import VitePluginVueDevtools from "vite-plugin-vue-devtools";
 import veauryVitePlugins from "veaury/vite/index.js";
@@ -15,7 +15,6 @@ import veauryVitePlugins from "veaury/vite/index.js";
 export default defineConfig({
   base: "./", // 设置基础路径
   plugins: [
-    // Vue(),
     veauryVitePlugins({
       type: "vue",
     }),
@@ -55,6 +54,7 @@ export default defineConfig({
     Icons({
       autoInstall: true,
     }),
+    UnoCSS(),
   ],
   resolve: {
     alias: {

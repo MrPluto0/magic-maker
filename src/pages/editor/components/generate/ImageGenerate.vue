@@ -72,7 +72,6 @@ const handleSubmit = () => {
 
   .text {
     color: #a78585;
-    font-family: "Open Sans";
     font-size: 10px;
     font-style: normal;
     font-weight: 400;
