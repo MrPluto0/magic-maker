@@ -1,0 +1,1 @@
+import{_ as o}from"./VideoAttr.vue_vue_type_script_setup_true_lang-QDgSo2wh.js";import"./index-C9HzHbyJ.js";/* empty css                   */import"./el-input-number-Hl8y28gj.js";import"./el-tooltip-l0sNRNKZ.js";import"./el-tag-D8DtC0Fq.js";import"./AttrCol.vue_vue_type_script_setup_true_lang-C36UuEIu.js";export{o as default};
