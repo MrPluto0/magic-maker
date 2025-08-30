@@ -23,29 +23,29 @@ import { useTrackState } from "@/stores/track";
 import TrackItem from "./TrackItem.vue";
 
 const props = defineProps({
-  isMain: {
-    type: Boolean,
-    default: false,
-  },
-  lineType: {
-    type: String,
-    default: "",
-  },
-  lineIndex: {
-    type: Number,
-    default: 0,
-  },
-  lineData: {
-    type: Array,
-    default() {
-      return [];
-    },
-  },
+	isMain: {
+		type: Boolean,
+		default: false,
+	},
+	lineType: {
+		type: String,
+		default: "",
+	},
+	lineIndex: {
+		type: Number,
+		default: 0,
+	},
+	lineData: {
+		type: Array,
+		default() {
+			return [];
+		},
+	},
 });
 
 const store = useTrackState();
 const isActive = computed(() => {
-  return store.selectTrackItem.line === props.lineIndex;
+	return store.selectTrackItem.line === props.lineIndex;
 });
 </script>
 

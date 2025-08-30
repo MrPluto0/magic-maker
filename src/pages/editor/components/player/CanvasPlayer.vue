@@ -20,38 +20,38 @@ const store = usePlayerState();
 const trackStore = useTrackState();
 const playerContent = ref();
 const containerSize = reactive({
-  width: 0,
-  height: 0,
+	width: 0,
+	height: 0,
 });
 
 function cancelSelect(event: MouseEvent) {
-  event.stopPropagation();
-  trackStore.selectTrackItem.line = -1;
-  trackStore.selectTrackItem.index = -1;
+	event.stopPropagation();
+	trackStore.selectTrackItem.line = -1;
+	trackStore.selectTrackItem.index = -1;
 }
 
 // 更新画布尺寸
 function updateContainerSize() {
-  const { width: maxW, height: maxH } =
-    playerContent.value.getBoundingClientRect();
-  containerSize.width = maxW;
-  containerSize.height = maxH;
+	const { width: maxW, height: maxH } =
+		playerContent.value.getBoundingClientRect();
+	containerSize.width = maxW;
+	containerSize.height = maxH;
 }
 
 onMounted(() => {
-  updateContainerSize();
+	updateContainerSize();
 });
 
 window.addEventListener("resize", updateContainerSize, false);
 
 watch(
-  () => [pageStore.trackHeight, pageStore.attrWidth],
-  () => {
-    updateContainerSize();
-  }
+	() => [pageStore.trackHeight, pageStore.attrWidth],
+	() => {
+		updateContainerSize();
+	},
 );
 
 watch([() => store.playerHeight, () => store.playerWidth], () => {
-  updateContainerSize();
+	updateContainerSize();
 });
 </script>

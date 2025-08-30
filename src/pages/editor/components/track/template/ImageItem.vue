@@ -21,18 +21,18 @@
 
 <script setup lang="ts">
 import Loading from "@/components/Loading.vue";
-import { ImageTrack } from "@/class/ImageTrack";
+import type { ImageTrack } from "@/class/ImageTrack";
 
 const props = defineProps({
-  trackItem: {
-    type: Object as PropType<ImageTrack>,
-    default() {
-      return {
-        width: "0px",
-        left: "0px",
-      };
-    },
-  },
+	trackItem: {
+		type: Object as PropType<ImageTrack>,
+		default() {
+			return {
+				width: "0px",
+				left: "0px",
+			};
+		},
+	},
 });
 
 const resource = computed(() => props.trackItem.resource);

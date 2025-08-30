@@ -24,26 +24,26 @@ import defaultColors from "./colorSet";
 import { Sketch } from "@ckpack/vue-color";
 
 const props = defineProps({
-  modelValue: {
-    type: String,
-    default() {
-      return "";
-    },
-  },
+	modelValue: {
+		type: String,
+		default() {
+			return "";
+		},
+	},
 });
 
 const emit = defineEmits({
-  "update:modelValue": (val) => {
-    return val !== null;
-  },
+	"update:modelValue": (val) => {
+		return val !== null;
+	},
 });
 
 function onUpdate(value: any) {
-  if (value.rgba.a === 0) {
-    emit("update:modelValue", "");
-  } else {
-    emit("update:modelValue", value.hex);
-  }
+	if (value.rgba.a === 0) {
+		emit("update:modelValue", "");
+	} else {
+		emit("update:modelValue", value.hex);
+	}
 }
 </script>
 

@@ -35,34 +35,34 @@
 import { useProjectState } from "@/stores/project";
 
 const props = defineProps<{
-  show: boolean;
+	show: boolean;
 }>();
 const emits = defineEmits(["update:show"]);
 
 const projectStore = useProjectState();
 
 const form = reactive({
-  name: "",
-  description: "",
+	name: "",
+	description: "",
 });
 
 const handleClose = () => {
-  emits("update:show", false);
+	emits("update:show", false);
 };
 
 const handleCreate = () => {
-  if (!form.name) {
-    ElMessage.error("请输入项目名称");
-    return;
-  }
+	if (!form.name) {
+		ElMessage.error("请输入项目名称");
+		return;
+	}
 
-  projectStore.createProject({
-    name: form.name,
-    description: form.description || "",
-  });
+	projectStore.createProject({
+		name: form.name,
+		description: form.description || "",
+	});
 
-  emits("update:show", false);
-  ElMessage.success("创建成功");
+	emits("update:show", false);
+	ElMessage.success("创建成功");
 };
 </script>
 

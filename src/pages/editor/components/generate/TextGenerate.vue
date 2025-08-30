@@ -144,79 +144,79 @@ const uploadFile = ref();
 const uploadFileName = ref("");
 
 const form = reactive({
-  style: "Promotional video",
-  messages: [],
+	style: "Promotional video",
+	messages: [],
 });
 
 const triggerFileInput = () => {
-  fileInputRef.value?.click();
+	fileInputRef.value?.click();
 };
 
 const handleFileChange = (event: Event) => {
-  const target = event.target as HTMLInputElement;
-  const file = target.files?.[0];
-  if (file) {
-    uploadFile.value = file;
-    uploadFileName.value = file.name;
-  }
+	const target = event.target as HTMLInputElement;
+	const file = target.files?.[0];
+	if (file) {
+		uploadFile.value = file;
+		uploadFileName.value = file.name;
+	}
 };
 
 const handleTextExpand = () => {
-  if (!uploadFile.value && !inputText.value) {
-    ElMessage.warning("请输入文字或上传文件");
-    return;
-  }
+	if (!uploadFile.value && !inputText.value) {
+		ElMessage.warning("请输入文字或上传文件");
+		return;
+	}
 
-  if (inputText.value) {
-    form.messages.push({
-      role: "user",
-      content: inputText.value,
-    });
-  } else {
-    form.messages.push({
-      role: "user",
-      content: "请解析该文件并扩写",
-    });
-  }
+	if (inputText.value) {
+		form.messages.push({
+			role: "user",
+			content: inputText.value,
+		});
+	} else {
+		form.messages.push({
+			role: "user",
+			content: "请解析该文件并扩写",
+		});
+	}
 
-  // 模拟生成文本
-  form.messages.push({
-    role: "system",
-    content: "这是一个扩写后的文本内容示例。在前端模式下，暂不支持AI生成功能。",
-    loading: 0,
-  });
+	// 模拟生成文本
+	form.messages.push({
+		role: "system",
+		content: "这是一个扩写后的文本内容示例。在前端模式下，暂不支持AI生成功能。",
+		loading: 0,
+	});
 
-  inputText.value = "";
-  uploadFile.value = null;
-  uploadFileName.value = "";
+	inputText.value = "";
+	uploadFile.value = null;
+	uploadFileName.value = "";
 };
 
 const handleTextSplit = (text: string) => {
-  form.messages.push({
-    role: "user",
-    content: "请输出分镜头脚本",
-  });
+	form.messages.push({
+		role: "user",
+		content: "请输出分镜头脚本",
+	});
 
-  form.messages.push({
-    role: "system",
-    content:
-      "这是一个分镜头脚本示例。在前端模式下，暂不支持AI分镜头脚本生成功能。",
-    loading: 0,
-  });
+	form.messages.push({
+		role: "system",
+		content:
+			"这是一个分镜头脚本示例。在前端模式下，暂不支持AI分镜头脚本生成功能。",
+		loading: 0,
+	});
 };
 
 const handleCopy = async (text: string) => {
-  try {
-    await toClipboard(text);
-    ElMessage.success("复制成功");
-  } catch (error) {
-    console.error(error);
-  }
+	try {
+		await toClipboard(text);
+		ElMessage.success("复制成功");
+	} catch (error) {
+		console.error(error);
+	}
 };
 
 const handleRegenerate = () => {
-  form.messages.pop();
-  handleTextExpand();
+	form.messages.pop();
+	handleTextExpand();
 };
 </script>
 

@@ -15,31 +15,31 @@
 <script lang="ts" setup>
 // Removed API imports for frontend-only mode
 import MaterialList from "./MaterialList.vue";
-import { Material } from "@/types/draw";
+import type { Material } from "@/types/draw";
 
 interface IPage {
-  page: number;
-  pageSize: number;
-  total: number;
-  category?: string;
+	page: number;
+	pageSize: number;
+	total: number;
+	category?: string;
 }
 
 const loading = ref(false);
 const templateList = ref<Material[]>([]);
 const page = reactive<IPage>({
-  page: 0,
-  pageSize: 6,
-  total: 1,
-  category: "template_psd",
+	page: 0,
+	pageSize: 6,
+	total: 1,
+	category: "template_psd",
 });
 
 const loadMore = () => {
-  // 前端模式下不加载模板
-  ElMessage.info("前端模式下暂无在线模板");
+	// 前端模式下不加载模板
+	ElMessage.info("前端模式下暂无在线模板");
 };
 
 onMounted(() => {
-  loadMore();
+	loadMore();
 });
 </script>
 

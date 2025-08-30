@@ -20,7 +20,7 @@
 <script setup lang="ts">
 import { useTrackState } from "@/stores/track";
 import { usePageState } from "@/stores/page";
-import { GeneralTrack } from "@/types/track";
+import type { GeneralTrack } from "@/types/track";
 import VideoAttr from "./items/VideoAttr.vue";
 import ImageAttr from "./items/ImageAttr.vue";
 import AudioAttr from "./items/AudioAttr.vue";
@@ -29,17 +29,17 @@ const pageStore = usePageState();
 const trackStore = useTrackState();
 
 const attrWidth = computed(() => ({
-  width: `${pageStore.attrWidth}px`,
+	width: `${pageStore.attrWidth}px`,
 }));
 
 // 将data下的配置导入
 const TrackOptionsConfig: Record<string, any> = {};
 const attributeFiles = import.meta.glob("./options/*.ts", { eager: true });
 for (const path in attributeFiles) {
-  const name = path.match(/(?<=\/)(\w+)(?=\.ts)/) || [];
-  TrackOptionsConfig[name[0]] = (
-    attributeFiles[path] as { Options: Record<string, any> }
-  ).Options;
+	const name = path.match(/(?<=\/)(\w+)(?=\.ts)/) || [];
+	TrackOptionsConfig[name[0]] = (
+		attributeFiles[path] as { Options: Record<string, any> }
+	).Options;
 }
 
 const track = computed(() => trackStore.selectTrack as GeneralTrack);

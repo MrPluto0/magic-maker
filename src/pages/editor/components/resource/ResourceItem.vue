@@ -132,23 +132,23 @@
 
 <script setup lang="ts">
 import {
-  Plus,
-  Minus,
-  CopyDocument,
-  FolderOpened,
+	Plus,
+	Minus,
+	CopyDocument,
+	FolderOpened,
 } from "@element-plus/icons-vue";
 import { useTrackState } from "@/stores/track";
-import { Resource } from "@/types/resource";
-import { TrackType } from "@/types/track";
+import type { Resource } from "@/types/resource";
+import type { TrackType } from "@/types/track";
 import { useResourceState } from "@/stores/resource";
 import useClipboard from "vue-clipboard3";
 import { ElMessage } from "element-plus";
 import { ref } from "vue";
 
 const props = defineProps<{
-  resource: Resource;
-  type: TrackType;
-  noAction?: boolean;
+	resource: Resource;
+	type: TrackType;
+	noAction?: boolean;
 }>();
 
 const trackStore = useTrackState();
@@ -157,41 +157,41 @@ const { toClipboard } = useClipboard();
 const showVideo = ref(false);
 
 async function dragStart(event: DragEvent) {
-  event.stopPropagation();
-  trackStore.dragData.dataInfo = props.resource;
-  trackStore.dragData.dragType = props.type;
-  trackStore.dragData.dragPoint.x = event.offsetX;
-  trackStore.dragData.dragPoint.y = event.offsetY;
-  trackStore.selectTrackItem.line = -1;
-  trackStore.selectTrackItem.index = -1;
+	event.stopPropagation();
+	trackStore.dragData.dataInfo = props.resource;
+	trackStore.dragData.dragType = props.type;
+	trackStore.dragData.dragPoint.x = event.offsetX;
+	trackStore.dragData.dragPoint.y = event.offsetY;
+	trackStore.selectTrackItem.line = -1;
+	trackStore.selectTrackItem.index = -1;
 }
 
 async function addTrack(event: MouseEvent) {
-  event.stopPropagation();
+	event.stopPropagation();
 
-  const track = await trackStore.createTrack(props.resource);
+	const track = await trackStore.createTrack(props.resource);
 
-  trackStore.addTrack(track);
+	trackStore.addTrack(track);
 }
 
 const getResultContent = (resource: Resource): string => {
-  // 如果resource有result属性，返回result，否则根据类型返回相应内容
-  if ((resource as any).result) {
-    return (resource as any).result;
-  }
-  if (resource.type === "text") {
-    return resource.content;
-  }
-  return "";
+	// 如果resource有result属性，返回result，否则根据类型返回相应内容
+	if ((resource as any).result) {
+		return (resource as any).result;
+	}
+	if (resource.type === "text") {
+		return resource.content;
+	}
+	return "";
 };
 
 const handleCopyButton = async (text: string) => {
-  try {
-    const selection = window.getSelection()?.toString() || "";
-    await toClipboard(selection === "" ? text : selection);
-    ElMessage.success("复制成功");
-  } catch (error) {
-    console.error(error);
-  }
+	try {
+		const selection = window.getSelection()?.toString() || "";
+		await toClipboard(selection === "" ? text : selection);
+		ElMessage.success("复制成功");
+	} catch (error) {
+		console.error(error);
+	}
 };
 </script>

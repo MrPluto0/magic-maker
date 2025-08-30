@@ -17,63 +17,63 @@ import { computed } from "vue";
 import { useTrackState } from "@/stores/track";
 import { usePlayerState } from "@/stores/player";
 const offsetLine = {
-  left: 10,
+	left: 10,
 };
 
 const trackStore = useTrackState();
 const playerStore = usePlayerState();
 const trackStyle = computed(() => {
-  return {
-    left: `${offsetLine.left}px`,
-    transform: `translate(${getGridPixel(
-      trackStore.trackScale,
-      playerStore.playStartFrame
-    )}px, 0px)`,
-  };
+	return {
+		left: `${offsetLine.left}px`,
+		transform: `translate(${getGridPixel(
+			trackStore.trackScale,
+			playerStore.playStartFrame,
+		)}px, 0px)`,
+	};
 });
 
 const isDragging = ref(false);
 
 function onMouseDown(event: MouseEvent) {
-  event.stopPropagation();
-  event.preventDefault();
-  playerStore.isPause = true;
-  isDragging.value = true;
+	event.stopPropagation();
+	event.preventDefault();
+	playerStore.isPause = true;
+	isDragging.value = true;
 }
 
 function onMouseMove(event: MouseEvent) {
-  // event.stopPropagation();
-  // event.preventDefault();
-  if (isDragging.value) {
-    // 获取相对于#timeline的偏移量
-    const rect = document
-      .getElementById("track-container")
-      .getBoundingClientRect();
-    // 默认fps为30
-    const frame = getSelectFrame(
-      event.pageX - offsetLine.left - rect.left,
-      trackStore.trackScale,
-      30
-    );
+	// event.stopPropagation();
+	// event.preventDefault();
+	if (isDragging.value) {
+		// 获取相对于#timeline的偏移量
+		const rect = document
+			.getElementById("track-container")
+			.getBoundingClientRect();
+		// 默认fps为30
+		const frame = getSelectFrame(
+			event.pageX - offsetLine.left - rect.left,
+			trackStore.trackScale,
+			30,
+		);
 
-    const playFrame = frame - 1;
-    const startFrame =
-      playFrame < 0
-        ? 0
-        : playFrame > trackStore.frameCount
-        ? trackStore.frameCount
-        : playFrame;
-    playerStore.playStartFrame = startFrame;
-  }
+		const playFrame = frame - 1;
+		const startFrame =
+			playFrame < 0
+				? 0
+				: playFrame > trackStore.frameCount
+					? trackStore.frameCount
+					: playFrame;
+		playerStore.playStartFrame = startFrame;
+	}
 }
 
 document.addEventListener("mousemove", onMouseMove);
 
 function onMouseUp(event: MouseEvent) {
-  // event.stopPropagation();
-  // event.preventDefault();
+	// event.stopPropagation();
+	// event.preventDefault();
 
-  isDragging.value = false;
+	isDragging.value = false;
 }
 
 document.addEventListener("mouseup", onMouseUp);

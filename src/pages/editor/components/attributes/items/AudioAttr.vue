@@ -88,7 +88,7 @@
 import { baseFps } from "@/data/track";
 import { useTrackState } from "@/stores/track";
 import AttrCol from "./AttrCol.vue";
-import { AudioTrack } from "@/class/AudioTrack";
+import type { AudioTrack } from "@/class/AudioTrack";
 import { debounce } from "lodash-es";
 import { audioDecoder, subtitleDecoder } from "@/utils/webcodecs";
 import { usePlayerState } from "@/stores/player";
@@ -98,24 +98,24 @@ const trackStore = useTrackState();
 const track = computed(() => trackStore.selectTrack as AudioTrack);
 
 const handleReGenerate = () => {
-  ElMessage.info("前端模式下暂不支持重新生成功能");
+	ElMessage.info("前端模式下暂不支持重新生成功能");
 };
 
 watch(
-  () => track.value.volume,
-  debounce(() => {
-    playerStore.isPause = true;
-    audioDecoder.updateVolume(track.value, track.value.volume);
-  }, 100)
+	() => track.value.volume,
+	debounce(() => {
+		playerStore.isPause = true;
+		audioDecoder.updateVolume(track.value, track.value.volume);
+	}, 100),
 );
 
 watch(
-  () => track.value.subtitle,
-  debounce(async () => {
-    playerStore.isPause = true;
-    await subtitleDecoder.decode(track.value);
-  }, 100),
-  { deep: true }
+	() => track.value.subtitle,
+	debounce(async () => {
+		playerStore.isPause = true;
+		await subtitleDecoder.decode(track.value);
+	}, 100),
+	{ deep: true },
 );
 </script>
 

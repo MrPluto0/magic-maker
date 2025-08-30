@@ -16,7 +16,7 @@
 // Removed API imports for frontend-only mode
 
 const props = defineProps<{
-  dataUrl: string;
+	dataUrl: string;
 }>();
 const emits = defineEmits(["finish"]);
 
@@ -25,8 +25,8 @@ const show = ref(true);
 const prompt = ref("");
 
 const onGenerate = () => {
-  ElMessage.info("前端模式下暂不支持风格迁移功能");
-  show.value = false;
+	ElMessage.info("前端模式下暂不支持风格迁移功能");
+	show.value = false;
 };
 </script>
 

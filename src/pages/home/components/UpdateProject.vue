@@ -35,44 +35,44 @@ import { useProjectState } from "@/stores/project";
 // Removed API imports for frontend-only mode
 
 const props = defineProps<{
-  show: boolean;
-  project: any;
+	show: boolean;
+	project: any;
 }>();
 const emits = defineEmits(["update:show"]);
 
 const projectStore = useProjectState();
 
 const form = reactive({
-  name: "",
-  description: "",
+	name: "",
+	description: "",
 });
 
 const handleClose = () => {
-  emits("update:show", false);
+	emits("update:show", false);
 };
 
 const handleCreate = () => {
-  if (!form.name) {
-    ElMessage.error("请输入项目名称");
-    return;
-  }
+	if (!form.name) {
+		ElMessage.error("请输入项目名称");
+		return;
+	}
 
-  projectStore.updateProject(props.project?.id, {
-    name: form.name,
-    description: form.description || "",
-  });
+	projectStore.updateProject(props.project?.id, {
+		name: form.name,
+		description: form.description || "",
+	});
 
-  emits("update:show", false);
-  ElMessage.success("更新成功");
+	emits("update:show", false);
+	ElMessage.success("更新成功");
 };
 
 watch(
-  () => props.project,
-  () => {
-    form.name = props.project.name;
-    form.description = props.project.description;
-  },
-  { deep: true }
+	() => props.project,
+	() => {
+		form.name = props.project.name;
+		form.description = props.project.description;
+	},
+	{ deep: true },
 );
 </script>
 

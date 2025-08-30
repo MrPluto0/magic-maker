@@ -33,19 +33,19 @@ const { getResourcesByType } = resourceStore;
 const loading = ref(false);
 
 const form = reactive({
-  prompt: "",
-  keywords: [],
-  model: "",
-  size: "",
+	prompt: "",
+	keywords: [],
+	model: "",
+	size: "",
 });
 
 const handleSubmit = () => {
-  if (!form.prompt) {
-    ElMessage.error("请输入文字描述");
-    return;
-  }
+	if (!form.prompt) {
+		ElMessage.error("请输入文字描述");
+		return;
+	}
 
-  ElMessage.info("前端模式下暂不支持AI图片生成功能");
+	ElMessage.info("前端模式下暂不支持AI图片生成功能");
 };
 </script>
 

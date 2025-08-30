@@ -50,7 +50,7 @@
 
 <script lang="ts" setup>
 import { useProjectState } from "@/stores/project";
-import { IProject } from "@/types/project";
+import type { IProject } from "@/types/project";
 import { useRouter } from "vue-router";
 import { Delete, Document, Edit } from "@element-plus/icons-vue";
 import UpdateProject from "./UpdateProject.vue";
@@ -64,25 +64,25 @@ const showUpdate = ref(false);
 const projectList = computed(() => projectStore.projectList);
 
 const checkProject = (targetProject) => {
-  if (targetProject) {
-    projectStore.loadProject(targetProject);
-    router.push("/editor");
-  }
+	if (targetProject) {
+		projectStore.loadProject(targetProject);
+		router.push("/editor");
+	}
 };
 
 const editProject = (pro: IProject) => {
-  project.value = pro;
-  showUpdate.value = true;
+	project.value = pro;
+	showUpdate.value = true;
 };
 
 const delProject = (id: string) => {
-  ElMessageBox.confirm("确定删除项目？", "提示", {
-    confirmButtonText: "确定",
-    cancelButtonText: "取消",
-    type: "warning",
-  }).then(() => {
-    projectStore.deleteProject(id);
-  });
+	ElMessageBox.confirm("确定删除项目？", "提示", {
+		confirmButtonText: "确定",
+		cancelButtonText: "取消",
+		type: "warning",
+	}).then(() => {
+		projectStore.deleteProject(id);
+	});
 };
 </script>
 

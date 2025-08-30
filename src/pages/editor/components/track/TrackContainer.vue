@@ -17,6 +17,6 @@ import { usePageState } from "@/stores/page";
 const page = usePageState();
 const store = useTrackState();
 const trackHeight = computed(() => ({
-  height: `${page.trackHeight}px`,
+	height: `${page.trackHeight}px`,
 }));
 </script>

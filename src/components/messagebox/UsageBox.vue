@@ -271,12 +271,12 @@
 
 <script lang="ts" setup>
 const props = defineProps<{
-  show: boolean;
+	show: boolean;
 }>();
 const emits = defineEmits(["update:show"]);
 
 const handleClose = () => {
-  emits("update:show", false);
+	emits("update:show", false);
 };
 </script>
 

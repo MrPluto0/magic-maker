@@ -104,11 +104,11 @@
 
 <script setup lang="ts">
 import {
-  Download,
-  Upload,
-  Sunny,
-  Moon,
-  UserFilled,
+	Download,
+	Upload,
+	Sunny,
+	Moon,
+	UserFilled,
 } from "@element-plus/icons-vue";
 import { usePageState } from "@/stores/page";
 import { useUserState } from "@/stores/user";
@@ -127,18 +127,18 @@ const route = useRoute();
 const showUserInfo = ref(false);
 
 const menu = [
-  {
-    name: "主页",
-    to: "/home",
-  },
-  {
-    name: "图像编辑",
-    to: "/draw",
-  },
-  {
-    name: "视频剪辑",
-    to: "/editor",
-  },
+	{
+		name: "主页",
+		to: "/home",
+	},
+	{
+		name: "图像编辑",
+		to: "/draw",
+	},
+	{
+		name: "视频剪辑",
+		to: "/editor",
+	},
 ];
 </script>
 

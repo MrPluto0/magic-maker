@@ -34,28 +34,28 @@ import ImageIcon from "@/components/icons/ImageIcon.vue";
 
 import { TrackHeightMap } from "@/data/track";
 const props = defineProps({
-  listData: {
-    type: Array as PropType<TrackLineItem[]>,
-    default() {
-      return [];
-    },
-  },
-  offsetTop: {
-    type: Number,
-    default: 0,
-  },
+	listData: {
+		type: Array as PropType<TrackLineItem[]>,
+		default() {
+			return [];
+		},
+	},
+	offsetTop: {
+		type: Number,
+		default: 0,
+	},
 });
 const componentMap = new Map([
-  ["video", VideoIcon],
-  ["audio", AudioIcon],
-  ["text", TextIcon],
-  ["image", ImageIcon],
+	["video", VideoIcon],
+	["audio", AudioIcon],
+	["text", TextIcon],
+	["image", ImageIcon],
 ]);
 const iconList = ref();
 watch(
-  () => props.offsetTop,
-  () => {
-    iconList.value.scrollTop = props.offsetTop;
-  }
+	() => props.offsetTop,
+	() => {
+		iconList.value.scrollTop = props.offsetTop;
+	},
 );
 </script>

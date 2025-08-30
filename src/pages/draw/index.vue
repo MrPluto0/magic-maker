@@ -53,30 +53,30 @@ const showSider = ref(true);
 const timer = ref();
 
 const onDropMaterial = async (e: DragEvent) => {
-  if (!drawStore.dragInfo) {
-    return;
-  }
-  try {
-    e.preventDefault();
-    drawStore.loading = true;
-    if (drawStore.dragInfo.category === "template_psd") {
-      await drawStore.addTemplate(drawStore.dragInfo.psdMetadata);
-    } else {
-      await drawStore.addMaterial(drawStore.dragInfo);
-    }
-  } finally {
-    drawStore.loading = false;
-  }
+	if (!drawStore.dragInfo) {
+		return;
+	}
+	try {
+		e.preventDefault();
+		drawStore.loading = true;
+		if (drawStore.dragInfo.category === "template_psd") {
+			await drawStore.addTemplate(drawStore.dragInfo.psdMetadata);
+		} else {
+			await drawStore.addMaterial(drawStore.dragInfo);
+		}
+	} finally {
+		drawStore.loading = false;
+	}
 };
 
 onMounted(() => {
-  timer.value = setInterval(async () => {
-    await projectStore.saveProject();
-  }, 30 * 1000);
+	timer.value = setInterval(async () => {
+		await projectStore.saveProject();
+	}, 30 * 1000);
 });
 
 onUnmounted(() => {
-  clearInterval(timer.value);
+	clearInterval(timer.value);
 });
 </script>
 

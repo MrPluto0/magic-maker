@@ -13,12 +13,12 @@
 </template>
 
 <script setup lang="ts">
-import { Resource } from "@/types/resource";
+import type { Resource } from "@/types/resource";
 import ResourceItem from "../resource/ResourceItem.vue";
 
 defineProps<{
-  listData: Resource[];
-  type: TrackType;
-  noAction?: boolean;
+	listData: Resource[];
+	type: TrackType;
+	noAction?: boolean;
 }>();
 </script>

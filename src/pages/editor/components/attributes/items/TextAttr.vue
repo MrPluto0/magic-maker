@@ -69,7 +69,7 @@
 import { baseFps } from "@/data/track";
 import { useTrackState } from "@/stores/track";
 import AttrCol from "./AttrCol.vue";
-import { TextTrack } from "@/class/TextTrack";
+import type { TextTrack } from "@/class/TextTrack";
 import ColorPicker from "../color/ColorPicker.vue";
 
 const loading = ref(false);

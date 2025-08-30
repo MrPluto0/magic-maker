@@ -68,18 +68,18 @@ const resourceStore = useResourceState();
 const { getResourcesByType } = resourceStore;
 const loading = ref(false);
 const form = reactive({
-  prompt: "",
-  style: "Electronic music",
-  len: 4,
+	prompt: "",
+	style: "Electronic music",
+	len: 4,
 });
 
 const handleSubmit = () => {
-  if (!form.prompt) {
-    ElMessage.error("请输入文字描述");
-    return;
-  }
+	if (!form.prompt) {
+		ElMessage.error("请输入文字描述");
+		return;
+	}
 
-  ElMessage.info("前端模式下暂不支持AI音乐生成功能");
+	ElMessage.info("前端模式下暂不支持AI音乐生成功能");
 };
 </script>
 

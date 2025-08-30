@@ -80,8 +80,8 @@ const resourceStore = useResourceState();
 const loading = ref(false);
 const speechList = ref([]);
 const form = reactive({
-  prompt: "",
-  voiceUrl: "",
+	prompt: "",
+	voiceUrl: "",
 });
 const voiceName = ref("");
 
@@ -91,99 +91,99 @@ const recBlob = ref<Blob>();
 const isRecording = ref(false);
 
 const handleRecStart = () => {
-  recorder.value = Recorder({
-    type: "mp3", //录音格式，可以换成wav等其他格式
-    sampleRate: 16000, //录音的采样率，越大细节越丰富越细腻
-    bitRate: 16, //录音的比特率，越大音质越好
-  });
+	recorder.value = Recorder({
+		type: "mp3", //录音格式，可以换成wav等其他格式
+		sampleRate: 16000, //录音的采样率，越大细节越丰富越细腻
+		bitRate: 16, //录音的比特率，越大音质越好
+	});
 
-  //打开录音，获得权限
-  recorder.value.open(
-    () => {
-      console.log("录音已打开");
-      recorder.value.start();
-      isRecording.value = true;
-      console.log("已开始录音");
-    },
-    (msg, isUserNotAllow) => {
-      //用户拒绝了录音权限，或者浏览器不支持录音
-      console.log((isUserNotAllow ? "UserNotAllow，" : "") + "无法录音:" + msg);
-    }
-  );
+	//打开录音，获得权限
+	recorder.value.open(
+		() => {
+			console.log("录音已打开");
+			recorder.value.start();
+			isRecording.value = true;
+			console.log("已开始录音");
+		},
+		(msg, isUserNotAllow) => {
+			//用户拒绝了录音权限，或者浏览器不支持录音
+			console.log((isUserNotAllow ? "UserNotAllow，" : "") + "无法录音:" + msg);
+		},
+	);
 };
 
 const handleRecStop = () => {
-  if (!recorder.value) {
-    console.error("未打开录音");
-    return;
-  }
-  recorder.value.stop(
-    (blob, duration) => {
-      //blob就是我们要的录音文件对象，可以上传，或者本地播放
-      isRecording.value = false;
-      recBlob.value = blob;
-      //简单利用URL生成本地文件地址，此地址只能本地使用，比如赋值给audio.src进行播放，赋值给a.href然后a.click()进行下载（a需提供download="xxx.mp3"属性）
-      var localUrl = (window.URL || webkitURL).createObjectURL(blob);
-      console.log("录音成功", blob, localUrl, "时长:" + duration + "ms");
-      recorder.value.close(); //关闭录音，释放录音资源，当然可以不释放，后面可以连续调用start
-      recorder.value = null;
-    },
-    (err) => {
-      console.error("结束录音出错：" + err);
-      recorder.value.close(); //关闭录音，释放录音资源，当然可以不释放，后面可以连续调用start
-      recorder.value = null;
-    }
-  );
+	if (!recorder.value) {
+		console.error("未打开录音");
+		return;
+	}
+	recorder.value.stop(
+		(blob, duration) => {
+			//blob就是我们要的录音文件对象，可以上传，或者本地播放
+			isRecording.value = false;
+			recBlob.value = blob;
+			//简单利用URL生成本地文件地址，此地址只能本地使用，比如赋值给audio.src进行播放，赋值给a.href然后a.click()进行下载（a需提供download="xxx.mp3"属性）
+			var localUrl = (window.URL || webkitURL).createObjectURL(blob);
+			console.log("录音成功", blob, localUrl, "时长:" + duration + "ms");
+			recorder.value.close(); //关闭录音，释放录音资源，当然可以不释放，后面可以连续调用start
+			recorder.value = null;
+		},
+		(err) => {
+			console.error("结束录音出错：" + err);
+			recorder.value.close(); //关闭录音，释放录音资源，当然可以不释放，后面可以连续调用start
+			recorder.value = null;
+		},
+	);
 };
 
 const handleRecPlay = () => {
-  //本地播放录音试听，可以直接用URL把blob转换成本地播放地址，用audio进行播放
-  var localUrl = URL.createObjectURL(recBlob.value);
-  var audio = document.createElement("audio");
-  audio.controls = true;
-  document.body.appendChild(audio);
-  audio.src = localUrl;
-  audio.play(); //这样就能播放了
+	//本地播放录音试听，可以直接用URL把blob转换成本地播放地址，用audio进行播放
+	var localUrl = URL.createObjectURL(recBlob.value);
+	var audio = document.createElement("audio");
+	audio.controls = true;
+	document.body.appendChild(audio);
+	audio.src = localUrl;
+	audio.play(); //这样就能播放了
 
-  //注意不用了时需要revokeObjectURL，否则霸占内存
-  setTimeout(function () {
-    URL.revokeObjectURL(audio.src);
-  }, 5000);
+	//注意不用了时需要revokeObjectURL，否则霸占内存
+	setTimeout(() => {
+		URL.revokeObjectURL(audio.src);
+	}, 5000);
 };
 
 const handleClone = () => {
-  if (!voiceName.value) {
-    ElMessage.error("请先填写音色名称");
-    return;
-  }
+	if (!voiceName.value) {
+		ElMessage.error("请先填写音色名称");
+		return;
+	}
 
-  ElMessage.info("前端模式下暂不支持音色克隆功能");
+	ElMessage.info("前端模式下暂不支持音色克隆功能");
 };
 
 const handleSubmit = () => {
-  if (!form.prompt) {
-    ElMessage.error("请输入文字描述");
-    return;
-  }
+	if (!form.prompt) {
+		ElMessage.error("请输入文字描述");
+		return;
+	}
 
-  ElMessage.info("前端模式下暂不支持AI语音生成功能");
+	ElMessage.info("前端模式下暂不支持AI语音生成功能");
 };
 
 const updateSpeechList = () => {
-  // 前端模式下使用默认音色列表
-  speechList.value = [
-    { voiceName: "默认音色1", voiceUrl: "default1" },
-    { voiceName: "默认音色2", voiceUrl: "default2" },
-  ];
-  speechList.value.push({
-    voiceName: "自定义",
-    voiceUrl: "custom",
-  });
-  form.voiceUrl = speechList.value[0].voiceUrl;
+	// 前端模式下使用默认音色列表
+	speechList.value = [
+		{ voiceName: "默认音色1", voiceUrl: "default1" },
+		{ voiceName: "默认音色2", voiceUrl: "default2" },
+	];
+	speechList.value.push({
+		voiceName: "自定义",
+		voiceUrl: "custom",
+	});
+	form.voiceUrl = speechList.value[0].voiceUrl;
 };
 
 onMounted(() => {
-  updateSpeechList();
+	updateSpeechList();
 });
 </script>
 

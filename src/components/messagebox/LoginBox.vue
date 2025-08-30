@@ -40,31 +40,31 @@ import { useUserState } from "@/stores/user";
 const userStore = useUserState();
 
 const form = reactive({
-  username: "任意输入账号密码即可",
-  password: "任意输入账号密码即可",
+	username: "任意输入账号密码即可",
+	password: "任意输入账号密码即可",
 });
 
 const handleClose = () => {
-  userStore.showLogin = false;
+	userStore.showLogin = false;
 };
 
 const handleLogin = () => {
-  if (!form.username || !form.password) {
-    ElMessage.error("请输入账号和密码");
-    return;
-  }
+	if (!form.username || !form.password) {
+		ElMessage.error("请输入账号和密码");
+		return;
+	}
 
-  const success = userStore.login(form.username, form.password);
-  if (success) {
-    ElMessage.success("登录成功");
-  } else {
-    ElMessage.error("登录失败");
-  }
+	const success = userStore.login(form.username, form.password);
+	if (success) {
+		ElMessage.success("登录成功");
+	} else {
+		ElMessage.error("登录失败");
+	}
 };
 
 const handleRegister = () => {
-  userStore.showLogin = false;
-  userStore.showRegister = true;
+	userStore.showLogin = false;
+	userStore.showRegister = true;
 };
 </script>
 

@@ -28,15 +28,15 @@
 </template>
 
 <script setup lang="ts">
-import { MenuItem } from "@/data/menu";
+import type { MenuItem } from "@/data/menu";
 
 defineProps<{
-  activeIndex: number;
-  menu: MenuItem[];
+	activeIndex: number;
+	menu: MenuItem[];
 }>();
 const emits = defineEmits(["update:activeIndex"]);
 
 function activeChangeHandler(index: number) {
-  emits("update:activeIndex", index);
+	emits("update:activeIndex", index);
 }
 </script>

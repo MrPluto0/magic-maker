@@ -6,26 +6,26 @@ type Store = PiniaPluginContext["store"];
 type Options = PiniaPluginContext["options"];
 
 interface Serializer {
-  serialize: (value: any) => string;
-  deserialize: (value: string) => any;
+	serialize: (value: any) => string;
+	deserialize: (value: string) => any;
 }
 
 type PluginOptions = PiniaPluginContext & {
-  serializer?: Serializer;
+	serializer?: Serializer;
 };
 
 declare module "pinia" {
-  export interface PiniaCustomProperties {
-    _undo: () => void;
-    _redo: () => void;
-    _resetStack: () => void;
-  }
+	export interface PiniaCustomProperties {
+		_undo: () => void;
+		_redo: () => void;
+		_resetStack: () => void;
+	}
 
-  export interface DefineStoreOptionsBase<S, Store> {
-    undo?: {
-      watch?: Array<keyof S>;
-    };
-  }
+	export interface DefineStoreOptionsBase<S, Store> {
+		undo?: {
+			watch?: Array<keyof S>;
+		};
+	}
 }
 
 /**
@@ -36,60 +36,60 @@ declare module "pinia" {
  * @returns {object} State of the store without omitted keys.
  */
 function removeOmittedKeys(
-  options: Options,
-  store: Store,
-  serializer: Serializer = {
-    serialize: JSON.stringify,
-    deserialize: JSON.parse,
-  }
+	options: Options,
+	store: Store,
+	serializer: Serializer = {
+		serialize: JSON.stringify,
+		deserialize: JSON.parse,
+	},
 ): Store["$state"] {
-  const clone = {};
-  options.undo.watch.forEach((key) => {
-    // clone[key] = serializer.deserialize(serializer.serialize(store[key]));
-    clone[key] = cloneDeep(store[key]);
-  });
-  return clone;
+	const clone = {};
+	options.undo.watch.forEach((key) => {
+		// clone[key] = serializer.deserialize(serializer.serialize(store[key]));
+		clone[key] = cloneDeep(store[key]);
+	});
+	return clone;
 }
 
 export default function PiniaUndo({
-  store,
-  options,
-  serializer,
+	store,
+	options,
+	serializer,
 }: PluginOptions) {
-  if (!options?.undo?.watch) return;
-  if (options.undo.watch.length == 0) return;
+	if (!options?.undo?.watch) return;
+	if (options.undo.watch.length == 0) return;
 
-  let stack = createStack(removeOmittedKeys(options, store, serializer));
-  let preventUpdateOnSubscribe = false;
-  let pushStack = debounce(() => {
-    const state = removeOmittedKeys(options, store, serializer);
-    stack.push(state);
-  }, 500);
+	let stack = createStack(removeOmittedKeys(options, store, serializer));
+	let preventUpdateOnSubscribe = false;
+	const pushStack = debounce(() => {
+		const state = removeOmittedKeys(options, store, serializer);
+		stack.push(state);
+	}, 500);
 
-  store._undo = () => {
-    preventUpdateOnSubscribe = true;
-    store.$patch(stack.undo());
-  };
+	store._undo = () => {
+		preventUpdateOnSubscribe = true;
+		store.$patch(stack.undo());
+	};
 
-  store._redo = () => {
-    preventUpdateOnSubscribe = true;
-    store.$patch(stack.redo());
-  };
+	store._redo = () => {
+		preventUpdateOnSubscribe = true;
+		store.$patch(stack.redo());
+	};
 
-  store._resetStack = () => {
-    stack = createStack(removeOmittedKeys(options, store, serializer));
-  };
+	store._resetStack = () => {
+		stack = createStack(removeOmittedKeys(options, store, serializer));
+	};
 
-  store.$subscribe(
-    (mutations) => {
-      if (preventUpdateOnSubscribe) {
-        preventUpdateOnSubscribe = false;
-        return;
-      }
-      pushStack();
-    },
-    {
-      flush: "sync",
-    }
-  );
+	store.$subscribe(
+		(mutations) => {
+			if (preventUpdateOnSubscribe) {
+				preventUpdateOnSubscribe = false;
+				return;
+			}
+			pushStack();
+		},
+		{
+			flush: "sync",
+		},
+	);
 }

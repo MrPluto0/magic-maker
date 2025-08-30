@@ -33,40 +33,40 @@ const store = usePlayerState();
 const trackStore = useTrackState();
 
 const playTime = computed(() => {
-  return formatPlayerTime(store.playStartFrame);
+	return formatPlayerTime(store.playStartFrame);
 });
 const allTime = computed(() => {
-  return formatPlayerTime(trackStore.frameCount);
+	return formatPlayerTime(trackStore.frameCount);
 });
 
 const controls = computed(() => [
-  {
-    title: "回退1s [<-]",
-    disable: trackStore.frameCount === 0,
-    icon: "BackwardIcon",
-    handler: () => {
-      if (trackStore.frameCount === 0) return;
-      store.backward();
-    },
-  },
-  {
-    title: "播放/暂停 [Space]",
-    disable: trackStore.frameCount === 0,
-    icon: store.isPause ? "PauseIcon" : "PlayIcon",
-    handler: () => {
-      if (trackStore.frameCount === 0) return;
-      store.isPause = !store.isPause;
-    },
-  },
-  {
-    title: "快进1s [->]",
-    disable: trackStore.frameCount === 0,
-    icon: "ForwardIcon",
-    handler: () => {
-      if (trackStore.frameCount === 0) return;
-      store.forward();
-    },
-  },
+	{
+		title: "回退1s [<-]",
+		disable: trackStore.frameCount === 0,
+		icon: "BackwardIcon",
+		handler: () => {
+			if (trackStore.frameCount === 0) return;
+			store.backward();
+		},
+	},
+	{
+		title: "播放/暂停 [Space]",
+		disable: trackStore.frameCount === 0,
+		icon: store.isPause ? "PauseIcon" : "PlayIcon",
+		handler: () => {
+			if (trackStore.frameCount === 0) return;
+			store.isPause = !store.isPause;
+		},
+	},
+	{
+		title: "快进1s [->]",
+		disable: trackStore.frameCount === 0,
+		icon: "ForwardIcon",
+		handler: () => {
+			if (trackStore.frameCount === 0) return;
+			store.forward();
+		},
+	},
 ]);
 </script>
 

@@ -10,7 +10,7 @@ import { useRouter } from "vue-router";
 const router = useRouter();
 
 const handleBack = () => {
-  router.back();
+	router.back();
 };
 </script>
 

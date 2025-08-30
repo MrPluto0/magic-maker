@@ -33,65 +33,65 @@ import { useTrackState } from "@/stores/track";
 import { computed } from "vue";
 
 const props = defineProps({
-  trackType: {
-    type: String,
-    default: "",
-  },
-  lineIndex: {
-    type: Number,
-    default: 0,
-  },
-  itemIndex: {
-    type: Number,
-    default: 0,
-  },
-  trackItem: {
-    type: Object,
-    default() {
-      return {
-        width: "0px",
-        left: "0px",
-      };
-    },
-  },
+	trackType: {
+		type: String,
+		default: "",
+	},
+	lineIndex: {
+		type: Number,
+		default: 0,
+	},
+	itemIndex: {
+		type: Number,
+		default: 0,
+	},
+	trackItem: {
+		type: Object,
+		default() {
+			return {
+				width: "0px",
+				left: "0px",
+			};
+		},
+	},
 });
 const store = useTrackState();
 const isActive = computed(() => {
-  return (
-    store.selectTrackItem.line === props.lineIndex &&
-    store.selectTrackItem.index === props.itemIndex
-  );
+	return (
+		store.selectTrackItem.line === props.lineIndex &&
+		store.selectTrackItem.index === props.itemIndex
+	);
 });
 const componentMap = new Map<string, any>([
-  ["video", VideoItem],
-  ["audio", AudioItem],
-  ["text", TextItem],
-  ["image", ImageItem],
+	["video", VideoItem],
+	["audio", AudioItem],
+	["text", TextItem],
+	["image", ImageItem],
 ]);
 const isDragState = computed(() => {
-  return (
-    store.moveTrackData.lineIndex === props.lineIndex &&
-    store.moveTrackData.itemIndex === props.itemIndex
-  );
+	return (
+		store.moveTrackData.lineIndex === props.lineIndex &&
+		store.moveTrackData.itemIndex === props.itemIndex
+	);
 });
 function setSelectTract(event: Event) {
-  event.preventDefault();
-  event.stopPropagation();
-  store.selectTrackItem.line = props.lineIndex;
-  store.selectTrackItem.index = props.itemIndex;
+	event.preventDefault();
+	event.stopPropagation();
+	store.selectTrackItem.line = props.lineIndex;
+	store.selectTrackItem.index = props.itemIndex;
 }
 
 const itemClass = computed(() => {
-  if (isDragState.value) {
-    return {
-      width: props.trackItem.showWidth,
-      left: `${parseInt(props.trackItem.showLeft) + store.dragData.moveX}px`,
-      top: `${store.dragData.moveY}px`,
-    };
-  }
-  return {
-    width: props.trackItem.showWidth,
-    left: props.trackItem.showLeft,
-  };
+	if (isDragState.value) {
+		return {
+			width: props.trackItem.showWidth,
+			left: `${parseInt(props.trackItem.showLeft) + store.dragData.moveX}px`,
+			top: `${store.dragData.moveY}px`,
+		};
+	}
+	return {
+		width: props.trackItem.showWidth,
+		left: props.trackItem.showLeft,
+	};
 });
 </script>

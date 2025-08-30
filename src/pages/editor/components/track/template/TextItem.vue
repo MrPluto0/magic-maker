@@ -12,18 +12,18 @@
 </template>
 
 <script setup lang="ts">
-import { TextTrack } from "@/class/TextTrack";
-import { PropType } from "vue";
+import type { TextTrack } from "@/class/TextTrack";
+import type { PropType } from "vue";
 
 const props = defineProps({
-  trackItem: {
-    type: Object as PropType<TextTrack>,
-    default() {
-      return {
-        width: "0px",
-        left: "0px",
-      };
-    },
-  },
+	trackItem: {
+		type: Object as PropType<TextTrack>,
+		default() {
+			return {
+				width: "0px",
+				left: "0px",
+			};
+		},
+	},
 });
 </script>

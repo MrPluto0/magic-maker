@@ -12,8 +12,8 @@
 
 <script lang="ts" setup>
 defineProps<{
-  name: string;
-  nowrap?: boolean;
+	name: string;
+	nowrap?: boolean;
 }>();
 </script>
 

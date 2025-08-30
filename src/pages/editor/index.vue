@@ -47,21 +47,21 @@ const projectStore = useProjectState();
 const timer = ref();
 
 const limitSize = reactive({
-  minHeight: 200,
-  maxHeight: document.body.getBoundingClientRect().height - 200,
-  minWidth: 300,
-  maxWidth: 600,
+	minHeight: 200,
+	maxHeight: document.body.getBoundingClientRect().height - 200,
+	minWidth: 300,
+	maxWidth: 600,
 });
 
 onMounted(() => {
-  initEditorHotKey();
-  timer.value = setInterval(async () => {
-    await projectStore.saveProject();
-  }, 30 * 1000);
+	initEditorHotKey();
+	timer.value = setInterval(async () => {
+		await projectStore.saveProject();
+	}, 30 * 1000);
 });
 
 onUnmounted(() => {
-  clearHotKey();
-  clearInterval(timer.value);
+	clearHotKey();
+	clearInterval(timer.value);
 });
 </script>
