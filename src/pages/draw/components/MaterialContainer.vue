@@ -36,7 +36,7 @@
             "
           >
             <el-button size="large" circle @click="loadMoreCategory">
-              <el-icon><IEpBottom /></el-icon>
+              <i class="i-ep-bottom" style="font-size: 16px"></i>
             </el-button>
           </div>
         </div>
@@ -61,7 +61,7 @@
             "
           >
             <el-button size="large" circle @click="loadMoreMaterial">
-              <el-icon><IEpBottom /></el-icon>
+              <i class="i-ep-bottom" style="font-size: 16px"></i>
             </el-button>
           </div>
         </div>
@@ -75,61 +75,61 @@ import MaterialList from "./MaterialList.vue";
 import type { Material } from "@/types/draw";
 
 interface IPage {
-	page: number;
-	pageSize: number;
-	total: number;
-	content?: string;
-	category?: string;
+  page: number;
+  pageSize: number;
+  total: number;
+  content?: string;
+  category?: string;
 }
 
 const loading1 = ref(false);
 const categoryList = ref<{ category: string; records: Material[] }[]>([]);
 const categoryPage = reactive<IPage>({
-	page: 0,
-	pageSize: 3,
-	total: 100,
-	content: "",
+  page: 0,
+  pageSize: 3,
+  total: 100,
+  content: "",
 });
 
 const loading2 = ref(false);
 const showCategoryMore = ref(false);
 const materialList = ref<Material[]>([]);
 const materialPage = reactive<IPage>({
-	page: 1,
-	pageSize: 6,
-	category: "",
-	total: 7,
+  page: 1,
+  pageSize: 6,
+  category: "",
+  total: 7,
 });
 
 const loadCategoryDetail = async (category: string, ms: Material[]) => {
-	showCategoryMore.value = true;
-	materialPage.category = category;
-	materialList.value = [...ms];
-	materialPage.page = 1;
-	loadMoreMaterial();
+  showCategoryMore.value = true;
+  materialPage.category = category;
+  materialList.value = [...ms];
+  materialPage.page = 1;
+  loadMoreMaterial();
 };
 
 const loadMoreMaterial = () => {
-	// 前端模式下不加载更多素材
-	ElMessage.info("前端模式下暂无在线素材");
+  // 前端模式下不加载更多素材
+  ElMessage.info("前端模式下暂无在线素材");
 };
 
 const loadMoreCategory = () => {
-	// 前端模式下不加载更多分类
-	ElMessage.info("前端模式下暂无在线分类");
+  // 前端模式下不加载更多分类
+  ElMessage.info("前端模式下暂无在线分类");
 };
 
 const refreshCategory = (reset: boolean) => {
-	if (reset) {
-		categoryPage.content = "";
-	}
-	categoryPage.page = 0;
-	categoryList.value = [];
-	loadMoreCategory();
+  if (reset) {
+    categoryPage.content = "";
+  }
+  categoryPage.page = 0;
+  categoryList.value = [];
+  loadMoreCategory();
 };
 
 onMounted(async () => {
-	loadMoreCategory();
+  loadMoreCategory();
 });
 </script>
 

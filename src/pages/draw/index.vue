@@ -28,8 +28,16 @@
         @click="showSider = !showSider"
         :class="showSider ? '-left-6' : '-left-2'"
       >
-        <el-icon v-if="showSider" color="#b3b3b8"><IEpArrowLeftBold /></el-icon>
-        <el-icon v-else color="#b3b3b8"><IEpArrowRightBold /></el-icon>
+        <i
+          v-if="showSider"
+          class="i-ep-arrow-left-bold"
+          style="color: #b3b3b8; font-size: 16px"
+        ></i>
+        <i
+          v-else
+          class="i-ep-arrow-right-bold"
+          style="color: #b3b3b8; font-size: 16px"
+        ></i>
       </div>
 
       <VWhiteboard />
@@ -53,30 +61,30 @@ const showSider = ref(true);
 const timer = ref();
 
 const onDropMaterial = async (e: DragEvent) => {
-	if (!drawStore.dragInfo) {
-		return;
-	}
-	try {
-		e.preventDefault();
-		drawStore.loading = true;
-		if (drawStore.dragInfo.category === "template_psd") {
-			await drawStore.addTemplate(drawStore.dragInfo.psdMetadata);
-		} else {
-			await drawStore.addMaterial(drawStore.dragInfo);
-		}
-	} finally {
-		drawStore.loading = false;
-	}
+  if (!drawStore.dragInfo) {
+    return;
+  }
+  try {
+    e.preventDefault();
+    drawStore.loading = true;
+    if (drawStore.dragInfo.category === "template_psd") {
+      await drawStore.addTemplate(drawStore.dragInfo.psdMetadata);
+    } else {
+      await drawStore.addMaterial(drawStore.dragInfo);
+    }
+  } finally {
+    drawStore.loading = false;
+  }
 };
 
 onMounted(() => {
-	timer.value = setInterval(async () => {
-		await projectStore.saveProject();
-	}, 30 * 1000);
+  timer.value = setInterval(async () => {
+    await projectStore.saveProject();
+  }, 30 * 1000);
 });
 
 onUnmounted(() => {
-	clearInterval(timer.value);
+  clearInterval(timer.value);
 });
 </script>
 

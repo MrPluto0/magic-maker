@@ -7,74 +7,74 @@ import VideoGenerate from "@/pages/editor/components/generate/VideoGenerate.vue"
 import SpeechGenerate from "@/pages/editor/components/generate/SpeechGenerate.vue";
 
 export interface MenuItem {
-	title: string;
-	key: TrackType;
-	icon: string;
-	active?: boolean;
-	component?: Component;
-	[key: string]: any;
+  title: string;
+  key: TrackType;
+  icon: string;
+  active?: boolean;
+  component?: Component;
+  [key: string]: any;
 }
 
 export const EditorGenerateMenu: MenuItem[] = [
-	{
-		title: "文本",
-		key: "text",
-		icon: "TextIcon",
-		component: TextGenerate,
-	},
-	{
-		title: "图片",
-		key: "image",
-		fileType: "image/*",
-		icon: "ImageIcon",
-		component: ImageGenerate,
-	},
-	{
-		title: "音频",
-		key: "audio",
-		fileType: "audio/*",
-		icon: "AudioIcon",
-		component: AudioGenerate,
-	},
-	{
-		title: "旁白",
-		// @ts-expect-error
-		key: "speech",
-		fileType: "audio/*",
-		icon: "VoiceIcon",
-		component: SpeechGenerate,
-	},
-	{
-		title: "视频",
-		key: "video",
-		fileType: "video/*",
-		icon: "VideoIcon",
-		component: VideoGenerate,
-	},
+  {
+    title: "文本",
+    key: "text",
+    icon: "i-mdi-format-text",
+    component: TextGenerate,
+  },
+  {
+    title: "图片",
+    key: "image",
+    fileType: "image/*",
+    icon: "i-mdi-image",
+    component: ImageGenerate,
+  },
+  {
+    title: "音频",
+    key: "audio",
+    fileType: "audio/*",
+    icon: "i-mdi-volume-high",
+    component: AudioGenerate,
+  },
+  {
+    title: "旁白",
+    // @ts-expect-error
+    key: "speech",
+    fileType: "audio/*",
+    icon: "i-mdi-microphone",
+    component: SpeechGenerate,
+  },
+  {
+    title: "视频",
+    key: "video",
+    fileType: "video/*",
+    icon: "i-mdi-video",
+    component: VideoGenerate,
+  },
 ];
 
 export const EditorMaterialMenu: MenuItem[] = [
-	{
-		title: "图片",
-		key: "image",
-		fileType: "image/*",
-		icon: "ImageIcon",
-		component: ImageGenerate,
-	},
-	{
-		title: "音频",
-		key: "audio",
-		fileType: "audio/*",
-		icon: "AudioIcon",
-		component: AudioGenerate,
-	},
-	{
-		title: "视频",
-		key: "video",
-		fileType: "video/*",
-		icon: "VideoIcon",
-		component: VideoGenerate,
-	},
+  {
+    title: "图片",
+    key: "image",
+    fileType: "image/*",
+    icon: "i-mdi-image",
+    component: ImageGenerate,
+  },
+  {
+    title: "音频",
+    key: "audio",
+    fileType: "audio/*",
+    icon: "i-mdi-volume-high",
+    component: AudioGenerate,
+  },
+  {
+    title: "视频",
+    key: "video",
+    fileType: "video/*",
+    icon: "i-mdi-video",
+    component: VideoGenerate,
+  },
 ];
 
 export const EditorAIMenu: MenuItem[] = [];

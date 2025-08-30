@@ -1,7 +1,9 @@
 <template>
-  <div class="flex items-center justify-center h-8 my-2">
+  <div class="flex items-center justify-center h-8 my-2 text-[18px]">
     <div class="m-auto flex items-center gap-4">
-      <span class="text-xs text-purple inline-block">{{ playTime }}</span>
+      <span class="text-xs text-purple" style="font-family: 'monospace'">{{
+        playTime
+      }}</span>
 
       <el-tooltip
         v-for="(control, i) in controls"
@@ -9,17 +11,18 @@
         effect="light"
         :content="control.title"
       >
-        <el-icon
-          :size="18"
-          class="cursor-pointer box-content"
-          :class="[control.disable ? 'cursor-not-allowed' : 'cursor-pointer']"
+        <i
+          :style="{
+            cursor: control.disable ? 'not-allowed' : 'pointer',
+          }"
+          :class="control.icon"
           @click="control.handler"
-        >
-          <component :is="control.icon" />
-        </el-icon>
+        />
       </el-tooltip>
 
-      <span class="text-xs">{{ allTime }}</span>
+      <span class="text-xs" style="font-family: 'monospace'">{{
+        allTime
+      }}</span>
     </div>
   </div>
 </template>
@@ -33,40 +36,40 @@ const store = usePlayerState();
 const trackStore = useTrackState();
 
 const playTime = computed(() => {
-	return formatPlayerTime(store.playStartFrame);
+  return formatPlayerTime(store.playStartFrame);
 });
 const allTime = computed(() => {
-	return formatPlayerTime(trackStore.frameCount);
+  return formatPlayerTime(trackStore.frameCount);
 });
 
 const controls = computed(() => [
-	{
-		title: "回退1s [<-]",
-		disable: trackStore.frameCount === 0,
-		icon: "BackwardIcon",
-		handler: () => {
-			if (trackStore.frameCount === 0) return;
-			store.backward();
-		},
-	},
-	{
-		title: "播放/暂停 [Space]",
-		disable: trackStore.frameCount === 0,
-		icon: store.isPause ? "PauseIcon" : "PlayIcon",
-		handler: () => {
-			if (trackStore.frameCount === 0) return;
-			store.isPause = !store.isPause;
-		},
-	},
-	{
-		title: "快进1s [->]",
-		disable: trackStore.frameCount === 0,
-		icon: "ForwardIcon",
-		handler: () => {
-			if (trackStore.frameCount === 0) return;
-			store.forward();
-		},
-	},
+  {
+    title: "回退1s [<-]",
+    disable: trackStore.frameCount === 0,
+    icon: "i-mdi-skip-backward",
+    handler: () => {
+      if (trackStore.frameCount === 0) return;
+      store.backward();
+    },
+  },
+  {
+    title: "播放/暂停 [Space]",
+    disable: trackStore.frameCount === 0,
+    icon: store.isPause ? "i-mdi-pause" : "i-mdi-play",
+    handler: () => {
+      if (trackStore.frameCount === 0) return;
+      store.isPause = !store.isPause;
+    },
+  },
+  {
+    title: "快进1s [->]",
+    disable: trackStore.frameCount === 0,
+    icon: "i-mdi-skip-forward",
+    handler: () => {
+      if (trackStore.frameCount === 0) return;
+      store.forward();
+    },
+  },
 ]);
 </script>
 

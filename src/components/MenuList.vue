@@ -3,21 +3,20 @@
     <li
       v-for="(item, index) of menu"
       :key="item.key"
-      class="flex items-center p-2 cursor-pointer hover:dark:bg-gray-700 hover:bg-gray-200"
+      class="flex items-center p-2 gap-1 cursor-pointer hover:dark:bg-night-light hover:bg-gray-200"
       @click="activeChangeHandler(index)"
     >
-      <ElIcon
-        :color="index === activeIndex ? '#1473e6' : ''"
-        :size="item.iconSize ?? 14"
-        class="flex-auto mr-1"
-      >
-        <component :is="item.icon" />
-      </ElIcon>
+      <i
+        :style="{
+          fontSize: '16px',
+        }"
+        :class="`${item.icon} ${index === activeIndex ? 'text-purple' : ''}`"
+      />
       <span
-        class="ml-0.5 select-none text-xs font-bold"
+        class="text-xs font-bold"
         :class="
           index === activeIndex
-            ? 'text-[#1473e6]'
+            ? 'text-purple'
             : 'dark:text-gray-300 text-gray-500'
         "
       >
@@ -31,12 +30,12 @@
 import type { MenuItem } from "@/data/menu";
 
 defineProps<{
-	activeIndex: number;
-	menu: MenuItem[];
+  activeIndex: number;
+  menu: MenuItem[];
 }>();
 const emits = defineEmits(["update:activeIndex"]);
 
 function activeChangeHandler(index: number) {
-	emits("update:activeIndex", index);
+  emits("update:activeIndex", index);
 }
 </script>

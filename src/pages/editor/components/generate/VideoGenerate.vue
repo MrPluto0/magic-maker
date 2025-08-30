@@ -26,13 +26,11 @@
           @keyup.enter="handleSubmit"
         >
           <template #suffix>
-            <el-icon
-              class="cursor-pointer mr-2"
-              size="18"
+            <i
+              class="i-mdi-upload cursor-pointer mr-2"
+              style="font-size: 18px"
               @click="triggerFileInput"
-            >
-              <UploadIcon />
-            </el-icon>
+            ></i>
             <input
               ref="fileInputRef"
               class="file-input"
@@ -45,9 +43,10 @@
             <el-popover trigger="click" width="325">
               <!-- 风格选择区域 -->
               <template #reference>
-                <el-icon :size="18" class="cursor-pointer mr-2">
-                  <ColorPanelIcon />
-                </el-icon>
+                <i
+                  class="i-mdi-palette cursor-pointer mr-2"
+                  style="font-size: 18px"
+                ></i>
               </template>
               <template #default>
                 <div class="grid-container2">
@@ -71,9 +70,10 @@
             <el-popover trigger="click">
               <!-- 尺寸选择区域 -->
               <template #reference>
-                <el-icon :size="18" class="cursor-pointer">
-                  <SizePanelIcon />
-                </el-icon>
+                <i
+                  class="i-mdi-resize cursor-pointer"
+                  style="font-size: 18px"
+                ></i>
               </template>
               <template #default>
                 <div class="grid-container">
@@ -97,7 +97,7 @@
         </el-input>
 
         <el-button class="dark:bg-purple-heavy" circle @click="handleSubmit">
-          <PlaneIcon />
+          <i class="i-mdi-send" />
         </el-button>
       </div>
     </div>
@@ -106,7 +106,6 @@
 
 <script lang="ts" setup>
 import { ImageSizeList, ResourceStyleList } from "@/data/constant";
-// Removed API imports for frontend-only mode
 import { useResourceState } from "@/stores/resource";
 
 const resourceStore = useResourceState();
@@ -115,36 +114,36 @@ const fileInputRef = ref<HTMLInputElement | null>(null);
 const uploadFileName = ref("");
 
 const form = reactive({
-	prompt: "",
-	imageUrl: "",
-	sizeStr: ImageSizeList[0].value,
-	style: "Anime Style",
+  prompt: "",
+  imageUrl: "",
+  sizeStr: ImageSizeList[0].value,
+  style: "Anime Style",
 });
 
 const triggerFileInput = () => {
-	fileInputRef.value?.click();
+  fileInputRef.value?.click();
 };
 
 const handleFileChange = (event: Event) => {
-	const target = event.target as HTMLInputElement;
-	const file = target.files?.[0];
-	if (file) {
-		uploadFileName.value = file.name;
-		form.imageUrl = URL.createObjectURL(file);
-	}
+  const target = event.target as HTMLInputElement;
+  const file = target.files?.[0];
+  if (file) {
+    uploadFileName.value = file.name;
+    form.imageUrl = URL.createObjectURL(file);
+  }
 };
 
 const handleSubmit = () => {
-	if (!form.prompt) {
-		ElMessage.error("请输入文字描述");
-		return;
-	}
+  if (!form.prompt) {
+    ElMessage.error("请输入文字描述");
+    return;
+  }
 
-	if (form.imageUrl) {
-		ElMessage.info("前端模式下暂不支持图片生成视频功能");
-	} else {
-		ElMessage.info("前端模式下暂不支持文字生成视频功能");
-	}
+  if (form.imageUrl) {
+    ElMessage.info("前端模式下暂不支持图片生成视频功能");
+  } else {
+    ElMessage.info("前端模式下暂不支持文字生成视频功能");
+  }
 };
 </script>
 

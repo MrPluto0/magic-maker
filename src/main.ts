@@ -4,7 +4,6 @@ import App from "./App.vue";
 import "virtual:uno.css";
 import "./styles/index.less";
 
-import installIcon from "@/plugins/installIcon"; // icon 注册
 import installRouter from "@/plugins/installRouter"; // 路由注册
 import installPiniaPlugin from "@/plugins/installPiniaPlugin"; // Pinia 状态监控
 import installExcalidraw from "@/plugins/installExcalidraw";
@@ -18,7 +17,6 @@ pinia.use(piniaPluginPersistedstate);
 app.use(pinia);
 
 app.use(installRouter);
-app.use(installIcon);
 app.use(installExcalidraw);
 
 app.mount("#app");

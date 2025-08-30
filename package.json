@@ -10,7 +10,6 @@
     "build": "vite build",
     "format": "biome format --write ./src",
     "lint": "biome lint --write ./src",
-    "prepare": "husky install",
     "deploy": "gh-pages -d dist -b gh-pages"
   },
   "dependencies": {
@@ -49,6 +48,7 @@
   "devDependencies": {
     "@biomejs/biome": "2.2.2",
     "@iconify-json/ep": "^1.2.1",
+    "@iconify-json/mdi": "^1.2.3",
     "@types/lodash-es": "^4.17.6",
     "@types/node": "^18.11.18",
     "@types/react": "^19.0.1",

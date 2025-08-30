@@ -3,9 +3,10 @@
     <div
       class="flex items-center text-xs pl-2 overflow-hidden h-5 leading-5 bg-[#4b4f54] text-white"
     >
-      <el-icon size="18">
-        <VideoIcon class="inline-block mr-2 shrink-0" />
-      </el-icon>
+      <i
+        class="i-mdi-video"
+        style="font-size: 18px; margin-right: 8px; flex-shrink: 0"
+      ></i>
       <span class="mr-4 shrink-0" v-if="resource">
         [{{ resource.duration.toFixed(1) }}s]
       </span>
@@ -51,9 +52,9 @@ import { getGridPixel } from "@/utils/canvasUtil";
 import { useTrackState } from "@/stores/track";
 
 const props = defineProps({
-	trackItem: {
-		type: Object as PropType<VideoTrack>,
-	},
+  trackItem: {
+    type: Object as PropType<VideoTrack>,
+  },
 });
 const store = usePlayerState();
 const trackStore = useTrackState();
@@ -64,44 +65,44 @@ const thumbnails = ref([]);
 const resource = computed(() => props.trackItem.resource);
 
 async function initVideo() {
-	if (!resource.value) {
-		console.error("Video resource not found");
-		return;
-	}
+  if (!resource.value) {
+    console.error("Video resource not found");
+    return;
+  }
 
-	try {
-		store.ingLoadingCount++;
-		loading.value = true;
+  try {
+    store.ingLoadingCount++;
+    loading.value = true;
 
-		const unitWidth = getGridPixel(
-			trackStore.trackScale,
-			props.trackItem.frameCount,
-		);
-		const imgCount = Math.ceil(unitWidth / 50);
-		const step = Math.ceil((resource.value.duration * 1e6) / imgCount);
-		const imgs = await videoDecoder.thumbnails(
-			props.trackItem,
-			trackStore.trackScale,
-			step,
-		);
-		thumbnails.value = imgs.map(({ img }) => {
-			return URL.createObjectURL(img);
-		});
-	} finally {
-		loading.value = false;
-		store.ingLoadingCount--;
-	}
+    const unitWidth = getGridPixel(
+      trackStore.trackScale,
+      props.trackItem.frameCount
+    );
+    const imgCount = Math.ceil(unitWidth / 50);
+    const step = Math.ceil((resource.value.duration * 1e6) / imgCount);
+    const imgs = await videoDecoder.thumbnails(
+      props.trackItem,
+      trackStore.trackScale,
+      step
+    );
+    thumbnails.value = imgs.map(({ img }) => {
+      return URL.createObjectURL(img);
+    });
+  } finally {
+    loading.value = false;
+    store.ingLoadingCount--;
+  }
 }
 
 watch(() => [props.trackItem, resource.value], initVideo, {
-	immediate: true,
-	flush: "post",
+  immediate: true,
+  flush: "post",
 });
 
 onUnmounted(() => {
-	thumbnails.value.forEach((item) => {
-		URL.revokeObjectURL(item);
-	});
+  thumbnails.value.forEach((item) => {
+    URL.revokeObjectURL(item);
+  });
 });
 </script>
 

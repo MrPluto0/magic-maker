@@ -16,9 +16,7 @@
           ]"
           :title="lineData.main ? '主轨道' : ''"
         >
-          <el-icon size="20">
-            <component :is="componentMap.get(lineData.type)" />
-          </el-icon>
+          <Icon :icon="iconMap.get(lineData.type)" style="font-size: 20px" />
         </div>
       </template>
     </div>
@@ -27,35 +25,34 @@
 
 <script setup lang="ts">
 import { ref, watch } from "vue";
-import VideoIcon from "@/components/icons/VideoIcon.vue";
-import AudioIcon from "@/components/icons/AudioIcon.vue";
-import TextIcon from "@/components/icons/TextIcon.vue";
-import ImageIcon from "@/components/icons/ImageIcon.vue";
 
 import { TrackHeightMap } from "@/data/track";
 const props = defineProps({
-	listData: {
-		type: Array as PropType<TrackLineItem[]>,
-		default() {
-			return [];
-		},
-	},
-	offsetTop: {
-		type: Number,
-		default: 0,
-	},
+  listData: {
+    type: Array as PropType<TrackLineItem[]>,
+    default() {
+      return [];
+    },
+  },
+  offsetTop: {
+    type: Number,
+    default: 0,
+  },
 });
-const componentMap = new Map([
-	["video", VideoIcon],
-	["audio", AudioIcon],
-	["text", TextIcon],
-	["image", ImageIcon],
+
+// 使用iconify图标映射
+const iconMap = new Map([
+  ["video", "i-mdi-video"],
+  ["audio", "i-mdi-volume-high"],
+  ["text", "i-mdi-format-text"],
+  ["image", "i-mdi-image"],
 ]);
+
 const iconList = ref();
 watch(
-	() => props.offsetTop,
-	() => {
-		iconList.value.scrollTop = props.offsetTop;
-	},
+  () => props.offsetTop,
+  () => {
+    iconList.value.scrollTop = props.offsetTop;
+  }
 );
 </script>

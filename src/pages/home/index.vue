@@ -22,16 +22,20 @@
       <div class="flex gap-16">
         <div>
           <div class="font-semibold mb-4">产品介绍</div>
-          <el-icon :size="120" class="cursor-pointer" @click="showUsage = true">
-            <HowtouseIcon />
-          </el-icon>
+          <i
+            class="i-mdi-help-circle cursor-pointer"
+            style="font-size: 120px"
+            @click="showUsage = true"
+          ></i>
           <UsageBox v-if="showUsage" v-model:show="showUsage" />
         </div>
         <div class="mr-4">
           <div class="font-semibold mb-4">关于我自己</div>
-          <el-icon :size="120" class="cursor-pointer" @click="openPage">
-            <ContactIcon />
-          </el-icon>
+          <i
+            class="i-mdi-account-circle cursor-pointer"
+            style="font-size: 120px"
+            @click="openPage"
+          ></i>
         </div>
       </div>
     </div>
@@ -60,7 +64,7 @@ const showCreate = ref(false);
 const showUsage = ref(false);
 
 const openPage = () => {
-	window.open("https://www.gypsophlia.top/");
+  window.open("https://www.gypsophlia.top/");
 };
 </script>
 

@@ -45,21 +45,21 @@
                 <el-dropdown-item
                   v-if="route.path === '/editor'"
                   @click="projectStore.saveProject"
-                  :icon="Upload"
+                  icon="i-mdi-upload"
                 >
                   保存剪辑
                 </el-dropdown-item>
                 <el-dropdown-item
                   v-if="route.path === '/whiteboard'"
                   @click="projectStore.saveProject"
-                  :icon="Upload"
+                  icon="i-mdi-upload"
                 >
                   保存画板
                 </el-dropdown-item>
                 <el-dropdown-item
                   v-if="route.path === '/editor'"
                   @click="projectStore.exportVideo"
-                  :icon="Download"
+                  icon="i-mdi-download"
                 >
                   导出视频
                 </el-dropdown-item>
@@ -72,8 +72,8 @@
           class="switch"
           v-model="pageStore.isDark"
           size="default"
-          :active-icon="Moon"
-          :inactive-icon="Sunny"
+          active-icon="i-mdi-weather-night"
+          inactive-icon="i-mdi-weather-sunny"
           inline-prompt
         />
 
@@ -84,14 +84,12 @@
             @click="userStore.showLogin = true"
             >登录</el-button
           >
-          <el-icon
-            class="cursor-pointer"
-            @click="showUserInfo = true"
+          <i
             v-else
-            :size="18"
-          >
-            <UserFilled />
-          </el-icon>
+            class="i-mdi-account cursor-pointer"
+            style="font-size: 18px"
+            @click="showUserInfo = true"
+          ></i>
         </div>
       </div>
     </div>
@@ -103,13 +101,6 @@
 </template>
 
 <script setup lang="ts">
-import {
-	Download,
-	Upload,
-	Sunny,
-	Moon,
-	UserFilled,
-} from "@element-plus/icons-vue";
 import { usePageState } from "@/stores/page";
 import { useUserState } from "@/stores/user";
 import { useProjectState } from "@/stores/project";
@@ -127,18 +118,18 @@ const route = useRoute();
 const showUserInfo = ref(false);
 
 const menu = [
-	{
-		name: "主页",
-		to: "/home",
-	},
-	{
-		name: "图像编辑",
-		to: "/draw",
-	},
-	{
-		name: "视频剪辑",
-		to: "/editor",
-	},
+  {
+    name: "主页",
+    to: "/home",
+  },
+  {
+    name: "图像编辑",
+    to: "/draw",
+  },
+  {
+    name: "视频剪辑",
+    to: "/editor",
+  },
 ];
 </script>
 

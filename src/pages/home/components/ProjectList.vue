@@ -26,19 +26,21 @@
           <div class="w-40">{{ new Date(pro.updatedAt).toLocaleString() }}</div>
           <div class="w-40">{{ new Date(pro.createdAt).toLocaleString() }}</div>
           <div class="w-20 flex gap-4 items-center">
-            <el-icon
-              color="#faa65e"
-              size="18"
+            <i
+              class="i-mdi-file-document"
+              style="color: #faa65e; font-size: 18px; cursor: pointer"
               @click.stop="projectStore.exportProject(pro)"
-            >
-              <Document />
-            </el-icon>
-            <el-icon color="#1473e6" size="18" @click.stop="editProject(pro)">
-              <Edit />
-            </el-icon>
-            <el-icon color="#F56C6C" size="18" @click.stop="delProject(pro.id)">
-              <Delete />
-            </el-icon>
+            ></i>
+            <i
+              class="i-mdi-pencil"
+              style="color: #1473e6; font-size: 18px; cursor: pointer"
+              @click.stop="editProject(pro)"
+            ></i>
+            <i
+              class="i-mdi-delete"
+              style="color: #f56c6c; font-size: 18px; cursor: pointer"
+              @click.stop="delProject(pro.id)"
+            ></i>
           </div>
         </div>
       </div>
@@ -52,7 +54,6 @@
 import { useProjectState } from "@/stores/project";
 import type { IProject } from "@/types/project";
 import { useRouter } from "vue-router";
-import { Delete, Document, Edit } from "@element-plus/icons-vue";
 import UpdateProject from "./UpdateProject.vue";
 
 const router = useRouter();
@@ -64,25 +65,25 @@ const showUpdate = ref(false);
 const projectList = computed(() => projectStore.projectList);
 
 const checkProject = (targetProject) => {
-	if (targetProject) {
-		projectStore.loadProject(targetProject);
-		router.push("/editor");
-	}
+  if (targetProject) {
+    projectStore.loadProject(targetProject);
+    router.push("/editor");
+  }
 };
 
 const editProject = (pro: IProject) => {
-	project.value = pro;
-	showUpdate.value = true;
+  project.value = pro;
+  showUpdate.value = true;
 };
 
 const delProject = (id: string) => {
-	ElMessageBox.confirm("确定删除项目？", "提示", {
-		confirmButtonText: "确定",
-		cancelButtonText: "取消",
-		type: "warning",
-	}).then(() => {
-		projectStore.deleteProject(id);
-	});
+  ElMessageBox.confirm("确定删除项目？", "提示", {
+    confirmButtonText: "确定",
+    cancelButtonText: "取消",
+    type: "warning",
+  }).then(() => {
+    projectStore.deleteProject(id);
+  });
 };
 </script>
 

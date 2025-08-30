@@ -36,9 +36,10 @@
       class="absolute top-2 right-2 bg-red-500 rounded-full w-6 h-6 opacity-0 hover:opacity-100 transition-opacity duration-150"
       @click="resourceStore.removeResource(resource.id)"
     >
-      <ElIcon :size="16" color="#fff" class="cursor-pointer p-1 box-content">
-        <Minus />
-      </ElIcon>
+      <i
+        class="i-mdi-minus text-white cursor-pointer p-1 box-content"
+        style="font-size: 16px"
+      ></i>
     </div>
 
     <div
@@ -46,9 +47,10 @@
       class="absolute bottom-2 right-1 bg-blue-500 rounded-full w-6 h-6 opacity-0 hover:opacity-100 transition-opacity duration-150"
       @click="addTrack"
     >
-      <ElIcon :size="16" color="#fff" class="cursor-pointer p-1 box-content">
-        <Plus />
-      </ElIcon>
+      <i
+        class="i-mdi-plus text-white cursor-pointer p-1 box-content"
+        style="font-size: 16px"
+      ></i>
     </div>
   </div>
 
@@ -76,9 +78,10 @@
       class="bg-red-500 rounded-full w-6 h-6"
       @click="resourceStore.removeResource(resource.id)"
     >
-      <ElIcon :size="16" color="#fff" class="cursor-pointer p-1 box-content">
-        <Minus />
-      </ElIcon>
+      <i
+        class="i-mdi-minus text-white cursor-pointer p-1 box-content"
+        style="font-size: 16px"
+      ></i>
     </div>
 
     <div
@@ -86,9 +89,10 @@
       class="bg-blue-500 rounded-full w-6 h-6"
       @click="addTrack"
     >
-      <ElIcon :size="16" color="#fff" class="cursor-pointer p-1 box-content">
-        <Plus />
-      </ElIcon>
+      <i
+        class="i-mdi-plus text-white cursor-pointer p-1 box-content"
+        style="font-size: 16px"
+      ></i>
     </div>
   </div>
 
@@ -98,7 +102,7 @@
         <div
           class="h-24 flex flex-col cursor-pointer center hover:border-2 hover:border-purple box-border overflow-hidden"
         >
-          <el-icon size="30"><FolderOpened /></el-icon>
+          <i class="i-mdi-folder-open" style="font-size: 30px"></i>
           <div
             class="w-20 text-center text-ellipsis overflow-hidden whitespace-nowrap"
           >
@@ -113,9 +117,10 @@
         class="absolute top-4 right-6 bg-night-light"
         @click="() => handleCopyButton(getResultContent(resource))"
       >
-        <el-icon size="18" color="#1473e6">
-          <CopyDocument />
-        </el-icon>
+        <i
+          class="i-mdi-content-copy"
+          style="font-size: 18px; color: #1473e6"
+        ></i>
       </button>
     </el-popover>
 
@@ -123,20 +128,15 @@
       class="absolute top-2 right-1 bg-red-500 rounded-full w-6 h-6 opacity-0 hover:opacity-100 transition-opacity duration-150"
       @click="resourceStore.removeResource(resource.id)"
     >
-      <ElIcon :size="16" color="#fff" class="cursor-pointer p-1 box-content">
-        <Minus />
-      </ElIcon>
+      <i
+        class="i-mdi-minus text-white cursor-pointer p-1 box-content"
+        style="font-size: 16px"
+      ></i>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import {
-	Plus,
-	Minus,
-	CopyDocument,
-	FolderOpened,
-} from "@element-plus/icons-vue";
 import { useTrackState } from "@/stores/track";
 import type { Resource } from "@/types/resource";
 import type { TrackType } from "@/types/track";
@@ -146,9 +146,9 @@ import { ElMessage } from "element-plus";
 import { ref } from "vue";
 
 const props = defineProps<{
-	resource: Resource;
-	type: TrackType;
-	noAction?: boolean;
+  resource: Resource;
+  type: TrackType;
+  noAction?: boolean;
 }>();
 
 const trackStore = useTrackState();
@@ -157,41 +157,41 @@ const { toClipboard } = useClipboard();
 const showVideo = ref(false);
 
 async function dragStart(event: DragEvent) {
-	event.stopPropagation();
-	trackStore.dragData.dataInfo = props.resource;
-	trackStore.dragData.dragType = props.type;
-	trackStore.dragData.dragPoint.x = event.offsetX;
-	trackStore.dragData.dragPoint.y = event.offsetY;
-	trackStore.selectTrackItem.line = -1;
-	trackStore.selectTrackItem.index = -1;
+  event.stopPropagation();
+  trackStore.dragData.dataInfo = props.resource;
+  trackStore.dragData.dragType = props.type;
+  trackStore.dragData.dragPoint.x = event.offsetX;
+  trackStore.dragData.dragPoint.y = event.offsetY;
+  trackStore.selectTrackItem.line = -1;
+  trackStore.selectTrackItem.index = -1;
 }
 
 async function addTrack(event: MouseEvent) {
-	event.stopPropagation();
+  event.stopPropagation();
 
-	const track = await trackStore.createTrack(props.resource);
+  const track = await trackStore.createTrack(props.resource);
 
-	trackStore.addTrack(track);
+  trackStore.addTrack(track);
 }
 
 const getResultContent = (resource: Resource): string => {
-	// 如果resource有result属性，返回result，否则根据类型返回相应内容
-	if ((resource as any).result) {
-		return (resource as any).result;
-	}
-	if (resource.type === "text") {
-		return resource.content;
-	}
-	return "";
+  // 如果resource有result属性，返回result，否则根据类型返回相应内容
+  if ((resource as any).result) {
+    return (resource as any).result;
+  }
+  if (resource.type === "text") {
+    return resource.content;
+  }
+  return "";
 };
 
 const handleCopyButton = async (text: string) => {
-	try {
-		const selection = window.getSelection()?.toString() || "";
-		await toClipboard(selection === "" ? text : selection);
-		ElMessage.success("复制成功");
-	} catch (error) {
-		console.error(error);
-	}
+  try {
+    const selection = window.getSelection()?.toString() || "";
+    await toClipboard(selection === "" ? text : selection);
+    ElMessage.success("复制成功");
+  } catch (error) {
+    console.error(error);
+  }
 };
 </script>

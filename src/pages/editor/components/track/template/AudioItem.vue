@@ -3,9 +3,10 @@
     <div
       class="flex items-center text-xs pl-2 overflow-hidden h-5 leading-5 bg-[#395c96] text-gray-100"
     >
-      <el-icon size="18">
-        <AudioIcon class="inline-block mr-2 shrink-0" />
-      </el-icon>
+      <i
+        class="i-mdi-volume-high"
+        style="font-size: 18px; margin-right: 8px; flex-shrink: 0"
+      ></i>
       <span class="mr-4 shrink-0">{{
         `${trackItem.name}.${trackItem.format}`
       }}</span>
@@ -36,15 +37,15 @@ import { WaveOptions } from "@/data/track";
 import type { AudioTrack } from "@/class/AudioTrack";
 
 const props = defineProps({
-	trackItem: {
-		type: Object as PropType<AudioTrack>,
-		default() {
-			return {
-				showWidth: "0px",
-				showLeft: "0px",
-			};
-		},
-	},
+  trackItem: {
+    type: Object as PropType<AudioTrack>,
+    default() {
+      return {
+        showWidth: "0px",
+        showLeft: "0px",
+      };
+    },
+  },
 });
 
 const store = usePlayerState();
@@ -53,47 +54,47 @@ const store = usePlayerState();
 const resource = computed(() => props.trackItem.resource);
 
 const waveStyle = computed(() => {
-	const { start, end, offsetL, offsetR, frameCount } = props.trackItem;
-	const showFrameCount = end - start;
-	return {
-		// transform: `scaleX(${(frameCount / showFrameCount).toFixed(2)})`,
-		transformOrigin: "left top",
-		left: `-${(offsetL / showFrameCount) * 100}%`,
-		right: `-${(offsetR / showFrameCount) * 100}%`,
-	};
+  const { start, end, offsetL, offsetR, frameCount } = props.trackItem;
+  const showFrameCount = end - start;
+  return {
+    // transform: `scaleX(${(frameCount / showFrameCount).toFixed(2)})`,
+    transformOrigin: "left top",
+    left: `-${(offsetL / showFrameCount) * 100}%`,
+    right: `-${(offsetR / showFrameCount) * 100}%`,
+  };
 });
 const loading = ref(true);
 const waveRef = ref();
 
 async function initAudio() {
-	if (!resource.value?.url) {
-		console.error("Audio resource URL not found");
-		return;
-	}
+  if (!resource.value?.url) {
+    console.error("Audio resource URL not found");
+    return;
+  }
 
-	store.ingLoadingCount++;
-	try {
-		// @ts-expect-error
-		WaveSurfer.create({
-			container: waveRef.value,
-			url: resource.value.url,
-			...WaveOptions,
-		});
-	} finally {
-		loading.value = false;
-		store.ingLoadingCount--;
-	}
+  store.ingLoadingCount++;
+  try {
+    // @ts-expect-error
+    WaveSurfer.create({
+      container: waveRef.value,
+      url: resource.value.url,
+      ...WaveOptions,
+    });
+  } finally {
+    loading.value = false;
+    store.ingLoadingCount--;
+  }
 }
 
 watch(
-	() => {
-		return resource.value && waveRef.value;
-	},
-	() => {
-		waveRef.value && initAudio();
-	},
-	{
-		immediate: true,
-	},
+  () => {
+    return resource.value && waveRef.value;
+  },
+  () => {
+    waveRef.value && initAudio();
+  },
+  {
+    immediate: true,
+  }
 );
 </script>

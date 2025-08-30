@@ -8,17 +8,6 @@
     </div>
 
     <div v-loading="loading" class="flex items-center w-full gap-2">
-      <div class="w-20">
-        <el-select v-model="form.style" placeholder="风格">
-          <el-option
-            v-for="(style, i) in MusicStyleList"
-            :key="i"
-            :value="style.value"
-            :label="style.text"
-          />
-        </el-select>
-      </div>
-
       <div class="flex-1">
         <el-input
           v-model="form.prompt"
@@ -29,9 +18,10 @@
             <el-popover trigger="click" :width="80">
               <!-- 时长选择区域 -->
               <template #reference>
-                <el-icon :size="18" class="cursor-pointer">
-                  <TimeIcon />
-                </el-icon>
+                <i
+                  class="i-mdi-clock-outline cursor-pointer"
+                  style="font-size: 18px"
+                ></i>
               </template>
               <template #default>
                 <div>
@@ -52,15 +42,15 @@
       </div>
 
       <el-button class="dark:bg-purple-heavy" circle @click="handleSubmit">
-        <PlaneIcon
-      /></el-button>
+        <i class="i-mdi-send" />
+      </el-button>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
 import { reactive, ref } from "vue";
-import { MusicStyleList, TimeIntervalList } from "@/data/constant";
+import { TimeIntervalList } from "@/data/constant";
 // Removed API imports for frontend-only mode
 import { useResourceState } from "@/stores/resource";
 
@@ -68,18 +58,18 @@ const resourceStore = useResourceState();
 const { getResourcesByType } = resourceStore;
 const loading = ref(false);
 const form = reactive({
-	prompt: "",
-	style: "Electronic music",
-	len: 4,
+  prompt: "",
+  style: "Electronic music",
+  len: 4,
 });
 
 const handleSubmit = () => {
-	if (!form.prompt) {
-		ElMessage.error("请输入文字描述");
-		return;
-	}
+  if (!form.prompt) {
+    ElMessage.error("请输入文字描述");
+    return;
+  }
 
-	ElMessage.info("前端模式下暂不支持AI音乐生成功能");
+  ElMessage.info("前端模式下暂不支持AI音乐生成功能");
 };
 </script>
 

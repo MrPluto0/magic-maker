@@ -24,13 +24,10 @@
           class="absolute bottom-2 right-1 bg-blue-500 rounded-full w-6 h-6 opacity-0 hover:opacity-100 transition-opacity duration-150"
           @click="handleAddMaterial(material)"
         >
-          <ElIcon
-            :size="16"
-            color="#fff"
-            class="cursor-pointer p-1 box-content"
-          >
-            <IEpPlus />
-          </ElIcon>
+          <i
+            class="i-ep-plus cursor-pointer p-1 box-content"
+            style="font-size: 16px; color: #fff"
+          ></i>
         </div>
       </div>
     </div>
@@ -42,22 +39,22 @@ import { useDrawStore } from "@/stores/draw";
 import type { Material } from "@/types/draw";
 
 defineProps<{
-	materials: Material[];
+  materials: Material[];
 }>();
 
 const drawStore = useDrawStore();
 
 const handleAddMaterial = async (material: Material) => {
-	try {
-		drawStore.loading = true;
-		if (material.category === "template_psd") {
-			await drawStore.addTemplate(material.psdMetadata);
-		} else {
-			await drawStore.addMaterial(material);
-		}
-	} finally {
-		drawStore.loading = false;
-	}
+  try {
+    drawStore.loading = true;
+    if (material.category === "template_psd") {
+      await drawStore.addTemplate(material.psdMetadata);
+    } else {
+      await drawStore.addMaterial(material);
+    }
+  } finally {
+    drawStore.loading = false;
+  }
 };
 </script>
 
