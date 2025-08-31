@@ -7,35 +7,34 @@
         </div>
 
         <div>
-          <el-button class="font-semibold" @click="showCreate = true">
+          <el-button
+            type="primary"
+            class="font-semibold"
+            @click="showCreate = true"
+          >
             新建项目
           </el-button>
           <NewProject v-model:show="showCreate" />
         </div>
         <div class="mt-4">
-          <el-button class="font-semibold" @click="projectStore.importProject">
+          <el-button
+            type="primary"
+            class="font-semibold"
+            @click="projectStore.importProject"
+          >
             导入项目
           </el-button>
         </div>
       </div>
 
       <div class="flex gap-16">
-        <div>
+        <div class="cursor-pointer" @click="showUsage = true">
           <div class="font-semibold mb-4">产品介绍</div>
-          <i
-            class="i-mdi-help-circle cursor-pointer"
-            style="font-size: 120px"
-            @click="showUsage = true"
-          ></i>
-          <UsageBox v-if="showUsage" v-model:show="showUsage" />
+          <UsageIcon />
         </div>
-        <div class="mr-4">
+        <div class="cursor-pointer" @click="openPage">
           <div class="font-semibold mb-4">关于我自己</div>
-          <i
-            class="i-mdi-account-circle cursor-pointer"
-            style="font-size: 120px"
-            @click="openPage"
-          ></i>
+          <ContactIcon />
         </div>
       </div>
     </div>
@@ -48,15 +47,19 @@
         </div>
       </div>
     </div>
+
+    <UsageBox v-if="showUsage" v-model:show="showUsage" />
   </div>
 </template>
 
 <script lang="ts" setup>
 import { useUserState } from "@/stores/user";
 import { useProjectState } from "@/stores/project";
-import UsageBox from "@/components/messagebox/UsageBox.vue";
+import UsageBox from "@/components/dialogs/UsageBox.vue";
 import NewProject from "./components/NewProject.vue";
 import ProjectList from "./components/ProjectList.vue";
+import UsageIcon from "@/components/icons/UsageIcon.vue";
+import ContactIcon from "@/components/icons/ContactIcon.vue";
 
 const userStore = useUserState();
 const projectStore = useProjectState();

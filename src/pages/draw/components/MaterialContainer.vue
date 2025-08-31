@@ -48,7 +48,10 @@
             @click="showCategoryMore = false"
             class="w-[25px] h-[25px] cursor-pointer absolute"
           >
-            <img src="@/assets/svg/back.svg" alt="" />
+            <div
+              class="i-mdi-arrow-left text-primary"
+              style="font-size: 16px"
+            ></div>
           </div>
           <div class="text-base mb-4 font-bold text-center">
             {{ materialPage.category }}

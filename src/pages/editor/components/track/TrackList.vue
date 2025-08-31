@@ -32,7 +32,7 @@
           <div
             class="flex justify-center items-center h-24 m-auto w-2/3 dark:bg-gray-500 bg-gray-200 rounded-md text-sm border-dashed border-2 dark:border-gray-500 border-gray-200 hover:dark:border-blue-300 hover:border-blue-400"
           >
-            <Icon icon="i-mdi-video" class="text-xl mr-4" />
+            <i class="i-mdi-video text-xl mr-4" />
             将素材拖拽到这里，开始编辑你的大作吧~
           </div>
         </template>

@@ -20,7 +20,7 @@
           <el-input type="textarea" :rows="5" v-model="form.description" />
         </el-form-item>
         <div class="flex justify-center mt-8 mb-8">
-          <el-button class="px-6" color="#1473E6" @click="handleCreate">
+          <el-button class="px-6" type="primary" @click="handleCreate">
             确认
           </el-button>
           <el-button class="px-6" @click="handleClose"> 取消 </el-button>
@@ -35,34 +35,34 @@
 import { useProjectState } from "@/stores/project";
 
 const props = defineProps<{
-	show: boolean;
+  show: boolean;
 }>();
 const emits = defineEmits(["update:show"]);
 
 const projectStore = useProjectState();
 
 const form = reactive({
-	name: "",
-	description: "",
+  name: "",
+  description: "",
 });
 
 const handleClose = () => {
-	emits("update:show", false);
+  emits("update:show", false);
 };
 
 const handleCreate = () => {
-	if (!form.name) {
-		ElMessage.error("请输入项目名称");
-		return;
-	}
+  if (!form.name) {
+    ElMessage.error("请输入项目名称");
+    return;
+  }
 
-	projectStore.createProject({
-		name: form.name,
-		description: form.description || "",
-	});
+  projectStore.createProject({
+    name: form.name,
+    description: form.description || "",
+  });
 
-	emits("update:show", false);
-	ElMessage.success("创建成功");
+  emits("update:show", false);
+  ElMessage.success("创建成功");
 };
 </script>
 

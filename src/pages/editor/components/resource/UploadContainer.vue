@@ -17,9 +17,7 @@
         :limit="1"
       >
         <i class="i-mdi-cloud-upload mt-2" style="font-size: 40px"></i>
-        <div class="el-upload__text !mt-[-10px] mb-4">
-          拖拽文件到此 或 <em>点击上传</em>
-        </div>
+        <div class="el-upload__text">拖拽文件到此 或 <em>点击上传</em></div>
       </el-upload>
     </div>
   </div>
@@ -80,11 +78,3 @@ watch(
   }
 );
 </script>
-
-<style scoped lang="less">
-.upload-container {
-  :deep(.el-upload-dragger) {
-    padding: 0 !important;
-  }
-}
-</style>

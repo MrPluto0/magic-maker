@@ -77,6 +77,14 @@ export const EditorMaterialMenu: MenuItem[] = [
   },
 ];
 
+// 使用iconify图标映射
+export const IconMap = {
+  video: "i-mdi-video",
+  audio: "i-mdi-volume-high",
+  text: "i-mdi-format-text",
+  image: "i-mdi-image",
+};
+
 export const EditorAIMenu: MenuItem[] = [];
 
 export const DrawAIMenu: MenuItem[] = [];

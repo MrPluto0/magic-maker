@@ -10,7 +10,7 @@
         :class="material.category === 'template_psd' ? 'w-32' : 'w-20'"
       >
         <div
-          class="h-20 cursor-pointer center dark:bg-night hover:border-2 hover:border-purple box-border overflow-hidden"
+          class="h-20 cursor-pointer center dark:bg-night hover:border-2 hover:border-primary box-border overflow-hidden"
           :class="material.category === 'template_psd' ? 'h-32' : 'h-20'"
         >
           <el-image

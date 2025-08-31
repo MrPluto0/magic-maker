@@ -7,16 +7,8 @@
   >
     <div class="px-10" style="width: 700px">
       <div class="flex items-end">
-        <div
-          class="w-28 text-white text-xl font-bold font-['Open Sans'] tracking-wide"
-        >
-          如 何 使 用
-        </div>
-        <div
-          class="w-24 text-white text-sm font-normal font-['Open Sans'] tracking-wide"
-        >
-          How To Use
-        </div>
+        <div class="w-28 text-white text-xl tracking-wide">如 何 使 用</div>
+        <div class="w-24 text-white text-sm tracking-wide">How To Use</div>
       </div>
 
       <el-divider class="w-2/3"></el-divider>
@@ -61,7 +53,7 @@
               </div>
               <div class="feature-item">
                 <div class="flex items-center mb-2">
-                  <span class="w-2 h-2 bg-purple-400 rounded-full mr-2"></span>
+                  <span class="w-2 h-2 bg-primary-400 rounded-full mr-2"></span>
                   <span class="font-medium">图像编辑</span>
                 </div>
                 <p class="text-gray-300 text-xs ml-4">
@@ -112,7 +104,7 @@
               </div>
               <div class="step-item flex items-start">
                 <span
-                  class="flex-shrink-0 w-6 h-6 bg-purple-500 text-white rounded-full flex items-center justify-center text-xs font-bold mr-3 mt-0.5"
+                  class="flex-shrink-0 w-6 h-6 bg-primary-500 text-white rounded-full flex items-center justify-center text-xs font-bold mr-3 mt-0.5"
                   >3</span
                 >
                 <div>
@@ -207,7 +199,7 @@
                 </div>
               </div>
               <div class="format-category">
-                <div class="font-medium text-purple-400 mb-2">图片格式</div>
+                <div class="font-medium text-primary-400 mb-2">图片格式</div>
                 <div class="text-xs text-gray-300 space-y-1">
                   <div>• JPEG, PNG</div>
                   <div>• GIF, WebP</div>
@@ -261,7 +253,7 @@
       </div>
 
       <div
-        class="my-8 text-right text-white text-xs font-normal font-['Open Sans'] leading-normal tracking-wide"
+        class="my-8 text-right text-white text-xs leading-normal tracking-wide"
       >
         © 2024. MagicMaker
       </div>
@@ -271,12 +263,12 @@
 
 <script lang="ts" setup>
 const props = defineProps<{
-	show: boolean;
+  show: boolean;
 }>();
 const emits = defineEmits(["update:show"]);
 
 const handleClose = () => {
-	emits("update:show", false);
+  emits("update:show", false);
 };
 </script>
 

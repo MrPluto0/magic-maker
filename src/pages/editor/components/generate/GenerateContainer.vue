@@ -1,7 +1,5 @@
 <template>
-  <div
-    class="flex h-full overflow-hidden relative container-box !p-0 bg-transparent"
-  >
+  <div class="flex h-full relative container-box !p-0 bg-transparent">
     <div class="flex flex-col gap-2 w-full">
       <MenuList v-model:active-index="activeIndex" :menu="EditorGenerateMenu" />
       <KeepAlive>

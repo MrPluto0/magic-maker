@@ -15,10 +15,6 @@
   "dependencies": {
     "@chinese-fonts/dymh": "^3.0.0",
     "@ckpack/vue-color": "^1.4.1",
-    "@element-plus/icons-vue": "^2.0.10",
-    "@typescript-eslint/eslint-plugin": "^8.8.1",
-    "@uiw/react-color": "^2.3.4",
-    "@unocss/reset": "^66.4.2",
     "@vitejs/plugin-react": "^4.3.4",
     "@vitejs/plugin-vue-jsx": "^4.1.1",
     "@vueuse/core": "^11.2.0",

@@ -40,33 +40,6 @@
               hidden
               @change="handleFileChange"
             />
-            <el-popover trigger="click" width="325">
-              <!-- 风格选择区域 -->
-              <template #reference>
-                <i
-                  class="i-mdi-palette cursor-pointer mr-2"
-                  style="font-size: 18px"
-                ></i>
-              </template>
-              <template #default>
-                <div class="grid-container2">
-                  <div
-                    v-for="(item, index) in ResourceStyleList"
-                    :key="index"
-                    class="item"
-                    @click="form.style = item.value"
-                  >
-                    <img class="img" :src="item.img" />
-                    <span
-                      class="text"
-                      :class="{ active: item.value == form.style }"
-                      >{{ item.text }}</span
-                    >
-                  </div>
-                </div>
-              </template>
-            </el-popover>
-
             <el-popover trigger="click">
               <!-- 尺寸选择区域 -->
               <template #reference>
@@ -87,7 +60,7 @@
                     <span
                       class="text"
                       :class="{ active: item.value == form.sizeStr }"
-                      >{{ item.text }}</span
+                      >{{ item.value }}</span
                     >
                   </div>
                 </div>
@@ -96,7 +69,7 @@
           </template>
         </el-input>
 
-        <el-button class="dark:bg-purple-heavy" circle @click="handleSubmit">
+        <el-button type="primary" circle @click="handleSubmit">
           <i class="i-mdi-send" />
         </el-button>
       </div>
@@ -105,7 +78,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ImageSizeList, ResourceStyleList } from "@/data/constant";
+import { ImageSizeList } from "@/data/constant";
 import { useResourceState } from "@/stores/resource";
 
 const resourceStore = useResourceState();
@@ -117,7 +90,6 @@ const form = reactive({
   prompt: "",
   imageUrl: "",
   sizeStr: ImageSizeList[0].value,
-  style: "Anime Style",
 });
 
 const triggerFileInput = () => {
@@ -178,7 +150,7 @@ const handleSubmit = () => {
   }
 
   .text.active {
-    @apply dark:text-purple;
+    @apply dark:text-primary;
     font-weight: bold;
   }
 

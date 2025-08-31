@@ -1,32 +1,17 @@
-// 样式重置
-@import url('@unocss/reset/tailwind.css');
-// 字体：抖音美好体
-@import url("@chinese-fonts/dymh/dist/DouyinSansBold/result.css");
-// 组件库 Element Plus 样式
-@import url(./element.less);
-// 白板 Excalidraw 样式
-@import url(./excalidraw.less);
-@import url(./transition.less);
-@import url(./scroll.less);
-@import url(./color.less);
+@import url("@chinese-fonts/dymh/dist/DouyinSansBold/result.css"); // 字体：抖音美好体
+@import url(./element.less); // 组件库 Element Plus 样式
+@import url(./excalidraw.less); // 白板 Excalidraw 样式
+@import url(./transition.less); // 过渡动画样式
+@import url(./scroll.less); // 滚动条样式
 
 html {
   font-family: "Douyin Sans";
-  font-weight: 500
+  user-select: none
 }
 
 #app {
   @apply w-screen h-screen tracking-wide overflow-hidden;
   @apply bg-gray-100 text-gray-800 dark:text-gray-100 dark:bg-night;
-}
-
-a:hover {
-  @apply font-semibold;
-}
-
-input {
-  outline: none;
-  font-weight: 500 !important;
 }
 
 .container-box {

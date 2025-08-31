@@ -6,10 +6,11 @@
     @dragstart="dragStart"
   >
     <div
-      class="h-24 cursor-pointer center bg-night hover:border-2 hover:border-purple box-border overflow-hidden"
+      class="h-24 cursor-pointer center hover:border-2 hover:border-primary box-border overflow-hidden"
     >
       <el-image
-        class="max-h-full max-w-full"
+        class="w-full h-full"
+        fit="cover"
         preview-teleported
         :src="'cover' in resource ? resource.cover : resource.url"
         :preview-src-list="[
@@ -24,33 +25,28 @@
     <span
       v-show="'duration' in resource && resource.duration"
       class="h-5 absolute bottom-1 right-2 text-xs text-gray-400"
-      >{{
+    >
+      {{
         "duration" in resource && resource.duration
           ? resource.duration.toFixed(1)
           : 0
       }}
-      s</span
-    >
+      s
+    </span>
 
     <div
-      class="absolute top-2 right-2 bg-red-500 rounded-full w-6 h-6 opacity-0 hover:opacity-100 transition-opacity duration-150"
+      class="absolute top-2 right-1 flex justify-center items-center bg-red-500 rounded-full w-5 h-5 opacity-0 hover:opacity-100 transition-opacity duration-150"
       @click="resourceStore.removeResource(resource.id)"
     >
-      <i
-        class="i-mdi-minus text-white cursor-pointer p-1 box-content"
-        style="font-size: 16px"
-      ></i>
+      <div class="i-mdi-minus text-white cursor-pointer"></div>
     </div>
 
     <div
       v-if="!noAction"
-      class="absolute bottom-2 right-1 bg-blue-500 rounded-full w-6 h-6 opacity-0 hover:opacity-100 transition-opacity duration-150"
+      class="absolute bottom-2 right-1 flex justify-center items-center bg-blue-500 rounded-full w-5 h-5 opacity-0 hover:opacity-100 transition-opacity duration-150"
       @click="addTrack"
     >
-      <i
-        class="i-mdi-plus text-white cursor-pointer p-1 box-content"
-        style="font-size: 16px"
-      ></i>
+      <div class="i-mdi-plus text-white cursor-pointer"></div>
     </div>
   </div>
 
@@ -100,7 +96,7 @@
     <el-popover trigger="click" placement="right" :width="400">
       <template #reference>
         <div
-          class="h-24 flex flex-col cursor-pointer center hover:border-2 hover:border-purple box-border overflow-hidden"
+          class="h-24 flex flex-col cursor-pointer center hover:border-2 hover:border-primary box-border overflow-hidden"
         >
           <i class="i-mdi-folder-open" style="font-size: 30px"></i>
           <div
@@ -117,10 +113,7 @@
         class="absolute top-4 right-6 bg-night-light"
         @click="() => handleCopyButton(getResultContent(resource))"
       >
-        <i
-          class="i-mdi-content-copy"
-          style="font-size: 18px; color: #1473e6"
-        ></i>
+        <i class="i-mdi-content-copy color-primary"></i>
       </button>
     </el-popover>
 

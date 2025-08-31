@@ -72,6 +72,8 @@ import AttrCol from "./AttrCol.vue";
 import type { TextTrack } from "@/class/TextTrack";
 import ColorPicker from "../color/ColorPicker.vue";
 
+console.log("TextAttr.vue");
+
 const loading = ref(false);
 const trackStore = useTrackState();
 const track = computed(() => trackStore.selectTrack as TextTrack);

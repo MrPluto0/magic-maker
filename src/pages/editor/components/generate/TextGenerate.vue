@@ -117,11 +117,7 @@
           </el-input>
         </div>
 
-        <el-button
-          class="dark:bg-purple-heavy"
-          circle
-          @click="handleTextExpand"
-        >
+        <el-button type="primary" @click="handleTextExpand">
           <i class="i-mdi-send" />
         </el-button>
       </div>

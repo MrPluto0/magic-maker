@@ -3,16 +3,11 @@
     <div
       class="flex items-center text-xs pl-2 overflow-hidden h-5 leading-5 bg-[#4b4f54] text-white"
     >
-      <i
-        class="i-mdi-video"
-        style="font-size: 18px; margin-right: 8px; flex-shrink: 0"
-      ></i>
-      <span class="mr-4 shrink-0" v-if="resource">
+      <i class="i-mdi-video mr-2 text-lg shrink-0"></i>
+      <span class="mr-2" v-if="resource">
         [{{ resource.duration.toFixed(1) }}s]
       </span>
-      <span class="shrink-0">{{
-        `${trackItem.name}.${trackItem.format}`
-      }}</span>
+      <span class="shrink-0">{{ `${trackItem.name}` }}</span>
     </div>
     <div
       ref="container"

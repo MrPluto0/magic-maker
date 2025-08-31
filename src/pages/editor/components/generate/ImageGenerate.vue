@@ -15,7 +15,7 @@
       >
       </el-input>
 
-      <el-button class="dark:bg-purple-heavy" circle @click="handleSubmit">
+      <el-button type="primary" @click="handleSubmit">
         <i class="i-mdi-send" />
       </el-button>
     </div>
@@ -80,7 +80,7 @@ const handleSubmit = () => {
   }
 
   .text.active {
-    @apply dark:text-purple;
+    @apply dark:text-primary;
     font-weight: bold;
   }
 

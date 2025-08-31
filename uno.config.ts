@@ -19,10 +19,10 @@ export default defineConfig({
         light: "#303030",
         lighter: "#262626",
       },
-      purple: {
+      primary: {
         DEFAULT: "#7457ff",
-        heavy: "#805DFF",
       },
     },
   },
+  safelist: ["i-mdi-image", "h-16"],
 });

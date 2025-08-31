@@ -41,7 +41,7 @@
         </el-input>
       </div>
 
-      <el-button class="dark:bg-purple-heavy" circle @click="handleSubmit">
+      <el-button type="primary" circle @click="handleSubmit">
         <i class="i-mdi-send" />
       </el-button>
     </div>
@@ -83,7 +83,7 @@ const handleSubmit = () => {
   letter-spacing: 0.5px;
 
   &.active {
-    @apply text-purple;
+    @apply text-primary;
     font-weight: bold;
   }
 }

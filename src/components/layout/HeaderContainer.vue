@@ -32,21 +32,21 @@
         <template
           v-if="
             userStore.isLogin &&
-            ['/editor', '/whiteboard'].includes(route.path) &&
-            projectStore.project?.id
+            projectStore.project?.id &&
+            route.path !== '/home'
           "
         >
           <div class="text-xs">自动保存：{{ projectStore.lastSaveTime }}</div>
 
           <el-dropdown class="outline-none">
-            <div class="flex items-center -mt-0.5 text-xs">更多操作</div>
+            <div class="flex items-center text-xs">更多操作</div>
             <template #dropdown>
               <el-dropdown-menu>
                 <el-dropdown-item
                   v-if="route.path === '/editor'"
                   @click="projectStore.saveProject"
-                  icon="i-mdi-upload"
                 >
+                  <i class="i-mdi-upload"></i>
                   保存剪辑
                 </el-dropdown-item>
                 <el-dropdown-item
@@ -59,8 +59,8 @@
                 <el-dropdown-item
                   v-if="route.path === '/editor'"
                   @click="projectStore.exportVideo"
-                  icon="i-mdi-download"
                 >
+                  <i class="i-mdi-download"></i>
                   导出视频
                 </el-dropdown-item>
               </el-dropdown-menu>
@@ -72,8 +72,8 @@
           class="switch"
           v-model="pageStore.isDark"
           size="default"
-          active-icon="i-mdi-weather-night"
-          inactive-icon="i-mdi-weather-sunny"
+          :active-icon="h('i', { class: 'i-mdi-weather-night' })"
+          :inactive-icon="h('i', { class: 'i-mdi-weather-sunny' })"
           inline-prompt
         />
 
@@ -101,13 +101,14 @@
 </template>
 
 <script setup lang="ts">
+import { ref, h } from "vue";
 import { usePageState } from "@/stores/page";
 import { useUserState } from "@/stores/user";
 import { useProjectState } from "@/stores/project";
 import { useRouter, useRoute } from "vue-router";
-import LoginBox from "../messagebox/LoginBox.vue";
-import RegisterBox from "../messagebox/RegisterBox.vue";
-import UserBox from "../messagebox/UserBox.vue";
+import LoginBox from "../dialogs/LoginBox.vue";
+import RegisterBox from "../dialogs/RegisterBox.vue";
+import UserBox from "../dialogs/UserBox.vue";
 
 const pageStore = usePageState();
 const userStore = useUserState();

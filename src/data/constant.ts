@@ -49,112 +49,29 @@ export const defaultMoveOptions = {
   pinchable: false, // 捏合开关
 };
 
-export const ResourceStyleList = [
-  {
-    value: "Anime Style",
-    text: "动画风格",
-    img: AnimeStyle,
-  },
-  {
-    value: "Photographic",
-    text: "照片摄影",
-    img: PhotographicStyle,
-  },
-  {
-    value: "Digital Art",
-    text: "数字艺术",
-    img: DigitalArtStyle,
-  },
-  {
-    value: "Comic Book",
-    text: "漫画书",
-    img: ComicBookStyle,
-  },
-  {
-    value: "Fantasy Ar",
-    text: "奇幻艺术",
-    img: FantasyArStyle,
-  },
-  {
-    value: "Analog Film",
-    text: "模拟胶片",
-    img: AnalogFilm,
-  },
-  {
-    value: "Neon Punk",
-    text: "霓虹朋克",
-    img: NeonPunkStyle,
-  },
-  {
-    value: "Isometric",
-    text: "等轴测投影",
-    img: IsometricStyle,
-  },
-  {
-    value: "Low Poly",
-    text: "低聚物",
-    img: LowPolyStyle,
-  },
-  {
-    value: "Line Art",
-    text: "线条艺术",
-    img: LineArtStyle,
-  },
-  {
-    value: "Cinematic",
-    text: "电影风格",
-    img: CinematicStyle,
-  },
-  {
-    value: "3D Model",
-    text: "3D模型",
-    img: D3ModelStyle,
-  },
-  {
-    value: "Pixel Art",
-    text: "像素艺术",
-    img: PixelArtStyle,
-  },
-  {
-    value: "Graffiti Style",
-    text: "涂鸦风格",
-    img: GraffitiStyle,
-  },
-  {
-    value: "Advertising Poster",
-    text: "广告风格",
-    img: AdertisingPosterStyle,
-  },
-  {
-    value: "Craft Clay",
-    text: "粘土风格",
-    img: CraftClayStyle,
-  },
-];
-
 export const ImageSizeList = [
   {
-    text: "9:16",
+    value: "9:16",
     img: Size9_16Icon,
   },
   {
-    text: "3:4",
+    value: "3:4",
     img: Size3_4Icon,
   },
   {
-    text: "1:1",
+    value: "1:1",
     img: Size1_1Icon,
   },
   {
-    text: "4:3",
+    value: "4:3",
     img: Size4_3Icon,
   },
   {
-    text: "16:9",
+    value: "16:9",
     img: Size16_9Icon,
   },
   {
-    text: "21:9",
+    value: "21:9",
     img: Size21_9Icon,
   },
 ];

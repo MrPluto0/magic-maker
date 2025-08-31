@@ -1,7 +1,7 @@
 <template>
   <div class="flex items-center justify-center h-8 my-2 text-[18px]">
     <div class="m-auto flex items-center gap-4">
-      <span class="text-xs text-purple" style="font-family: 'monospace'">{{
+      <span class="text-xs text-primary" style="font-family: 'monospace'">{{
         playTime
       }}</span>
 
@@ -55,7 +55,7 @@ const controls = computed(() => [
   {
     title: "播放/暂停 [Space]",
     disable: trackStore.frameCount === 0,
-    icon: store.isPause ? "i-mdi-pause" : "i-mdi-play",
+    icon: store.isPause ? "i-mdi-play" : "i-mdi-pause",
     handler: () => {
       if (trackStore.frameCount === 0) return;
       store.isPause = !store.isPause;

@@ -20,9 +20,7 @@
           <el-input type="textarea" :rows="5" v-model="form.description" />
         </el-form-item>
         <div class="flex justify-center mt-8 mb-8">
-          <el-button class="px-6" color="#1473E6" @click="handleCreate">
-            确认
-          </el-button>
+          <el-button class="px-6" @click="handleCreate"> 确认 </el-button>
           <el-button class="px-6" @click="handleClose"> 取消 </el-button>
         </div>
       </el-form>
@@ -35,44 +33,44 @@ import { useProjectState } from "@/stores/project";
 // Removed API imports for frontend-only mode
 
 const props = defineProps<{
-	show: boolean;
-	project: any;
+  show: boolean;
+  project: any;
 }>();
 const emits = defineEmits(["update:show"]);
 
 const projectStore = useProjectState();
 
 const form = reactive({
-	name: "",
-	description: "",
+  name: "",
+  description: "",
 });
 
 const handleClose = () => {
-	emits("update:show", false);
+  emits("update:show", false);
 };
 
 const handleCreate = () => {
-	if (!form.name) {
-		ElMessage.error("请输入项目名称");
-		return;
-	}
+  if (!form.name) {
+    ElMessage.error("请输入项目名称");
+    return;
+  }
 
-	projectStore.updateProject(props.project?.id, {
-		name: form.name,
-		description: form.description || "",
-	});
+  projectStore.updateProject(props.project?.id, {
+    name: form.name,
+    description: form.description || "",
+  });
 
-	emits("update:show", false);
-	ElMessage.success("更新成功");
+  emits("update:show", false);
+  ElMessage.success("更新成功");
 };
 
 watch(
-	() => props.project,
-	() => {
-		form.name = props.project.name;
-		form.description = props.project.description;
-	},
-	{ deep: true },
+  () => props.project,
+  () => {
+    form.name = props.project.name;
+    form.description = props.project.description;
+  },
+  { deep: true }
 );
 </script>
 

@@ -3,20 +3,20 @@
     <li
       v-for="(item, index) of menu"
       :key="item.key"
-      class="flex items-center p-2 gap-1 cursor-pointer hover:dark:bg-night-light hover:bg-gray-200"
-      @click="activeChangeHandler(index)"
+      class="flex items-center p-2 gap-1 cursor-pointer rounded-[8px] hover:dark:bg-night-light hover:bg-gray-200"
+      @click="handleChange(index)"
     >
       <i
         :style="{
           fontSize: '16px',
         }"
-        :class="`${item.icon} ${index === activeIndex ? 'text-purple' : ''}`"
+        :class="`${item.icon} ${index === activeIndex ? 'text-primary' : ''}`"
       />
       <span
         class="text-xs font-bold"
         :class="
           index === activeIndex
-            ? 'text-purple'
+            ? 'text-primary'
             : 'dark:text-gray-300 text-gray-500'
         "
       >
@@ -35,7 +35,7 @@ defineProps<{
 }>();
 const emits = defineEmits(["update:activeIndex"]);
 
-function activeChangeHandler(index: number) {
+function handleChange(index: number) {
   emits("update:activeIndex", index);
 }
 </script>

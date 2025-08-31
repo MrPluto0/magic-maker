@@ -30,7 +30,7 @@
         </div>
 
         <div>
-          <el-button class="dark:bg-purple-heavy" circle @click="handleSubmit">
+          <el-button type="primary" circle @click="handleSubmit">
             <i class="i-mdi-send" />
           </el-button>
         </div>
@@ -197,13 +197,10 @@ onMounted(() => {
 .time-text {
   cursor: pointer;
   font-size: 13px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: normal;
   letter-spacing: 0.5px;
 
   &.active {
-    @apply text-purple;
+    @apply text-primary;
     font-weight: bold;
   }
 }

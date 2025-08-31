@@ -12,7 +12,7 @@
       <div class="flex-1 overflow-auto">
         <div
           class="my-2 flex cursor-pointer gap-4"
-          :class="{ 'text-purple': pro.id == projectStore.project?.id }"
+          :class="{ 'text-primary': pro.id == projectStore.project?.id }"
           v-for="(pro, i) in projectList"
           :key="i"
           @click="checkProject(pro)"
