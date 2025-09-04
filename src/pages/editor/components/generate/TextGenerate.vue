@@ -5,7 +5,7 @@
       class="flex-1 w-full flex flex-col mt-4 overflow-auto gap-4"
     >
       <div
-        v-for="(item, index) in form.messages"
+        v-for="(item, index) in dialogs"
         :key="index"
         class="chat-item text-sm"
         :class="'chat-item-' + item.role"
@@ -29,47 +29,23 @@
 
         <!-- 文本区域 -->
         <div class="chat-textbox">
-          <div
-            v-if="!item.edit"
-            class="text-xs select-text text-white"
-            @click="item.edit = true"
-          >
+          <div class="text-xs select-text text-white">
             {{ item.content }}
           </div>
-          <el-input
-            v-else
-            type="textarea"
-            v-model="item.content"
-            autosize
-            @mouseleave="item.edit = false"
-            class="text-xs text-white w-[250px]"
-          ></el-input>
 
           <!-- 按钮区 -->
           <div
             v-if="item.role === 'system'"
-            class="flex items-center mt-2 gap-3"
+            class="flex items-center mt-2 gap-2"
           >
             <button @click="() => handleCopy(item.content)">
-              <i
-                class="i-mdi-content-copy"
-                style="color: white; font-size: 16px"
-              ></i>
+              <div class="i-mdi-content-copy h-3.5 w-4 cursor-pointer"></div>
             </button>
             <button
               v-if="index === form.messages.length - 1"
               @click="() => handleRegenerate()"
             >
-              <i
-                class="i-mdi-refresh"
-                style="color: white; font-size: 16px"
-              ></i>
-            </button>
-            <button @click="() => handleTextSplit(item.content)">
-              <i
-                class="i-mdi-content-cut"
-                style="color: white; font-size: 16px"
-              ></i>
+              <div class="i-mdi-refresh h-4 w-4 cursor-pointer"></div>
             </button>
           </div>
         </div>
@@ -130,9 +106,13 @@ import { reactive, ref } from "vue";
 import useClipboard from "vue-clipboard3";
 import { ElMessage } from "element-plus";
 import { useResourceState } from "@/stores/resource";
+import { TextResource } from "@/types/resource";
 
 const { toClipboard } = useClipboard();
 const resourceStore = useResourceState();
+const dialogs = computed(
+  () => resourceStore.getResourcesByType("text") as TextResource[]
+);
 
 const loading = ref(false);
 const inputText = ref("");
@@ -142,7 +122,6 @@ const uploadFile = ref();
 const uploadFileName = ref("");
 
 const form = reactive({
-  style: "Promotional video",
   messages: [],
 });
 
@@ -189,20 +168,6 @@ const handleTextExpand = () => {
   uploadFileName.value = "";
 };
 
-const handleTextSplit = (text: string) => {
-  form.messages.push({
-    role: "user",
-    content: "请输出分镜头脚本",
-  });
-
-  form.messages.push({
-    role: "system",
-    content:
-      "这是一个分镜头脚本示例。在前端模式下，暂不支持AI分镜头脚本生成功能。",
-    loading: 0,
-  });
-};
-
 const handleCopy = async (text: string) => {
   try {
     await toClipboard(text);
@@ -226,7 +191,6 @@ const handleRegenerate = () => {
 
   .chat-textbox {
     max-width: 280px;
-    min-height: 30px;
     border-radius: 8px;
     padding: 7px 10px;
     white-space: pre-wrap; /* 自动换行 */

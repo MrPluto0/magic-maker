@@ -30,7 +30,7 @@
         </div>
 
         <div>
-          <el-button type="primary" circle @click="handleSubmit">
+          <el-button type="primary" @click="handleSubmit">
             <i class="i-mdi-send" />
           </el-button>
         </div>

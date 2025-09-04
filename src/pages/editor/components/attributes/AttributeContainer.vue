@@ -7,7 +7,7 @@
       <el-empty description="点击轨道进行编辑" />
     </div>
 
-    <div v-else class="pr-2 overflow-auto">
+    <div v-else class="overflow-auto">
       <div class="mb-4 border-b-primary border-b-2">基本信息</div>
       <VideoAttr v-if="track.type === 'video'" />
       <ImageAttr v-else-if="track.type === 'image'" />

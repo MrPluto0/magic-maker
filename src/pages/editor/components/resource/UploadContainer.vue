@@ -36,7 +36,7 @@ const loading = ref(false);
 const activeIndex = ref(0);
 
 const list = computed(
-  () => resourceStore.getResourcesByType(activeItem.value.key).value || []
+  () => resourceStore.getResourcesByType(activeItem.value.key) || []
 );
 
 const activeItem = computed(

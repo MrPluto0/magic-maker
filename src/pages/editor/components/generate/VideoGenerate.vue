@@ -1,7 +1,7 @@
 <template>
   <div class="w-full h-full overflow-hidden flex flex-col items-center gap-4">
     <div class="flex-1 w-full overflow-auto">
-      <ResourceList :list-data="resourceStore.videoList" type="video" />
+      <ResourceList :list-data="resource" type="video" />
     </div>
 
     <div class="w-full">
@@ -69,7 +69,7 @@
           </template>
         </el-input>
 
-        <el-button type="primary" circle @click="handleSubmit">
+        <el-button type="primary" @click="handleSubmit">
           <i class="i-mdi-send" />
         </el-button>
       </div>
@@ -80,8 +80,14 @@
 <script lang="ts" setup>
 import { ImageSizeList } from "@/data/constant";
 import { useResourceState } from "@/stores/resource";
+import { VideoResource } from "@/types/resource";
 
 const resourceStore = useResourceState();
+
+const resource = computed(
+  () => resourceStore.getResourcesByType("video") as VideoResource[]
+);
+
 const loading = ref(false);
 const fileInputRef = ref<HTMLInputElement | null>(null);
 const uploadFileName = ref("");

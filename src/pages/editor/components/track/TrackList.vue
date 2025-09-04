@@ -293,7 +293,6 @@ function getInsertLineInfo(): {
     dragElement.offsetTop +
     dragElement.offsetHeight / 2 +
     dragElement.offsetParent.offsetTop;
-
   const elems = Array.from(
     document.querySelectorAll(".trackLine")
   ) as HTMLElement[];
@@ -463,7 +462,7 @@ function onMouseMove(event: MouseEvent) {
 }
 
 function insert(insertInfo: InsertInfo) {
-  const dragInfo = store.dragData.dataInfo;
+  const dragInfo = store.dragData.dataInfo as Track;
   const startFrame = Math.max(
     fixPosition.right !== 0
       ? getSelectFrame(insertInfo.right, store.trackScale, baseFps) -

@@ -7,8 +7,6 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
-    AboutMe: typeof import('./src/components/icons/AboutMe.vue')['default']
-    AboutMeIcon: typeof import('./src/components/icons/AboutMeIcon.vue')['default']
     ContactIcon: typeof import('./src/components/icons/ContactIcon.vue')['default']
     ElButton: typeof import('element-plus/es')['ElButton']
     ElButtonGroup: typeof import('element-plus/es')['ElButtonGroup']
@@ -37,13 +35,11 @@ declare module 'vue' {
     ElTooltip: typeof import('element-plus/es')['ElTooltip']
     ElUpload: typeof import('element-plus/es')['ElUpload']
     HeaderContainer: typeof import('./src/components/layout/HeaderContainer.vue')['default']
-    HowToUse: typeof import('./src/components/icons/HowToUse.vue')['default']
     Loading: typeof import('./src/components/Loading.vue')['default']
     LoginBox: typeof import('./src/components/dialogs/LoginBox.vue')['default']
     MenuList: typeof import('./src/components/MenuList.vue')['default']
     Recorder: typeof import('./src/components/dialogs/Recorder.vue')['default']
     RegisterBox: typeof import('./src/components/dialogs/RegisterBox.vue')['default']
-    RouterBack: typeof import('./src/components/RouterBack.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     SplitLine: typeof import('./src/components/SplitLine.vue')['default']

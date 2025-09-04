@@ -1,10 +1,7 @@
 <template>
   <div class="w-full flex-1 overflow-hidden flex flex-col items-center gap-4">
     <div class="flex-1 w-full overflow-auto">
-      <ResourceList
-        :list-data="getResourcesByType('audio').value"
-        type="audio"
-      />
+      <ResourceList :list-data="resource" type="audio" />
     </div>
 
     <div v-loading="loading" class="flex items-center w-full gap-2">
@@ -41,7 +38,7 @@
         </el-input>
       </div>
 
-      <el-button type="primary" circle @click="handleSubmit">
+      <el-button type="primary" @click="handleSubmit">
         <i class="i-mdi-send" />
       </el-button>
     </div>
@@ -51,11 +48,14 @@
 <script lang="ts" setup>
 import { reactive, ref } from "vue";
 import { TimeIntervalList } from "@/data/constant";
-// Removed API imports for frontend-only mode
 import { useResourceState } from "@/stores/resource";
+import { AudioResource } from "@/types/resource";
 
 const resourceStore = useResourceState();
-const { getResourcesByType } = resourceStore;
+const resource = computed(
+  () => resourceStore.getResourcesByType("audio") as AudioResource[]
+);
+
 const loading = ref(false);
 const form = reactive({
   prompt: "",
