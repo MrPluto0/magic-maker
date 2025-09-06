@@ -9,8 +9,8 @@
 </template>
 
 <script setup lang="ts">
-import TrackControl from "./item/TrackControl.vue";
-import TrackList from "./TrackList.vue";
+import TrackControl from "./track/item/TrackControl.vue";
+import TrackList from "./track/TrackList.vue";
 import { useTrackState } from "@/stores/track";
 import { usePageState } from "@/stores/page";
 

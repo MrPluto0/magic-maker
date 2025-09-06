@@ -91,42 +91,6 @@
       ></i>
     </div>
   </div>
-
-  <div v-else-if="type === 'text'" class="relative w-24">
-    <el-popover trigger="click" placement="right" :width="400">
-      <template #reference>
-        <div
-          class="h-24 flex flex-col cursor-pointer center hover:border-2 hover:border-primary box-border overflow-hidden"
-        >
-          <i class="i-mdi-folder-open" style="font-size: 30px"></i>
-          <div
-            class="w-20 text-center text-ellipsis overflow-hidden whitespace-nowrap"
-          >
-            {{ resource.meta?.prompt }}
-          </div>
-        </div>
-      </template>
-      <div class="whitespace-pre overflow-auto max-h-[600px] select-text">
-        {{ getResultContent(resource) }}
-      </div>
-      <button
-        class="absolute top-4 right-6 bg-night-light"
-        @click="() => handleCopyButton(getResultContent(resource))"
-      >
-        <i class="i-mdi-content-copy color-primary"></i>
-      </button>
-    </el-popover>
-
-    <div
-      class="absolute top-2 right-1 bg-red-500 rounded-full w-6 h-6 opacity-0 hover:opacity-100 transition-opacity duration-150"
-      @click="resourceStore.removeResource(resource.id)"
-    >
-      <i
-        class="i-mdi-minus text-white cursor-pointer p-1 box-content"
-        style="font-size: 16px"
-      ></i>
-    </div>
-  </div>
 </template>
 
 <script setup lang="ts">
@@ -134,8 +98,6 @@ import { useTrackState } from "@/stores/track";
 import type { Resource } from "@/types/resource";
 import type { TrackType } from "@/types/track";
 import { useResourceState } from "@/stores/resource";
-import useClipboard from "vue-clipboard3";
-import { ElMessage } from "element-plus";
 import { ref } from "vue";
 
 const props = defineProps<{
@@ -146,7 +108,6 @@ const props = defineProps<{
 
 const trackStore = useTrackState();
 const resourceStore = useResourceState();
-const { toClipboard } = useClipboard();
 const showVideo = ref(false);
 
 async function dragStart(event: DragEvent) {
@@ -166,25 +127,4 @@ async function addTrack(event: MouseEvent) {
 
   trackStore.addTrack(track);
 }
-
-const getResultContent = (resource: Resource): string => {
-  // 如果resource有result属性，返回result，否则根据类型返回相应内容
-  if ((resource as any).result) {
-    return (resource as any).result;
-  }
-  if (resource.type === "text") {
-    return resource.content;
-  }
-  return "";
-};
-
-const handleCopyButton = async (text: string) => {
-  try {
-    const selection = window.getSelection()?.toString() || "";
-    await toClipboard(selection === "" ? text : selection);
-    ElMessage.success("复制成功");
-  } catch (error) {
-    console.error(error);
-  }
-};
 </script>

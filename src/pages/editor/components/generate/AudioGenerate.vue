@@ -50,6 +50,7 @@ import { reactive, ref } from "vue";
 import { TimeIntervalList } from "@/data/constant";
 import { useResourceState } from "@/stores/resource";
 import { AudioResource } from "@/types/resource";
+import ResourceList from "../resource/ResourceList.vue";
 
 const resourceStore = useResourceState();
 const resource = computed(

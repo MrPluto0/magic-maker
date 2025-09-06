@@ -3,11 +3,7 @@
     ref="lineElement"
     class="flex justify-center items-center"
     :class="[
-      disabled
-        ? 'cursor-no-drop'
-        : isVertical
-        ? 'cursor-c-resize'
-        : 'cursor-r-resize',
+      isVertical ? 'cursor-c-resize' : 'cursor-r-resize',
       isVertical ? 'w-2 h-full flex-col' : 'h-2 w-full flex-row',
     ]"
     @mousedown="mouseDownHandler"
@@ -16,62 +12,56 @@
       class="absolute flex z-10 dark:bg-night-light bg-gray-200"
       :class="
         isVertical
-          ? 'h-8 w-4 flex-col  cursor-ew-resize'
+          ? 'h-6 w-4 flex-col  cursor-ew-resize'
           : 'w-8 h-4 flex-row cursor-ns-resize'
       "
     >
       <i
         class="i-mdi-dots-horizontal flex-auto"
         :class="isVertical ? 'rotate-90' : ''"
-        :style="{ color: iconColor, fontSize: '16px' }"
       ></i>
     </span>
   </div>
 </template>
 
 <script setup lang="ts">
-import { usePageState } from "@/stores/page";
 import { computed, ref } from "vue";
 
-const props = defineProps({
-  disabled: {
-    type: Boolean,
-    default: false,
-  },
-  newWidth: {
-    type: Number,
-    default: 0,
-  },
-  newHeight: {
-    type: Number,
-    default: 0,
-  },
-  direction: {
-    type: String,
-    default: "horizontal",
-  },
-  limitSize: {
-    type: Object,
-    default() {
-      return {
-        minHeight: 0,
-        maxHeight: 999999,
-        minWidth: 0,
-        maxWidth: 999999,
-      };
-    },
-  },
+// 定义限制尺寸的接口
+interface LimitSize {
+  minHeight?: number;
+  maxHeight?: number;
+  minWidth?: number;
+  maxWidth?: number;
+}
+
+// 使用泛型定义 props
+interface Props {
+  newWidth?: number;
+  reverse?: boolean;
+  newHeight?: number;
+  direction?: "horizontal" | "vertical";
+  limitSize?: LimitSize;
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  newWidth: 0,
+  reverse: false,
+  newHeight: 0,
+  direction: "horizontal",
+  limitSize: (): LimitSize => ({
+    minHeight: 0,
+    maxHeight: 999999,
+    minWidth: 0,
+    maxWidth: 999999,
+  }),
 });
 
-const emit = defineEmits({
-  // 校验事件
-  "update:newWidth": (val) => {
-    return val !== null;
-  },
-  "update:newHeight": (val) => {
-    return val !== null;
-  },
-});
+// 定义 emit 事件类型
+const emit = defineEmits<{
+  "update:newWidth": [value: number];
+  "update:newHeight": [value: number];
+}>();
 
 const newWidthValue = computed({
   get() {
@@ -91,11 +81,8 @@ const newHeightValue = computed({
 });
 
 const lineElement = ref();
-const store = usePageState();
 const isVertical = computed(() => props.direction === "vertical");
-const iconColor = computed(() => {
-  return store.isDark ? "#E5E7EB" : "#1F2937";
-});
+
 // 定位数据缓存
 const positionState = {
   left: 0,
@@ -105,9 +92,6 @@ const positionState = {
 let enableMove = false;
 
 function mouseDownHandler() {
-  if (props.disabled) {
-    return;
-  }
   const { left, top } = lineElement.value.getBoundingClientRect();
   positionState.left = parseInt(left);
   positionState.top = parseInt(top);
@@ -123,7 +107,9 @@ function mouseDownHandler() {
     positionState.left = pageX;
     positionState.top = pageY;
     if (isVertical.value) {
-      const newWidth = newWidthValue.value - offsetX;
+      const newWidth = props.reverse
+        ? newWidthValue.value + offsetX
+        : newWidthValue.value - offsetX;
       newWidthValue.value =
         newWidth > maxWidth
           ? maxWidth
@@ -131,7 +117,9 @@ function mouseDownHandler() {
           ? minWidth
           : newWidth;
     } else {
-      const newHeight = newHeightValue.value - offsetY;
+      const newHeight = props.reverse
+        ? newHeightValue.value + offsetY
+        : newHeightValue.value - offsetY;
       newHeightValue.value =
         newHeight > maxHeight
           ? maxHeight

@@ -1,6 +1,7 @@
 <template>
-  <div class="w-full h-full overflow-hidden flex flex-col items-center">
+  <div class="w-full h-full overflow-hidden flex flex-col gap-2 items-center">
     <MenuList v-model:active-index="activeIndex" :menu="EditorMaterialMenu" />
+
     <div class="flex-1 w-full overflow-auto">
       <ResourceList :list-data="list" :type="activeItem.key" />
     </div>
@@ -28,7 +29,7 @@ import MenuList from "@/components/MenuList.vue";
 import { EditorMaterialMenu } from "@/data/menu";
 import { useResourceState } from "@/stores/resource";
 import type { UploadUserFile } from "element-plus";
-import ResourceList from "./ResourceList.vue";
+import ResourceList from "./resource/ResourceList.vue";
 
 const resourceStore = useResourceState();
 const fileList = ref<UploadUserFile[]>([]);

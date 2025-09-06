@@ -1,5 +1,5 @@
 <template>
-  <ul class="flex items-center gap-2 w-full">
+  <ul class="flex items-center justify-between w-full">
     <li
       v-for="(item, index) of menu"
       :key="item.key"

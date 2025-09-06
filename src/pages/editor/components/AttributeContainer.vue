@@ -1,5 +1,10 @@
 <template>
-  <div class="select-none relative container-box" :style="attrWidth">
+  <div
+    class="select-none relative container-box"
+    :style="{
+      width: `${pageStore.attrWidth}px`,
+    }"
+  >
     <div
       v-if="!track"
       class="w-full h-full flex flex-col justify-center items-center"
@@ -21,17 +26,13 @@
 import { useTrackState } from "@/stores/track";
 import { usePageState } from "@/stores/page";
 import type { GeneralTrack } from "@/types/track";
-import VideoAttr from "./items/VideoAttr.vue";
-import ImageAttr from "./items/ImageAttr.vue";
-import AudioAttr from "./items/AudioAttr.vue";
-import TextAttr from "./items/TextAttr.vue";
+import VideoAttr from "./attributes/items/VideoAttr.vue";
+import ImageAttr from "./attributes/items/ImageAttr.vue";
+import AudioAttr from "./attributes/items/AudioAttr.vue";
+import TextAttr from "./attributes/items/TextAttr.vue";
 
 const pageStore = usePageState();
 const trackStore = useTrackState();
-
-const attrWidth = computed(() => ({
-  width: `${pageStore.attrWidth}px`,
-}));
 
 // 将data下的配置导入
 const TrackOptionsConfig: Record<string, any> = {};
