@@ -1,0 +1,12 @@
+{
+    "rewrites": [
+        {
+            "source": "/api",
+            "destination": "https://ark.cn-beijing.volces.com/api/v3"
+        },
+        {
+            "source": "/tos",
+            "destination": "https://ark-content-generation-v2-cn-beijing.tos-cn-beijing.volces.com"
+        }
+    ]
+}

@@ -5,19 +5,13 @@ import AutoImport from "unplugin-auto-import/vite";
 import Components from "unplugin-vue-components/vite";
 import { ElementPlusResolver } from "unplugin-vue-components/resolvers";
 import UnoCSS from "unocss/vite";
-import VueRouter from "unplugin-vue-router/vite";
 import VitePluginVueDevtools from "vite-plugin-vue-devtools";
-import veauryVitePlugins from "veaury/vite/index.js";
+import veauryVitePlugins from "veaury/vite/esm/index.mjs";
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  base: "./", // 设置基础路径
+  base: "./",
   plugins: [
-    veauryVitePlugins({
-      type: "vue",
-    }),
-    VitePluginVueDevtools(),
-    VueRouter(),
     AutoImport({
       ignore: ["h"], //解决h报错
       imports: ["vue"],
@@ -27,6 +21,11 @@ export default defineConfig({
       resolvers: [ElementPlusResolver()],
     }),
     UnoCSS(),
+    // 兼容vue和react
+    veauryVitePlugins({
+      type: "vue",
+    }),
+    VitePluginVueDevtools(),
   ],
   resolve: {
     alias: {

@@ -190,7 +190,7 @@ export const useTrackState = defineStore(
             fill: "#FFF",
             stroke: undefined,
             textBackgroundColor: undefined,
-          },
+          } as any,
           startFrame
         );
         return textTrack;
@@ -266,7 +266,7 @@ export const useTrackState = defineStore(
           fill: "#FFF",
           stroke: undefined,
           textBackgroundColor: undefined,
-        },
+        } as any,
         playStore.playStartFrame
       );
       addTrack(track);
