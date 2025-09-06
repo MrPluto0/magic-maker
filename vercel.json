@@ -1,12 +1,13 @@
 {
+    "$schema": "https://openapi.vercel.sh/vercel.json",
     "rewrites": [
         {
-            "source": "/api",
-            "destination": "https://ark.cn-beijing.volces.com/api/v3"
+            "source": "/api/:path*",
+            "destination": "https://ark.cn-beijing.volces.com/api/v3/:path*"
         },
         {
-            "source": "/tos",
-            "destination": "https://ark-content-generation-v2-cn-beijing.tos-cn-beijing.volces.com"
+            "source": "/tos/:path*",
+            "destination": "https://ark-content-generation-v2-cn-beijing.tos-cn-beijing.volces.com/:path*"
         }
     ]
 }
