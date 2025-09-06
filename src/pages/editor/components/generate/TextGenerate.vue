@@ -5,20 +5,20 @@
       class="flex-1 w-full flex flex-col mt-4 overflow-auto gap-4"
     >
       <div
-        v-for="(item, index) in dialogs"
+        v-for="(item, index) in messages"
         :key="index"
         class="chat-item text-sm"
         :class="'chat-item-' + item.role"
       >
         <!-- 头像区 -->
         <div class="avatar">
-          <img
+          <i
             v-if="item.role === 'system' && !item.loading"
-            src="@/assets/svg/avatar/system.svg"
+            class="i-mdi-robot"
           />
-          <img
+          <i
             v-if="item.role === 'system' && item.loading"
-            src="@/assets/svg/avatar/thinking.gif"
+            class="i-mdi-loading"
           />
           <i
             v-if="item.role === 'user'"
@@ -110,9 +110,11 @@ import { TextResource } from "@/types/resource";
 
 const { toClipboard } = useClipboard();
 const resourceStore = useResourceState();
-const dialogs = computed(
-  () => resourceStore.getResourcesByType("text") as TextResource[]
-);
+
+const messages = computed(() => {
+  const dialogs = resourceStore.getResourcesByType("text") as TextResource[];
+  return dialogs.length ? dialogs[0].messages : [];
+});
 
 const loading = ref(false);
 const inputText = ref("");

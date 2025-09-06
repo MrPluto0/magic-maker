@@ -39,7 +39,7 @@ import ResourceList from "../resource/ResourceList.vue";
 import { ImageResource } from "@/types/resource";
 import { ImageSizeList } from "@/data/constant";
 import { OpenAIService } from "@/class/OpenAI";
-import { blobToFile, urlToFile } from "@/utils/file";
+import { urlToFile } from "@/utils/file";
 
 const resourceStore = useResourceState();
 

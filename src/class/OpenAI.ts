@@ -65,13 +65,4 @@ export class OpenAIService {
 
     return response.data[0].url;
   }
-
-  // public async generateVideo(params: any) {
-  //   const { model = "damo-3d", ...otherParams } = params;
-
-  //   const response = await this.openai.audio({
-  //     model,
-  //     ...otherParams,
-  //   });
-  // }
 }

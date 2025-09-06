@@ -39,6 +39,10 @@ export interface VideoResource extends BaseResource {
 // 文本资源
 export interface TextResource extends BaseResource {
   type: "text";
+  messages: ChatMessage[];
+}
+
+export interface ChatMessage {
   content: string;
   role: "user" | "system";
   [key: string]: any;
