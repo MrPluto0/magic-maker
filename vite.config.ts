@@ -32,21 +32,21 @@ export default defineConfig({
     alias: {
       "@": fileURLToPath(new URL("./src", import.meta.url)),
       "@pkg": path.resolve(__dirname, "./packages"),
-      pages: path.resolve(__dirname, "./src/pages"),
     },
   },
   server: {
-    headers: {
-      // 开启以确保ShareArrayBuffer能够正常使用，来支持ffmpeg的worker多线程
-      // "Cross-Origin-Embedder-Policy": "require-corp",
-      // "Cross-Origin-Opener-Policy": "same-origin",
+    proxy: {
+      "/api": {
+        target: "https://ark.cn-beijing.volces.com/api/v3",
+        rewrite: (path) => path.replace(/^\/api/, ""),
+        changeOrigin: true,
+      },
+      "/tos": {
+        target:
+          "https://ark-content-generation-v2-cn-beijing.tos-cn-beijing.volces.com",
+        rewrite: (path) => path.replace(/^\/tos/, ""),
+        changeOrigin: true,
+      },
     },
-    // Removed API proxy configuration for frontend-only mode
-  },
-  optimizeDeps: {
-    exclude: ["@ffmpeg/ffmpeg", "@ffmpeg/util"],
-  },
-  define: {
-    "process.env": {},
   },
 });

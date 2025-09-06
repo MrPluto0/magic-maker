@@ -7,9 +7,7 @@ export interface BaseResource {
   type: TrackType;
   createdAt: string;
   url: string;
-  meta?: {
-    [key: string]: any;
-  };
+  meta?: Record<string, any>;
 }
 
 // 音频资源

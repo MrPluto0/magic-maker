@@ -25,22 +25,16 @@ export const useResourceState = defineStore("resource", () => {
   /**
    * 添加资源（从文件）
    */
-  const createResource = async (file: File): Promise<Resource> => {
+  const createResource = async (
+    file: File,
+    meta?: Record<string, any>
+  ): Promise<Resource> => {
     try {
       const resource = await ResourceFactory.createFromFile(file);
+      resource.meta = meta;
       resources.value.push(resource);
-
-      // 注册URL管理
-      const urls: string[] = [];
-      if ("url" in resource && resource.url) {
-        urls.push(resource.url);
-      }
-      if ("cover" in resource && resource.cover) {
-        urls.push(resource.cover);
-      }
       return resource;
     } catch (error) {
-      // 内联错误处理
       console.error("File parse error:", error);
       throw error;
     }

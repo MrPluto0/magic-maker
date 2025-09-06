@@ -9,7 +9,7 @@
     </div>
 
     <div v-loading="loading" class="flex items-center w-full gap-2">
-      <div class="w-20 shrink-0">
+      <div class="w-20">
         <el-select v-model="form.voiceUrl" placeholder="音色">
           <el-option
             v-for="(voice, i) in speechList"

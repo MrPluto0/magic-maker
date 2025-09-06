@@ -1,9 +1,9 @@
-import { uniqueId } from "lodash-es";
 import { baseFps, UnitFrame2μs } from "@/data/track";
 import { audioDecoder, splitClip, subtitleDecoder } from "@/utils/webcodecs";
 import { type IClip, OffscreenSprite } from "@webav/av-cliper";
 import type { AudioResource } from "@/types/resource";
 import type { BaseTrack, TrackType } from "@/types/track";
+import { nanoid } from "nanoid";
 
 /**
  * 默认的音频设置，⚠️ 不要变更它的值 ⚠️
@@ -47,7 +47,7 @@ export class AudioTrack implements BaseTrack {
   };
 
   constructor(resource: AudioResource, curFrame: number, volume: number = 1) {
-    this.id = uniqueId();
+    this.id = nanoid();
     this.resource = resource;
 
     // 获取文件信息

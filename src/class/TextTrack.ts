@@ -1,9 +1,9 @@
-import { uniqueId } from "lodash-es";
 import { getTextRect } from "@/utils/common";
 import { ImgClip, OffscreenSprite } from "@webav/av-cliper";
 import { baseFps, UnitFrame2μs } from "@/data/track";
 import type { BaseTrack, TrackType } from "@/types/track";
 import { TextResource } from "@/types/resource";
+import { nanoid } from "nanoid";
 
 export class TextTrack implements BaseTrack {
   id: string;
@@ -31,7 +31,7 @@ export class TextTrack implements BaseTrack {
 
   constructor(source: TextResource, curFrame: number) {
     // 设置ID
-    this.id = uniqueId();
+    this.id = nanoid();
     this.resource = source;
 
     // 设置文字信息

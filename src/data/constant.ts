@@ -1,27 +1,3 @@
-import AnimeStyle from "@/assets/style/Animal Style.jpg";
-import PhotographicStyle from "@/assets/style/Photographic.jpg";
-import DigitalArtStyle from "@/assets/style/Digital Art.jpg";
-import ComicBookStyle from "@/assets/style/Comic Book.jpg";
-import FantasyArStyle from "@/assets/style/Fantasy Art.jpg";
-import AnalogFilm from "@/assets/style/Analog Film.jpg";
-import NeonPunkStyle from "@/assets/style/Neon Punk.jpg";
-import IsometricStyle from "@/assets/style/Isometric.jpg";
-import LowPolyStyle from "@/assets/style/Low Poly.jpg";
-import LineArtStyle from "@/assets/style/Line Art.jpg";
-import CinematicStyle from "@/assets/style/Cinematic.jpg";
-import D3ModelStyle from "@/assets/style/3D Model.jpg";
-import PixelArtStyle from "@/assets/style/Pixel Art.jpg";
-import GraffitiStyle from "@/assets/style/Graffiti Style.jpg";
-import AdertisingPosterStyle from "@/assets/style/Advertising Poster.jpg";
-import CraftClayStyle from "@/assets/style/Craft Clay.jpg";
-
-import Size9_16Icon from "@/assets/svg/size/9-16.svg";
-import Size3_4Icon from "@/assets/svg/size/3-4.svg";
-import Size1_1Icon from "@/assets/svg/size/1-1.svg";
-import Size4_3Icon from "@/assets/svg/size/4-3.svg";
-import Size16_9Icon from "@/assets/svg/size/16-9.svg";
-import Size21_9Icon from "@/assets/svg/size/21-9.svg";
-
 export const defaultMoveOptions = {
   draggable: true,
   resizable: false,
@@ -51,28 +27,36 @@ export const defaultMoveOptions = {
 
 export const ImageSizeList = [
   {
-    value: "9:16",
-    img: Size9_16Icon,
+    value: "1024x1024",
+    text: "1:1",
   },
   {
-    value: "3:4",
-    img: Size3_4Icon,
+    value: "864x1152",
+    text: "3:4",
   },
   {
-    value: "1:1",
-    img: Size1_1Icon,
+    value: "1152x864",
+    text: "4:3",
   },
   {
-    value: "4:3",
-    img: Size4_3Icon,
+    value: "1280x720",
+    text: "16:9",
   },
   {
-    value: "16:9",
-    img: Size16_9Icon,
+    value: "720x1280",
+    text: "9:16",
   },
   {
-    value: "21:9",
-    img: Size21_9Icon,
+    value: "832x1248",
+    text: "2:3",
+  },
+  {
+    value: "1248x832",
+    text: "3:2",
+  },
+  {
+    value: "1512x648",
+    text: "21:9",
   },
 ];
 

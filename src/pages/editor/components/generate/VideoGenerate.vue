@@ -56,7 +56,6 @@
                     class="item"
                     @click="form.sizeStr = item.value"
                   >
-                    <img class="icon" :src="item.img" />
                     <span
                       class="text"
                       :class="{ active: item.value == form.sizeStr }"

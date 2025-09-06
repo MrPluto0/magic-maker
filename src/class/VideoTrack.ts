@@ -1,9 +1,9 @@
-import { uniqueId } from "lodash-es";
 import { videoDecoder, splitClip } from "@/utils/webcodecs";
 import { OffscreenSprite } from "@webav/av-cliper";
 import { baseFps, UnitFrame2μs } from "@/data/track";
 import type { VideoResource } from "@/types/resource";
 import type { BaseTrack, TrackType } from "@/types/track";
+import { nanoid } from "nanoid";
 
 export class VideoTrack implements BaseTrack {
   id: string;
@@ -35,7 +35,7 @@ export class VideoTrack implements BaseTrack {
 
   constructor(resource: VideoResource, curFrame: number) {
     // 设置ID
-    this.id = uniqueId();
+    this.id = nanoid();
     this.resource = resource;
 
     // 获取文件信息

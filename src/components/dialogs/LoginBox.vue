@@ -24,8 +24,8 @@
           />
         </el-form-item>
         <div class="flex justify-center mt-16 mb-8">
-          <el-button class="px-6" @click="handleLogin"> 登录 </el-button>
-          <el-button class="px-6" @click="handleRegister"> 注册 </el-button>
+          <el-button class="!px-6" @click="handleLogin"> 登录 </el-button>
+          <el-button class="!px-6" @click="handleRegister"> 注册 </el-button>
         </div>
       </el-form>
     </div>

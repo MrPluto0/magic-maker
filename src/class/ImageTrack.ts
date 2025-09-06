@@ -1,9 +1,9 @@
-import { uniqueId } from "lodash-es";
 import { imageDecoder } from "@/utils/webcodecs";
 import { OffscreenSprite } from "@webav/av-cliper";
 import { baseFps, UnitFrame2μs } from "@/data/track";
 import type { ImageResource } from "@/types/resource";
 import type { BaseTrack, TrackType } from "@/types/track";
+import { nanoid } from "nanoid";
 
 /**
  * 解析文件不能放在片段中：
@@ -38,7 +38,7 @@ export class ImageTrack implements BaseTrack {
   }
 
   constructor(resource: ImageResource, curFrame: number) {
-    this.id = uniqueId();
+    this.id = nanoid();
     this.resource = resource;
 
     // 获取文件信息

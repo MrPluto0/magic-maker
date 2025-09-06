@@ -4,17 +4,30 @@
       <ResourceList :list-data="resource" type="image" />
     </div>
 
-    <div v-loading="loading" class="flex items-center w-full gap-2">
-      <el-input
-        v-model="form.prompt"
-        placeholder="请输入提示词"
-        @keyup.enter="handleSubmit"
-      >
-      </el-input>
+    <div v-loading="loading" class="flex items-center w-full gap-1">
+      <div class="w-20">
+        <el-select v-model="form.size" placeholder="尺寸">
+          <el-option
+            v-for="(size, i) in ImageSizeList"
+            :key="i"
+            :value="size.value"
+            :label="size.text"
+          />
+        </el-select>
+      </div>
 
-      <el-button type="primary" @click="handleSubmit">
-        <i class="i-mdi-send" />
-      </el-button>
+      <div class="flex-1 gap-1 flex">
+        <el-input
+          v-model="form.prompt"
+          placeholder="请输入提示词"
+          @keyup.enter="handleSubmit"
+        >
+        </el-input>
+
+        <el-button type="primary" @click="handleSubmit">
+          <i class="i-mdi-send" />
+        </el-button>
+      </div>
     </div>
   </div>
 </template>
@@ -24,6 +37,9 @@ import { reactive, ref } from "vue";
 import { useResourceState } from "@/stores/resource";
 import ResourceList from "../resource/ResourceList.vue";
 import { ImageResource } from "@/types/resource";
+import { ImageSizeList } from "@/data/constant";
+import { OpenAIService } from "@/class/OpenAI";
+import { blobToFile, urlToFile } from "@/utils/file";
 
 const resourceStore = useResourceState();
 
@@ -34,17 +50,34 @@ const resource = computed(
 
 const form = reactive({
   prompt: "",
-  keywords: [],
-  model: "",
   size: "",
 });
 
-const handleSubmit = () => {
+const handleSubmit = async () => {
   if (!form.prompt) {
     ElMessage.error("请输入文字描述");
     return;
   }
 
-  ElMessage.info("前端模式下暂不支持AI图片生成功能");
+  loading.value = true;
+
+  try {
+    const openai = OpenAIService.getInstance();
+    const url = await openai.generateImage({
+      prompt: form.prompt,
+      n: 1,
+      // @ts-expect-error
+      size: form.size || "1024x1024",
+    });
+
+    const file = await urlToFile(url, `generated-image-${Date.now()}.png`);
+    resourceStore.createResource(file, {
+      prompt: form.prompt,
+      size: form.size,
+    });
+  } finally {
+    loading.value = false;
+    form.prompt = "";
+  }
 };
 </script>

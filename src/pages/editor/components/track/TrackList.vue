@@ -98,7 +98,7 @@ import { getGridPixel, getSelectFrame } from "@/utils/canvasUtil";
 import { ref, computed } from "vue";
 import { useTrackState } from "@/stores/track";
 import { usePlayerState } from "@/stores/player";
-import { debounce, get, over } from "lodash-es";
+import { debounce } from "lodash-es";
 import type { Resource } from "@/types/resource";
 import { baseFps } from "@/data/track";
 import type { Track } from "@/types/track";
