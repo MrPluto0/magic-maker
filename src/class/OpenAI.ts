@@ -28,6 +28,14 @@ export class OpenAIService {
     return OpenAIService.instance;
   }
 
+  public async uploadFile(file: File) {
+    const response = await this.openai.files.create({
+      file,
+      purpose: "assistants",
+    });
+    return response.id; // 返回文件ID
+  }
+
   // 聊天接口
   public async chat(params: ChatParams) {
     const {
@@ -47,18 +55,17 @@ export class OpenAIService {
       ...otherParams,
     });
 
-    return response.choices[0].message;
+    return response;
   }
 
   // 生成图片接口
   public async generateImage(params: ImageParams) {
     const { model = this.defaultModel.image, ...otherParams } = params;
 
-    // @ts-expect-error
     const response = (await this.openai.images.generate({
       model,
-      stream: false,
       response_format: "url",
+      // @ts-expect-error
       watermark: false,
       ...otherParams,
     })) as ImagesResponse;

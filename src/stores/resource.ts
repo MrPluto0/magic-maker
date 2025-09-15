@@ -5,7 +5,6 @@ import type { TrackType } from "@/types/track";
 import { readFileFromOPFS } from "@/utils/file";
 
 export const useResourceState = defineStore("resource", () => {
-  // 统一资源列表
   const resources = ref<Resource[]>([]);
 
   /**
@@ -70,6 +69,8 @@ export const useResourceState = defineStore("resource", () => {
    */
   const loadResources = async (resourceList: Resource[]) => {
     for (const r of resourceList) {
+      if (!r.url) continue;
+      // 从OPFS读取文件数据，生成Blob URL
       const file = await readFileFromOPFS(r.id, r.url);
       const buffer = await file.arrayBuffer();
       r.url = file
@@ -77,14 +78,6 @@ export const useResourceState = defineStore("resource", () => {
         : r.url;
     }
     resources.value.splice(0, resources.value.length, ...resourceList);
-  };
-
-  /**
-   * 清空所有资源
-   */
-  const clearAllResources = () => {
-    // 清理所有URL
-    resources.value.splice(0, resources.value.length);
   };
 
   /**
@@ -96,11 +89,8 @@ export const useResourceState = defineStore("resource", () => {
     }
 
     const lowerQuery = query.toLowerCase();
-    return resources.value.filter(
-      (resource) =>
-        resource.name.toLowerCase().includes(lowerQuery) ||
-        (resource.type === "text" &&
-          resource.content.toLowerCase().includes(lowerQuery))
+    return resources.value.filter((resource) =>
+      resource.name.toLowerCase().includes(lowerQuery)
     );
   };
 
@@ -134,7 +124,6 @@ export const useResourceState = defineStore("resource", () => {
     addResource,
     removeResource,
     loadResources,
-    clearAllResources,
     searchResources,
     getResourceStats,
   };

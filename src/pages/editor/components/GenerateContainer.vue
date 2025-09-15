@@ -1,6 +1,6 @@
 <template>
   <div class="flex h-full relative container-box !p-0 bg-transparent">
-    <div class="flex flex-col gap-2 w-full">
+    <div class="flex flex-col gap-3 w-full">
       <MenuList v-model:active-index="activeIndex" :menu="EditorGenerateMenu" />
       <KeepAlive>
         <component :is="activeItem.component" :key="activeItem.key" />

@@ -1,3 +1,4 @@
+import { ChatCompletionMessageParam } from "openai/resources/index";
 import { TrackType } from "./track";
 
 // 基础资源接口
@@ -42,11 +43,9 @@ export interface TextResource extends BaseResource {
   messages: ChatMessage[];
 }
 
-export interface ChatMessage {
-  content: string;
-  role: "user" | "system";
+export type ChatMessage = ChatCompletionMessageParam & {
   [key: string]: any;
-}
+};
 
 // 统一资源类型
 export type Resource =

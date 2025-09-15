@@ -183,7 +183,7 @@ export const useTrackState = defineStore(
         // 对于文本资源，创建文本轨道
         const textTrack = new TextTrack(
           {
-            text: resource.content,
+            text: "xxxx",
             fontSize: 24,
             fontFamily: "Arial",
             name: resource.name,

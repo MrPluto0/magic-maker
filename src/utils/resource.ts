@@ -119,7 +119,7 @@ export class ResourceFactory {
     return {
       ...resource,
       type: "text",
-      content,
+      messages: [{ role: "user", content }],
     };
   }
 
