@@ -173,7 +173,7 @@ export const useTrackState = defineStore(
         const audioTrack = new AudioTrack(resource, startFrame, volume);
         await audioDecoder.decode(audioTrack);
         // 检查是否有字幕数据
-        if ("subtitle" in resource && resource.subtitle) {
+        if (resource.subtitle) {
           await subtitleDecoder.decode(audioTrack, resource.subtitle);
         }
         return audioTrack;

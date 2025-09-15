@@ -104,7 +104,7 @@ export class AudioTrack implements BaseTrack {
   }
 
   // 生成合成对象
-  async combine(target: "audio" | "subtitle" = "audio") {
+  async combine(target: "audio" | "subti tle" = "audio") {
     let clip: IClip;
     if (target === "audio") {
       clip = await audioDecoder.decode(this);

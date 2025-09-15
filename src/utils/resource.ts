@@ -7,8 +7,9 @@ import type {
   TextResource,
 } from "@/types/resource";
 import { videoDecoder, audioDecoder, imageDecoder } from "./webcodecs";
-import { FILE_SIZE_LIMITS, SUPPORTED_FILE_TYPES } from "@/data/file";
+import { FILE_SIZE_LIMITS } from "@/data/file";
 import { writeFileToOPFS } from "./file";
+import { MP4Clip } from "@webav/av-cliper";
 
 /**
  * 资源工厂类
@@ -123,7 +124,7 @@ export class ResourceFactory {
     };
   }
 
-  private static async genVideoCover(clip: any): Promise<string> {
+  private static async genVideoCover(clip: MP4Clip): Promise<string> {
     try {
       const { video } = await clip.tick(0);
 
@@ -169,20 +170,6 @@ export class ResourceFactory {
         `文件大小超过限制 (${ResourceFactory.formatFileSize(maxSize)})`
       );
     }
-
-    const supportedTypes = ResourceFactory.getSupportedTypes();
-    if (!ResourceFactory.validateFileType(file, supportedTypes)) {
-      throw new Error(`不支持的文件格式: ${file.type}`);
-    }
-  }
-
-  private static validateFileType(file: File, allowedTypes: string[]): boolean {
-    return allowedTypes.some((type) => {
-      if (type.endsWith("/*")) {
-        return file.type.startsWith(type.slice(0, -1));
-      }
-      return file.type === type;
-    });
   }
 
   private static getFileCategory(mimeType: string): string {
@@ -191,15 +178,6 @@ export class ResourceFactory {
     if (mimeType.startsWith("image/")) return "IMAGE";
     if (mimeType.startsWith("text/")) return "TEXT";
     return "UNKNOWN";
-  }
-
-  private static getSupportedTypes(): string[] {
-    return [
-      ...SUPPORTED_FILE_TYPES.VIDEO,
-      ...SUPPORTED_FILE_TYPES.AUDIO,
-      ...SUPPORTED_FILE_TYPES.IMAGE,
-      ...SUPPORTED_FILE_TYPES.TEXT,
-    ];
   }
 
   private static formatFileSize(bytes: number): string {

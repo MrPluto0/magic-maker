@@ -25,7 +25,6 @@
 <script setup lang="ts">
 import { useTrackState } from "@/stores/track";
 import { usePageState } from "@/stores/page";
-import type { GeneralTrack } from "@/types/track";
 import VideoAttr from "./attributes/items/VideoAttr.vue";
 import ImageAttr from "./attributes/items/ImageAttr.vue";
 import AudioAttr from "./attributes/items/AudioAttr.vue";
@@ -44,5 +43,5 @@ for (const path in attributeFiles) {
   ).Options;
 }
 
-const track = computed(() => trackStore.selectTrack as GeneralTrack);
+const track = computed(() => trackStore.selectTrack);
 </script>

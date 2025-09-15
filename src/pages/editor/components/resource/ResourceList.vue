@@ -6,7 +6,7 @@
         :key="`${item.name}-${index}`"
         class="flex flex-col max-w-full"
       >
-        <ResourceItem :resource="item" :type="type" :no-action="noAction" />
+        <ResourceItem :resource="item" :type="type" />
       </li>
     </ul>
   </div>
@@ -20,6 +20,5 @@ import { TrackType } from "@/types/track";
 defineProps<{
   listData: Resource[];
   type: TrackType;
-  noAction?: boolean;
 }>();
 </script>

@@ -84,7 +84,7 @@ export async function urlToFile(url: string, fileName: string) {
 }
 
 // 通过URL获取Base64数据
-export const fetch2Base64 = async (url: string): Promise<string> => {
+export const fetchToBase64 = async (url: string): Promise<string> => {
   const data = await fetch(proxyUrl(url));
   const blob = await data.blob();
   return new Promise((resolve, reject) => {

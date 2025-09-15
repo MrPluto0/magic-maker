@@ -42,7 +42,6 @@
     </div>
 
     <div
-      v-if="!noAction"
       class="absolute bottom-2 right-1 flex justify-center items-center bg-blue-500 rounded-full w-5 h-5 opacity-0 hover:opacity-100 transition-opacity duration-150"
       @click="addTrack"
     >
@@ -57,38 +56,26 @@
     @dragstart="dragStart"
   >
     <div class="flex-1 overflow-hidden flex gap-4 items-center">
-      <el-popover>
-        <template #reference>
-          <audio
-            class="h-10"
-            controls
-            preload="metadata"
-            :src="'url' in resource ? resource.url : ''"
-          ></audio>
-        </template>
-        <div>{{ resource.meta?.prompt }}</div>
-      </el-popover>
+      <audio
+        class="h-10"
+        controls
+        preload="metadata"
+        :src="'url' in resource ? resource.url : ''"
+      ></audio>
     </div>
 
     <div
-      class="bg-red-500 rounded-full w-6 h-6"
+      class="flex justify-center items-center bg-red-500 rounded-full w-5 h-5"
       @click="resourceStore.removeResource(resource.id)"
     >
-      <i
-        class="i-mdi-minus text-white cursor-pointer p-1 box-content"
-        style="font-size: 16px"
-      ></i>
+      <div class="i-mdi-minus text-white cursor-pointer"></div>
     </div>
 
     <div
-      v-if="!noAction"
-      class="bg-blue-500 rounded-full w-6 h-6"
+      class="right-1 flex justify-center items-center bg-blue-500 rounded-full w-5 h-5"
       @click="addTrack"
     >
-      <i
-        class="i-mdi-plus text-white cursor-pointer p-1 box-content"
-        style="font-size: 16px"
-      ></i>
+      <div class="i-mdi-plus text-white cursor-pointer"></div>
     </div>
   </div>
 </template>
@@ -103,7 +90,6 @@ import { ref } from "vue";
 const props = defineProps<{
   resource: Resource;
   type: TrackType;
-  noAction?: boolean;
 }>();
 
 const trackStore = useTrackState();
@@ -123,8 +109,8 @@ async function dragStart(event: DragEvent) {
 async function addTrack(event: MouseEvent) {
   event.stopPropagation();
 
-  const track = await trackStore.createTrack(props.resource);
-
+  const { resource } = props;
+  const track = await trackStore.createTrack(resource);
   trackStore.addTrack(track);
 }
 </script>

@@ -25,5 +25,5 @@ export default defineConfig({
       },
     },
   },
-  safelist: ["i-mdi-image", "h-16"],
+  safelist: ["i-mdi-image", "h-16", "h-12"],
 });
