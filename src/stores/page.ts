@@ -1,4 +1,4 @@
-import { ref } from "vue";
+import { ref, watch } from "vue";
 import { defineStore } from "pinia";
 
 export const usePageState = defineStore(
@@ -15,6 +15,13 @@ export const usePageState = defineStore(
     // 素材区宽度
     const resourceWidth = ref(370);
 
+    // AI设置表单
+    const aiSettings = ref({
+      apiKey: "",
+      textModel: "doubao-seed-1-6-flash-250715",
+      imageModel: "doubao-seedream-3-0-t2i-250415",
+    });
+
     watch(isDark, () => {
       document.documentElement.classList[isDark.value ? "add" : "remove"](
         "dark"
@@ -28,6 +35,7 @@ export const usePageState = defineStore(
       attrWidth,
       trackHeight,
       resourceWidth,
+      aiSettings,
     };
   },
   {

@@ -2,13 +2,12 @@ import { getTextRect } from "@/utils/common";
 import { ImgClip, OffscreenSprite } from "@webav/av-cliper";
 import { baseFps, UnitFrame2μs } from "@/data/track";
 import type { BaseTrack, TrackType } from "@/types/track";
-import { TextResource } from "@/types/resource";
 import { nanoid } from "nanoid";
 
 export class TextTrack implements BaseTrack {
   id: string;
   type: TrackType = "text";
-  resource: TextResource;
+  resource: any;
   name: string;
   frameCount: number;
   start: number;
@@ -29,13 +28,13 @@ export class TextTrack implements BaseTrack {
   text = "";
   loading = false;
 
-  constructor(source: TextResource, curFrame: number) {
+  constructor(source: any, curFrame: number) {
     // 设置ID
     this.id = nanoid();
     this.resource = source;
 
     // 设置文字信息
-    this.text = source.content || "请输入文字";
+    this.text = source.text || "请输入文字";
     this.name = source.name;
     this.format = "text";
 

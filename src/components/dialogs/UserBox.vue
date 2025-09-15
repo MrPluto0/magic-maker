@@ -79,6 +79,67 @@
           </div>
         </div>
       </el-tab-pane>
+
+      <el-tab-pane label="AI 设置" name="second">
+        <div class="mt-2">
+          <el-form label-width="100px" class="ai-settings-form">
+            <el-form-item label="API Key：">
+              <el-input
+                v-model="pageStore.aiSettings.apiKey"
+                type="password"
+                placeholder="请输入您的 API Key"
+                show-password
+                clearable
+              >
+                <template #prefix>
+                  <i class="i-mdi-key text-gray-400" />
+                </template>
+              </el-input>
+            </el-form-item>
+
+            <el-form-item label="文本模型：">
+              <el-input
+                v-model="pageStore.aiSettings.textModel"
+                placeholder="请输入文本生成模型ID，如：doubao-seed-1-6-flash-250715"
+                clearable
+              >
+                <template #prefix>
+                  <i class="i-mdi-text text-gray-400" />
+                </template>
+              </el-input>
+            </el-form-item>
+
+            <el-form-item label="图片模型：">
+              <el-input
+                v-model="pageStore.aiSettings.imageModel"
+                placeholder="请输入图片生成模型ID，如：doubao-seedream-3-0-t2i-250415"
+                clearable
+              >
+                <template #prefix>
+                  <i class="i-mdi-image text-gray-400" />
+                </template>
+              </el-input>
+            </el-form-item>
+          </el-form>
+
+          <!-- 设置说明 -->
+          <div class="mt-6 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+            <h4 class="text-sm font-medium text-gray-900 dark:text-white mb-2">
+              <i class="i-mdi-information-outline mr-1" />
+              设置说明
+            </h4>
+            <ul class="text-xs text-gray-600 dark:text-gray-300 space-y-1">
+              <li>• 目前均使用的是字节的火山大模型，注册可领取免费额度</li>
+              <li>• API Key 将安全存储在本地，不会上传到服务器</li>
+              <li>• 请输入准确的模型ID，请自行在火山引擎上查看</li>
+              <li>
+                • 文本模型用于对话生成、文本扩写等功能；图片模型用于 AI
+                绘图功能；其他模型尚未支持。
+              </li>
+            </ul>
+          </div>
+        </div>
+      </el-tab-pane>
     </el-tabs>
   </el-dialog>
 </template>
@@ -89,6 +150,7 @@ import { ElMessage } from "element-plus";
 import { onMounted, ref } from "vue";
 import { useUserState } from "@/stores/user";
 import { useProjectState } from "@/stores/project";
+import { usePageState } from "@/stores/page";
 import type { IUser } from "@/types/user";
 
 defineProps<{
@@ -98,6 +160,7 @@ defineProps<{
 const emits = defineEmits(["update:show"]);
 const userStore = useUserState();
 const proStore = useProjectState();
+const pageStore = usePageState();
 const router = useRouter();
 
 const form = ref<IUser>({} as IUser);
@@ -170,6 +233,35 @@ onMounted(() => {
 
   .el-tabs__nav-scroll {
     background-color: transparent !important;
+  }
+}
+
+.ai-settings-form {
+  .el-form-item {
+    margin-bottom: 20px;
+  }
+
+  .el-select {
+    width: 100%;
+  }
+
+  .el-input__prefix {
+    display: flex;
+    align-items: center;
+  }
+}
+
+/* 设置说明区域样式 */
+.settings-info {
+  border-left: 3px solid var(--el-color-primary);
+
+  h4 {
+    display: flex;
+    align-items: center;
+
+    i {
+      margin-right: 4px;
+    }
   }
 }
 </style>

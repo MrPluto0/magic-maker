@@ -183,7 +183,7 @@ export const useTrackState = defineStore(
         // 对于文本资源，创建文本轨道
         const textTrack = new TextTrack(
           {
-            text: "xxxx",
+            text: "请输入文字",
             fontSize: 24,
             fontFamily: "Arial",
             name: resource.name,
@@ -259,14 +259,14 @@ export const useTrackState = defineStore(
       const track = new TextTrack(
         {
           type: "text",
-          text: selection === "" ? "文本内容" : selection,
+          text: selection ?? "文本内容",
           fontSize: 24,
           fontFamily: "Arial",
           name: "文本",
           fill: "#FFF",
           stroke: undefined,
           textBackgroundColor: undefined,
-        } as any,
+        },
         playStore.playStartFrame
       );
       addTrack(track);
@@ -359,6 +359,13 @@ export const useTrackState = defineStore(
       }
 
       trackList.value.splice(0, trackList.value.length, ...newTrackList);
+    };
+
+    // @ts-expect-error
+    window.clearTrack = () => {
+      trackList.value = [];
+      selectTrackItem.line = -1;
+      selectTrackItem.index = -1;
     };
 
     return {

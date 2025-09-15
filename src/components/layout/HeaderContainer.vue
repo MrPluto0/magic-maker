@@ -36,7 +36,7 @@
             route.path !== '/home'
           "
         >
-          <div class="text-xs">自动保存：{{ projectStore.lastSaveTime }}</div>
+          <div class="text-xs">上次保存：{{ projectStore.lastSaveTime }}</div>
 
           <el-dropdown class="outline-none">
             <div class="flex items-center text-xs">更多操作</div>
@@ -77,7 +77,9 @@
           inline-prompt
         />
 
-        <div class="flex items-center">
+        <div class="flex items-center gap-4 text-[20px]">
+          <i class="i-mdi-github cursor-pointer" @click="openGithub"></i>
+
           <el-button
             v-if="!userStore.isLogin"
             type="primary"
@@ -87,7 +89,6 @@
           <i
             v-else
             class="i-mdi-account cursor-pointer"
-            style="font-size: 18px"
             @click="showUserInfo = true"
           ></i>
         </div>
@@ -132,6 +133,10 @@ const menu = [
     to: "/editor",
   },
 ];
+
+const openGithub = () => {
+  window.open("https://github.com/MrPluto0/magic-maker", "_blank");
+};
 </script>
 
 <style lang="less" scoped>

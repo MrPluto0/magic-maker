@@ -2,7 +2,7 @@ import { ChatCompletionCreateParamsBase } from "openai/resources/chat/completion
 import { ImageGenerateParamsBase } from "openai/resources/images";
 
 export interface ChatParams
-  extends Omit<ChatCompletionCreateParamsBase, "stream" | "model"> {
+  extends Omit<ChatCompletionCreateParamsBase, "model"> {
   thinking?: boolean;
   model?: string;
 }

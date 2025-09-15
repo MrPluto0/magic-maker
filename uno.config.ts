@@ -21,6 +21,7 @@ export default defineConfig({
       },
       primary: {
         DEFAULT: "#7457ff",
+        light: "#d1c7ff",
       },
     },
   },
