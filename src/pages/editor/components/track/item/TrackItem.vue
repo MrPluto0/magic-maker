@@ -1,12 +1,9 @@
 <template>
   <div
     class="text-left text-sm top-0 absolute trackItem"
-    :class="[
-      TrackHeightMap[props.trackItem.type],
-      isDragState ? 'z-50 isDrag' : 'z-10',
-    ]"
+    :class="[TrackHeightMap[trackType], isDragState ? 'z-50 isDrag' : 'z-10']"
     :style="[itemClass]"
-    :data-type="props.trackItem.type"
+    :data-type="trackType"
     :data-line="lineIndex"
     :data-index="itemIndex"
     @click="setSelectTract"
@@ -18,7 +15,7 @@
       :itemIndex="itemIndex"
     />
     <!-- 容器 -->
-    <component :is="componentMap.get(trackItem.type)" :trackItem="trackItem" />
+    <component :is="componentMap.get(trackType)" :trackItem="trackItem" />
   </div>
 </template>
 
@@ -31,67 +28,59 @@ import ImageItem from "../template/ImageItem.vue";
 import { TrackHeightMap } from "@/data/track";
 import { useTrackState } from "@/stores/track";
 import { computed } from "vue";
+import { getGridPixel } from "@/utils/canvasUtil";
+import type { Track } from "@/types/track";
 
-const props = defineProps({
-  trackType: {
-    type: String,
-    default: "",
-  },
-  lineIndex: {
-    type: Number,
-    default: 0,
-  },
-  itemIndex: {
-    type: Number,
-    default: 0,
-  },
-  trackItem: {
-    type: Object,
-    default() {
-      return {
-        width: "0px",
-        left: "0px",
-      };
-    },
-  },
-});
-const store = useTrackState();
-const isActive = computed(() => {
-  return (
-    store.selectTrackItem.line === props.lineIndex &&
-    store.selectTrackItem.index === props.itemIndex
-  );
-});
 const componentMap = new Map<string, any>([
-  ["video", VideoItem],
-  ["audio", AudioItem],
-  ["text", TextItem],
-  ["image", ImageItem],
+	["video", VideoItem],
+	["audio", AudioItem],
+	["text", TextItem],
+	["image", ImageItem],
 ]);
-const isDragState = computed(() => {
-  return (
-    store.moveTrackData.lineIndex === props.lineIndex &&
-    store.moveTrackData.itemIndex === props.itemIndex
-  );
+
+const { lineIndex, itemIndex, trackItem } = defineProps<{
+	lineIndex: number;
+	itemIndex: number;
+	trackItem: Track;
+}>();
+
+const store = useTrackState();
+
+const trackType = computed(() => trackItem.type);
+
+const isActive = computed(() => {
+	return (
+		store.selectTrackItem.line === lineIndex &&
+		store.selectTrackItem.index === itemIndex
+	);
 });
+
+const isDragState = computed(() => {
+	return (
+		store.moveTrackData.lineIndex === lineIndex &&
+		store.moveTrackData.itemIndex === itemIndex
+	);
+});
+
 function setSelectTract(event: Event) {
-  event.preventDefault();
-  event.stopPropagation();
-  store.selectTrackItem.line = props.lineIndex;
-  store.selectTrackItem.index = props.itemIndex;
+	event.preventDefault();
+	event.stopPropagation();
+	store.selectTrackItem.line = lineIndex;
+	store.selectTrackItem.index = itemIndex;
 }
 
 const itemClass = computed(() => {
-  if (isDragState.value) {
-    return {
-      width: props.trackItem.showWidth,
-      left: `${parseInt(props.trackItem.showLeft) + store.dragData.moveX}px`,
-      top: `${store.dragData.moveY}px`,
-    };
-  }
-  return {
-    width: props.trackItem.showWidth,
-    left: props.trackItem.showLeft,
-  };
+	const showWidth = `${getGridPixel(
+		store.trackScale,
+		trackItem.end - trackItem.start,
+	)}px`;
+	const showLeft = `${getGridPixel(store.trackScale, trackItem.start)}px`;
+	return {
+		width: showWidth,
+		left: isDragState
+			? `${parseInt(showLeft) + store.dragData.moveX}px`
+			: showLeft,
+		top: isDragState ? `${store.dragData.moveY}px` : "",
+	};
 });
 </script>

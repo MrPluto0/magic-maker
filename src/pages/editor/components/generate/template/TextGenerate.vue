@@ -193,7 +193,7 @@ import { reactive, ref } from "vue";
 import useClipboard from "vue-clipboard3";
 import { ElMessage } from "element-plus";
 import { useResourceState } from "@/stores/resource";
-import { ChatMessage, TextResource } from "@/types/resource";
+import type { ChatMessage, TextResource } from "@/types/resource";
 import { usePageState } from "@/stores/page";
 import { nanoid } from "nanoid";
 import { OpenAIService } from "@/class/OpenAI";
@@ -207,160 +207,160 @@ const scrollRef = ref<HTMLElement | null>(null);
 const fileInputRef = ref<HTMLInputElement | null>(null);
 
 const form = reactive({
-  input: "",
-  file: null as File | null,
-  loading: false,
-  thinking: false,
+	input: "",
+	file: null as File | null,
+	loading: false,
+	thinking: false,
 });
 
 const showDialogs = ref(false);
 const dialogList = computed(
-  () => resourceStore.getResourcesByType("text").reverse() as TextResource[]
+	() => resourceStore.getResourcesByType("text").reverse() as TextResource[],
 );
 const dialog = ref<TextResource | null>(dialogList.value?.[0] || null);
 
 const messages = computed(() => {
-  return dialog.value?.messages || [];
+	return dialog.value?.messages || [];
 });
 
 const scrollBottom = () => {
-  nextTick(() => {
-    if (scrollRef.value) {
-      scrollRef.value.scrollTo({
-        top: scrollRef.value.scrollHeight,
-        behavior: "smooth",
-      });
-    }
-  });
+	nextTick(() => {
+		if (scrollRef.value) {
+			scrollRef.value.scrollTo({
+				top: scrollRef.value.scrollHeight,
+				behavior: "smooth",
+			});
+		}
+	});
 };
 
 const triggerFileInput = () => {
-  fileInputRef.value?.click();
+	fileInputRef.value?.click();
 };
 
 const handleFileChange = (event: Event) => {
-  const target = event.target as HTMLInputElement;
-  const file = target.files?.[0];
-  if (file) {
-    form.file = file;
-  }
+	const target = event.target as HTMLInputElement;
+	const file = target.files?.[0];
+	if (file) {
+		form.file = file;
+	}
 };
 
 const handleCreateDialog = () => {
-  if (dialogList.value?.[0]?.messages?.length === 0) {
-    dialog.value = dialogList.value[0];
-    return;
-  }
-  const newDialog: TextResource = {
-    id: nanoid(),
-    type: "text",
-    name: "新对话",
-    messages: [],
-    url: "",
-    createdAt: new Date().toISOString(),
-  };
-  resourceStore.addResource(newDialog);
-  dialog.value = newDialog;
+	if (dialogList.value?.[0]?.messages?.length === 0) {
+		dialog.value = dialogList.value[0];
+		return;
+	}
+	const newDialog: TextResource = {
+		id: nanoid(),
+		type: "text",
+		name: "新对话",
+		messages: [],
+		url: "",
+		createdAt: new Date().toISOString(),
+	};
+	resourceStore.addResource(newDialog);
+	dialog.value = newDialog;
 };
 
 const handleDeleteDialog = (id: string) => {
-  ElMessageBox.confirm("确定删除该对话吗？", "提示", {
-    type: "warning",
-  }).then(() => {
-    resourceStore.removeResource(id);
-    if (dialog.value?.id === id) {
-      dialog.value = dialogList.value?.[0] || null;
-    }
-  });
+	ElMessageBox.confirm("确定删除该对话吗？", "提示", {
+		type: "warning",
+	}).then(() => {
+		resourceStore.removeResource(id);
+		if (dialog.value?.id === id) {
+			dialog.value = dialogList.value?.[0] || null;
+		}
+	});
 };
 
 const handleRenameDialog = (dialog: TextResource) => {
-  ElMessageBox.prompt("请输入新的对话名称", "重命名", {
-    inputValue: dialog.name || "",
-  }).then(({ value }) => {
-    dialog.name = value;
-  });
+	ElMessageBox.prompt("请输入新的对话名称", "重命名", {
+		inputValue: dialog.name || "",
+	}).then(({ value }) => {
+		dialog.name = value;
+	});
 };
 
 const handleChat = async () => {
-  if (!form.input) {
-    ElMessage.warning("请输入提示词");
-    return;
-  }
+	if (!form.input) {
+		ElMessage.warning("请输入提示词");
+		return;
+	}
 
-  try {
-    // 更新对话名称
-    dialog.value.name = form.input.slice(0, 10) || "新对话";
-    form.loading = true;
+	try {
+		// 更新对话名称
+		dialog.value.name = form.input.slice(0, 10) || "新对话";
+		form.loading = true;
 
-    if (!form.file) {
-      messages.value.push({
-        role: "user",
-        content: form.input,
-      });
-    } else {
-      const fileId = await openAI.uploadFile(form.file);
-      messages.value.push({
-        role: "user",
-        content: [
-          { type: "text", text: form.input },
-          {
-            type: "file",
-            file: { file_id: fileId, filename: form.file.name },
-          },
-        ],
-      });
-    }
+		if (!form.file) {
+			messages.value.push({
+				role: "user",
+				content: form.input,
+			});
+		} else {
+			const fileId = await openAI.uploadFile(form.file);
+			messages.value.push({
+				role: "user",
+				content: [
+					{ type: "text", text: form.input },
+					{
+						type: "file",
+						file: { file_id: fileId, filename: form.file.name },
+					},
+				],
+			});
+		}
 
-    scrollBottom();
+		scrollBottom();
 
-    const response = await openAI.chat({
-      messages: messages.value,
-      thinking: form.thinking,
-      stream: true,
-    });
+		const response = await openAI.chat({
+			messages: messages.value,
+			thinking: form.thinking,
+			stream: true,
+		});
 
-    messages.value.push({
-      role: "assistant",
-      content: "",
-      reason: "",
-    });
+		messages.value.push({
+			role: "assistant",
+			content: "",
+			reason: "",
+		});
 
-    for await (const chunk of response) {
-      // @ts-expect-error
-      const reason = chunk.choices[0].delta?.reasoning_content;
-      const content = chunk.choices[0].delta?.content || "";
-      if (reason) {
-        messages.value[messages.value.length - 1].reason += reason;
-      } else {
-        messages.value[messages.value.length - 1].content += content;
-      }
-      scrollBottom();
-    }
-  } finally {
-    form.loading = false;
-    form.input = "";
-    form.file = null;
-  }
+		for await (const chunk of response) {
+			// @ts-expect-error
+			const reason = chunk.choices[0].delta?.reasoning_content;
+			const content = chunk.choices[0].delta?.content || "";
+			if (reason) {
+				messages.value[messages.value.length - 1].reason += reason;
+			} else {
+				messages.value[messages.value.length - 1].content += content;
+			}
+			scrollBottom();
+		}
+	} finally {
+		form.loading = false;
+		form.input = "";
+		form.file = null;
+	}
 };
 
 const handleCopy = async (message: ChatMessage) => {
-  try {
-    // @ts-expect-error
-    await toClipboard(message?.content);
-    ElMessage.success("复制成功");
-  } catch (error) {
-    console.error(error);
-  }
+	try {
+		// @ts-expect-error
+		await toClipboard(message?.content);
+		ElMessage.success("复制成功");
+	} catch (error) {
+		console.error(error);
+	}
 };
 
 const handleRegenerate = () => {
-  messages.value.pop();
-  handleChat();
+	messages.value.pop();
+	handleChat();
 };
 
 onMounted(() => {
-  scrollBottom();
+	scrollBottom();
 });
 </script>
 

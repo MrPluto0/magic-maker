@@ -82,14 +82,15 @@
 
 <script setup lang="ts">
 import { useTrackState } from "@/stores/track";
-import type { Resource } from "@/types/resource";
+import type { AudioResource, Resource } from "@/types/resource";
 import type { TrackType } from "@/types/track";
 import { useResourceState } from "@/stores/resource";
 import { ref } from "vue";
+import { VideoTrack } from "@/class/VideoTrack";
 
 const props = defineProps<{
-  resource: Resource;
-  type: TrackType;
+	resource: Resource;
+	type: TrackType;
 }>();
 
 const trackStore = useTrackState();
@@ -97,20 +98,20 @@ const resourceStore = useResourceState();
 const showVideo = ref(false);
 
 async function dragStart(event: DragEvent) {
-  event.stopPropagation();
-  trackStore.dragData.dataInfo = props.resource;
-  trackStore.dragData.dragType = props.type;
-  trackStore.dragData.dragPoint.x = event.offsetX;
-  trackStore.dragData.dragPoint.y = event.offsetY;
-  trackStore.selectTrackItem.line = -1;
-  trackStore.selectTrackItem.index = -1;
+	event.stopPropagation();
+	trackStore.dragData.dataInfo = props.resource;
+	trackStore.dragData.dragType = props.type;
+	trackStore.dragData.dragPoint.x = event.offsetX;
+	trackStore.dragData.dragPoint.y = event.offsetY;
+	trackStore.selectTrackItem.line = -1;
+	trackStore.selectTrackItem.index = -1;
 }
 
 async function addTrack(event: MouseEvent) {
-  event.stopPropagation();
+	event.stopPropagation();
 
-  const { resource } = props;
-  const track = await trackStore.createTrack(resource);
-  trackStore.addTrack(track);
+	const { resource } = props;
+	const track = await trackStore.createTrack(resource);
+	trackStore.addTrack(track);
 }
 </script>

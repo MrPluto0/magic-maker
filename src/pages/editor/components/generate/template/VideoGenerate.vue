@@ -79,8 +79,8 @@
 <script lang="ts" setup>
 import { ImageSizeList } from "@/data/constant";
 import { useResourceState } from "@/stores/resource";
-import { VideoResource } from "@/types/resource";
-import ResourceList from "../resource/ResourceList.vue";
+import type { VideoResource } from "@/types/resource";
+import ResourceList from "../../resource/ResourceList.vue";
 
 const resourceStore = useResourceState();
 

@@ -6,14 +6,14 @@
     v-show="isActive"
   >
     <div
-      class="cursor-c-resize flex flex-col justify-center absolute -top-px -bottom-px -left-2 text-center rounded-tl rounded-bl w-2 dark:bg-gray-100 bg-gray-500 dark:text-gray-800 text-gray-100"
+      class="cursor-ew-resize flex flex-col justify-center absolute -top-px -bottom-px -left-2 text-center rounded-tl rounded-bl w-2 dark:bg-gray-100 bg-gray-500 dark:text-gray-800 text-gray-100"
       ref="handlerLeft"
       @mousedown="mouseDownHandler($event, 'left')"
     >
       <span>|</span>
     </div>
     <div
-      class="cursor-c-resize flex flex-col justify-center absolute -top-px -bottom-px -right-2 text-center rounded-tr rounded-br w-2 dark:bg-gray-100 bg-gray-500 dark:text-gray-800 text-gray-100"
+      class="cursor-ew-resize flex flex-col justify-center absolute -top-px -bottom-px -right-2 text-center rounded-tr rounded-br w-2 dark:bg-gray-100 bg-gray-500 dark:text-gray-800 text-gray-100"
       ref="handlerRight"
       @mousedown="mouseDownHandler($event, 'right')"
     >
@@ -25,10 +25,10 @@
 <script setup lang="ts">
 import { useTrackState } from "@/stores/track";
 import { usePlayerState } from "@/stores/player";
-import type { TrackItem } from "@/stores/track";
 import { computed, toRefs } from "vue";
 import { getGridPixel } from "@/utils/canvasUtil";
 import { baseFps } from "@/data/track";
+import type { Track } from "@/types/track";
 
 const props = defineProps({
 	isActive: {
@@ -98,12 +98,9 @@ function getFixLine(x: number, distance = 10) {
 	return result;
 }
 
-let fixPosition = { left: 0, right: 0 };
-
 // 设置吸附
 function adsorption(x: number, lines: { position: number; frame: number }[]) {
 	if (lines.length === 0) {
-		fixPosition = { left: 0, right: 0, start: 0, end: 0 };
 		return;
 	}
 	// 吸附其实就是移动拖拽元素的位置
@@ -119,7 +116,7 @@ function adsorption(x: number, lines: { position: number; frame: number }[]) {
 }
 
 const frameWidth = computed(() => getGridPixel(store.trackScale, 1));
-function initLimits(lineData: TrackItem[], trackItem: TrackItem) {
+function initLimits(lineData: Track[], trackItem: Track) {
 	const beforeTrack =
 		props.itemIndex > 0 ? lineData[props.itemIndex - 1] : null;
 	const afterTrack =
@@ -151,6 +148,7 @@ function initLimits(lineData: TrackItem[], trackItem: TrackItem) {
 		...limitData,
 	});
 }
+
 function setTrackFrameData(frameCount: number, handleType: string) {
 	const {
 		isVA,
@@ -201,7 +199,6 @@ function setTrackFrameData(frameCount: number, handleType: string) {
 				newEnd = originStart + rightMaxWidth;
 			}
 			const diffEnd = newEnd - originEnd;
-			// @ts-expect-error
 			store.trackList[props.lineIndex].list[props.itemIndex].offsetR = Math.max(
 				offsetR - diffEnd,
 				0,

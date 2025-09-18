@@ -30,12 +30,12 @@
 import type { MenuItem } from "@/data/menu";
 
 defineProps<{
-  activeIndex: number;
-  menu: MenuItem[];
+	activeIndex: number;
+	menu: MenuItem[];
 }>();
 const emits = defineEmits(["update:activeIndex"]);
 
 function handleChange(index: number) {
-  emits("update:activeIndex", index);
+	emits("update:activeIndex", index);
 }
 </script>

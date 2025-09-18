@@ -7,9 +7,7 @@
         class="i-mdi-volume-high"
         style="font-size: 18px; margin-right: 8px; flex-shrink: 0"
       ></i>
-      <span class="mr-4 shrink-0">{{
-        `${trackItem.name}.${trackItem.format}`
-      }}</span>
+      <span class="mr-4 shrink-0">{{ trackItem.name }}</span>
     </div>
 
     <div class="overflow-hidden bg-blue-900 bg-opacity-60 flex-1 relative">
@@ -36,35 +34,24 @@ import WaveSurfer from "wavesurfer.js";
 import { WaveOptions } from "@/data/track";
 import type { AudioTrack } from "@/class/AudioTrack";
 
-const props = defineProps({
-  trackItem: {
-    type: Object as PropType<AudioTrack>,
-    default() {
-      return {
-        showWidth: "0px",
-        showLeft: "0px",
-      };
-    },
-  },
-});
+const props = defineProps<{
+  trackItem: AudioTrack;
+}>();
 
 const store = usePlayerState();
+const loading = ref(true);
+const waveRef = ref();
 
-// 获取关联的资源
 const resource = computed(() => props.trackItem.resource);
-
 const waveStyle = computed(() => {
-  const { start, end, offsetL, offsetR, frameCount } = props.trackItem;
+  const { start, end, offsetL, offsetR } = props.trackItem;
   const showFrameCount = end - start;
   return {
-    // transform: `scaleX(${(frameCount / showFrameCount).toFixed(2)})`,
     transformOrigin: "left top",
     left: `-${(offsetL / showFrameCount) * 100}%`,
     right: `-${(offsetR / showFrameCount) * 100}%`,
   };
 });
-const loading = ref(true);
-const waveRef = ref();
 
 async function initAudio() {
   if (!resource.value?.url) {
@@ -74,7 +61,6 @@ async function initAudio() {
 
   store.ingLoadingCount++;
   try {
-    // @ts-expect-error
     WaveSurfer.create({
       container: waveRef.value,
       url: resource.value.url,
@@ -87,9 +73,7 @@ async function initAudio() {
 }
 
 watch(
-  () => {
-    return resource.value && waveRef.value;
-  },
+  () => resource.value && waveRef.value,
   () => {
     waveRef.value && initAudio();
   },

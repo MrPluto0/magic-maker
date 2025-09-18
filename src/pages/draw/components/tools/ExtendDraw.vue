@@ -131,7 +131,7 @@
 // Removed API imports for frontend-only mode
 
 const props = defineProps<{
-  dataUrl: string;
+	dataUrl: string;
 }>();
 const emits = defineEmits(["finish"]);
 
@@ -141,81 +141,81 @@ const loading = ref(false);
 const prompt = ref("");
 
 const position = reactive({
-  left: 0,
-  right: 0,
-  top: 0,
-  bottom: 0,
-  lastL: 0,
-  lastR: 0,
-  lastT: 0,
-  lastB: 0,
+	left: 0,
+	right: 0,
+	top: 0,
+	bottom: 0,
+	lastL: 0,
+	lastR: 0,
+	lastT: 0,
+	lastB: 0,
 });
 const moveInfo = reactive({
-  isMoving: false,
-  left: false,
-  right: false,
-  top: false,
-  bottom: false,
-  startX: 0,
-  startY: 0,
+	isMoving: false,
+	left: false,
+	right: false,
+	top: false,
+	bottom: false,
+	startX: 0,
+	startY: 0,
 });
 
 const onMouseDown = (
-  e: MouseEvent,
-  l: boolean,
-  r: boolean,
-  t: boolean,
-  b: boolean
+	e: MouseEvent,
+	l: boolean,
+	r: boolean,
+	t: boolean,
+	b: boolean,
 ) => {
-  moveInfo.isMoving = true;
-  moveInfo.left = l;
-  moveInfo.right = r;
-  moveInfo.top = t;
-  moveInfo.bottom = b;
-  moveInfo.startX = e.screenX;
-  moveInfo.startY = e.screenY;
-  position.lastL = position.left;
-  position.lastR = position.right;
-  position.lastT = position.top;
-  position.lastB = position.bottom;
+	moveInfo.isMoving = true;
+	moveInfo.left = l;
+	moveInfo.right = r;
+	moveInfo.top = t;
+	moveInfo.bottom = b;
+	moveInfo.startX = e.screenX;
+	moveInfo.startY = e.screenY;
+	position.lastL = position.left;
+	position.lastR = position.right;
+	position.lastT = position.top;
+	position.lastB = position.bottom;
 };
 
 const onMouseMove = (e: MouseEvent) => {
-  if (!moveInfo.isMoving) return;
-  const dx = e.screenX - moveInfo.startX;
-  const dy = e.screenY - moveInfo.startY;
-  if (moveInfo.left) {
-    position.left = Math.min(position.lastL + dx, 0);
-  }
-  if (moveInfo.right) {
-    position.right = Math.min(position.lastR - dx, 0);
-  }
-  if (moveInfo.top) {
-    position.top = Math.min(position.lastT + dy, 0);
-  }
-  if (moveInfo.bottom) {
-    position.bottom = Math.min(position.lastB - dy, 0);
-  }
+	if (!moveInfo.isMoving) return;
+	const dx = e.screenX - moveInfo.startX;
+	const dy = e.screenY - moveInfo.startY;
+	if (moveInfo.left) {
+		position.left = Math.min(position.lastL + dx, 0);
+	}
+	if (moveInfo.right) {
+		position.right = Math.min(position.lastR - dx, 0);
+	}
+	if (moveInfo.top) {
+		position.top = Math.min(position.lastT + dy, 0);
+	}
+	if (moveInfo.bottom) {
+		position.bottom = Math.min(position.lastB - dy, 0);
+	}
 };
 
 const onMouseUp = (e: MouseEvent) => {
-  moveInfo.isMoving = false;
-  moveInfo.left = false;
-  moveInfo.right = false;
-  moveInfo.top = false;
-  moveInfo.bottom = false;
+	moveInfo.isMoving = false;
+	moveInfo.left = false;
+	moveInfo.right = false;
+	moveInfo.top = false;
+	moveInfo.bottom = false;
 };
 
 const onReset = () => {
-  position.left = 0;
-  position.right = 0;
-  position.top = 0;
-  position.bottom = 0;
+	position.left = 0;
+	position.right = 0;
+	position.top = 0;
+	position.bottom = 0;
 };
 
 const onGenerate = () => {
-  ElMessage.info("前端模式下暂不支持图像扩图功能");
-  show.value = false;
+	ElMessage.info("前端模式下暂不支持图像扩图功能");
+	show.value = false;
 };
 </script>
 

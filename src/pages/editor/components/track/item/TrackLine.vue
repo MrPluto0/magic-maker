@@ -21,31 +21,19 @@
 import { TrackHeightMap } from "@/data/track";
 import { useTrackState } from "@/stores/track";
 import TrackItem from "./TrackItem.vue";
+import type { Track, TrackType } from "@/types/track";
 
-const props = defineProps({
-  isMain: {
-    type: Boolean,
-    default: false,
-  },
-  lineType: {
-    type: String,
-    default: "",
-  },
-  lineIndex: {
-    type: Number,
-    default: 0,
-  },
-  lineData: {
-    type: Array,
-    default() {
-      return [];
-    },
-  },
-});
+const { lineIndex } = defineProps<{
+	isMain?: boolean;
+	lineType: TrackType;
+	lineIndex: number;
+	lineData: Track[];
+}>();
 
 const store = useTrackState();
+
 const isActive = computed(() => {
-  return store.selectTrackItem.line === props.lineIndex;
+	return store.selectTrackItem.line === lineIndex;
 });
 </script>
 

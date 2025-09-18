@@ -74,7 +74,7 @@
 <script lang="ts" setup>
 import { reactive, ref } from "vue";
 import { useResourceState } from "@/stores/resource";
-import ResourceList from "../resource/ResourceList.vue";
+import ResourceList from "../../resource/ResourceList.vue";
 import Recorder from "recorder-core";
 import "recorder-core/src/engine/mp3";
 import "recorder-core/src/engine/mp3-engine";

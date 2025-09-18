@@ -4,7 +4,6 @@ import { useTrackState } from "./track";
 import { useResourceState } from "./resource";
 import { baseFps } from "@/data/track";
 import type { Track } from "@/types/track";
-import { subtitleDecoder } from "@/utils/webcodecs";
 
 export const usePlayerState = defineStore("player", () => {
 	const trackStore = useTrackState();
@@ -22,12 +21,14 @@ export const usePlayerState = defineStore("player", () => {
 	const playingTracks = computed(() => {
 		const tracks: Track[] = [];
 		trackStore.trackList.forEach(({ list }) => {
-			const item = list.find(
-				(item) =>
+			list.forEach((item) => {
+				if (
 					playStartFrame.value >= item.start &&
-					playStartFrame.value <= item.end,
-			);
-			item && tracks.push(item);
+					playStartFrame.value <= item.end
+				) {
+					tracks.push(item);
+				}
+			});
 		});
 		return tracks;
 	});
@@ -56,7 +57,16 @@ export const usePlayerState = defineStore("player", () => {
 					playerConfig.playerWidth = Math.floor(resource.width || 1920);
 					playerConfig.playerHeight = Math.floor(resource.height || 1080);
 				}
-				subtitleDecoder.refresh();
+
+				// TODO:
+				// if (track) {
+				//   await this.decode(track, undefined, true);
+				// } else {
+				//   // 刷新全部
+				//   for (const [_, track] of this.audioMap.entries()) {
+				//     await this.decode(track, undefined, true);
+				//   }
+				// }
 			}
 		},
 		{

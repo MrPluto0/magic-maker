@@ -39,22 +39,22 @@ import { useDrawStore } from "@/stores/draw";
 import type { Material } from "@/types/draw";
 
 defineProps<{
-  materials: Material[];
+	materials: Material[];
 }>();
 
 const drawStore = useDrawStore();
 
 const handleAddMaterial = async (material: Material) => {
-  try {
-    drawStore.loading = true;
-    if (material.category === "template_psd") {
-      await drawStore.addTemplate(material.psdMetadata);
-    } else {
-      await drawStore.addMaterial(material);
-    }
-  } finally {
-    drawStore.loading = false;
-  }
+	try {
+		drawStore.loading = true;
+		if (material.category === "template_psd") {
+			await drawStore.addTemplate(material.psdMetadata);
+		} else {
+			await drawStore.addMaterial(material);
+		}
+	} finally {
+		drawStore.loading = false;
+	}
 };
 </script>
 

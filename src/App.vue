@@ -20,11 +20,11 @@ import HeaderContainer from "./components/layout/HeaderContainer.vue";
 const project = useProjectState();
 
 onMounted(() => {
-  if (!Combinator.isSupported()) {
-    ElMessageBox.alert(
-      "💔 当前浏览器不支持 WebCodecs，请使用 Chrome、Edge（并升级到新版本）体验 ❤️‍🩹"
-    );
-  }
-  project.init();
+	if (!Combinator.isSupported()) {
+		ElMessageBox.alert(
+			"💔 当前浏览器不支持 WebCodecs，请使用 Chrome、Edge（并升级到新版本）体验 ❤️‍🩹",
+		);
+	}
+	project.init();
 });
 </script>

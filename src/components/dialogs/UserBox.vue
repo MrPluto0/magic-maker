@@ -154,7 +154,7 @@ import { usePageState } from "@/stores/page";
 import type { IUser } from "@/types/user";
 
 defineProps<{
-  show: boolean;
+	show: boolean;
 }>();
 
 const emits = defineEmits(["update:show"]);
@@ -167,63 +167,63 @@ const form = ref<IUser>({} as IUser);
 const fileInputRef = ref<HTMLInputElement | null>(null);
 
 const handleSave = () => {
-  // 前端模式下仅更新本地状态
-  if (form.value?.username) {
-    userStore.userInfo.name = form.value.username;
-  }
-  ElMessage.success("保存成功");
+	// 前端模式下仅更新本地状态
+	if (form.value?.username) {
+		userStore.userInfo.name = form.value.username;
+	}
+	ElMessage.success("保存成功");
 };
 
 const handleClose = () => {
-  emits("update:show", false);
+	emits("update:show", false);
 };
 
 const handleLogout = () => {
-  userStore.isLogin = false;
-  userStore.authInfo = {
-    accessToken: "",
-    tokenType: "",
-  };
-  proStore.project = null;
-  handleClose();
-  router.push("/");
-  ElMessage.success("退出成功");
+	userStore.isLogin = false;
+	userStore.authInfo = {
+		accessToken: "",
+		tokenType: "",
+	};
+	proStore.project = null;
+	handleClose();
+	router.push("/");
+	ElMessage.success("退出成功");
 };
 
 const triggerUpload = () => {
-  fileInputRef.value?.click();
+	fileInputRef.value?.click();
 };
 
 const handleUploadAvatar = (e: any) => {
-  const file = e.target.files[0];
-  if (file) {
-    const maxSizeInBytes = 5 * 1024 * 1024; // 5MB
-    if (file.size > maxSizeInBytes) {
-      ElMessage.error("文件大小超过5MB，请重新上传");
-      return;
-    }
-    // 前端模式下使用本地URL
-    const localUrl = URL.createObjectURL(file);
-    form.value.avatarUrl = localUrl;
-    ElMessage.success("头像更新成功");
-  }
+	const file = e.target.files[0];
+	if (file) {
+		const maxSizeInBytes = 5 * 1024 * 1024; // 5MB
+		if (file.size > maxSizeInBytes) {
+			ElMessage.error("文件大小超过5MB，请重新上传");
+			return;
+		}
+		// 前端模式下使用本地URL
+		const localUrl = URL.createObjectURL(file);
+		form.value.avatarUrl = localUrl;
+		ElMessage.success("头像更新成功");
+	}
 };
 
 onMounted(() => {
-  // 前端模式下使用默认用户信息
-  form.value = {
-    id: 1,
-    username: userStore.userInfo.name || "本地用户",
-    nickname: userStore.userInfo.name || "本地用户",
-    avatarUrl: "",
-    email: "",
-    phone: "",
-    phoneCountryCode: "+86",
-    direction: "",
-    profession: "",
-    introduction: "",
-    createAt: "2024-01-01T00:00:00Z",
-  };
+	// 前端模式下使用默认用户信息
+	form.value = {
+		id: 1,
+		username: userStore.userInfo.name || "本地用户",
+		nickname: userStore.userInfo.name || "本地用户",
+		avatarUrl: "",
+		email: "",
+		phone: "",
+		phoneCountryCode: "+86",
+		direction: "",
+		profession: "",
+		introduction: "",
+		createAt: "2024-01-01T00:00:00Z",
+	};
 });
 </script>
 

@@ -64,7 +64,7 @@
 import type { VideoTrack } from "@/class/VideoTrack";
 import { baseFps } from "@/data/track";
 import { useTrackState } from "@/stores/track";
-import AttrCol from "./AttrCol.vue";
+import AttrCol from "../AttrCol.vue";
 import type { VideoResource } from "@/types/resource";
 
 const trackStore = useTrackState();
@@ -72,42 +72,42 @@ const trackStore = useTrackState();
 const track = computed(() => trackStore.selectTrack as VideoTrack);
 
 const resource = computed(
-	() => trackStore.selectTrack.resource as VideoResource,
+  () => trackStore.selectTrack.resource as VideoResource
 );
 
 const handleReGenerate = async () => {
-	if (!track.value) {
-		ElMessage.error("缺少重新生成所需的提示词");
-		return;
-	}
+  if (!track.value) {
+    ElMessage.error("缺少重新生成所需的提示词");
+    return;
+  }
 
-	try {
-		track.value.loading = true;
+  try {
+    track.value.loading = true;
 
-		// 这里需要根据实际情况调用生成API
-		// 由于我们已经移除了API调用，这里可能需要其他处理方式
-		ElMessage.info("重新生成功能需要后端支持");
+    // 这里需要根据实际情况调用生成API
+    // 由于我们已经移除了API调用，这里可能需要其他处理方式
+    ElMessage.info("重新生成功能需要后端支持");
 
-		// const resource = await text2video({
-		//   prompt: resource.value.meta.prompt,
-		//   sizeStr: "",
-		//   style: "",
-		// });
+    // const resource = await text2video({
+    //   prompt: resource.value.meta.prompt,
+    //   sizeStr: "",
+    //   style: "",
+    // });
 
-		// const newTrack = await trackStore.createTrack(resource, oldTrack.start);
-		// if (newTrack.end > oldTrack.end) {
-		//   newTrack.offsetR = newTrack.end - oldTrack.end;
-		//   newTrack.end = oldTrack.end;
-		// }
-		// trackStore.selectTrackById(oldTrack.id);
-		// const { line, index } = trackStore.selectTrackItem;
-		// trackStore.trackList[line].list.splice(index, 1, newTrack);
-	} catch (error) {
-		console.error("重新生成失败:", error);
-		ElMessage.error("重新生成失败");
-	} finally {
-		track.value.loading = false;
-	}
+    // const newTrack = await trackStore.createTrack(resource, oldTrack.start);
+    // if (newTrack.end > oldTrack.end) {
+    //   newTrack.offsetR = newTrack.end - oldTrack.end;
+    //   newTrack.end = oldTrack.end;
+    // }
+    // trackStore.selectTrackById(oldTrack.id);
+    // const { line, index } = trackStore.selectTrackItem;
+    // trackStore.trackList[line].list.splice(index, 1, newTrack);
+  } catch (error) {
+    console.error("重新生成失败:", error);
+    ElMessage.error("重新生成失败");
+  } finally {
+    track.value.loading = false;
+  }
 };
 </script>
 

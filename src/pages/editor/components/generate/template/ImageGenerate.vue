@@ -35,8 +35,8 @@
 <script lang="ts" setup>
 import { reactive, ref } from "vue";
 import { useResourceState } from "@/stores/resource";
-import ResourceList from "../resource/ResourceList.vue";
-import { ImageResource } from "@/types/resource";
+import ResourceList from "../../resource/ResourceList.vue";
+import type { ImageResource } from "@/types/resource";
 import { ImageSizeList } from "@/data/constant";
 import { OpenAIService } from "@/class/OpenAI";
 import { urlToFile } from "@/utils/file";

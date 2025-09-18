@@ -2,7 +2,7 @@
   <div
     class="trackList flex flex-1 flex-row w-full overflow-x-hidden overflow-y-auto relative"
   >
-    <TrackListIcon :listData="showTrackList" :offsetTop="startY" />
+    <TrackListIcon :listData="store.trackList" :offsetTop="startY" />
     <div
       class="flex-1 overflow-x-scroll overflow-y-auto flex-col shrink-0 grow relative"
       ref="trackList"
@@ -28,7 +28,7 @@
         @dragover.stop.prevent="setDropLineLeft"
         @drop="onDrop"
       >
-        <template v-if="showTrackList.length === 0">
+        <template v-if="store.trackList.length === 0">
           <div
             class="flex justify-center items-center h-24 m-auto w-2/3 dark:bg-gray-500 bg-gray-200 rounded-md text-sm border-dashed border-2 dark:border-gray-500 border-gray-200 hover:dark:border-blue-300 hover:border-blue-400"
           >
@@ -43,7 +43,7 @@
           id="track-container"
         >
           <template
-            v-for="(lineData, lineIndex) of showTrackList"
+            v-for="(lineData, lineIndex) of store.trackList"
             :key="lineData.list.reduce((r, item) => r + item.id, 'line')"
           >
             <TrackLine
@@ -65,9 +65,9 @@
             />
           </template>
         </div>
-        <TrackPlayPoint v-show="showTrackList.length !== 0" />
+        <TrackPlayPoint v-show="store.trackList.length !== 0" />
 
-        <template v-if="showTrackList.length !== 0">
+        <template v-if="store.trackList.length !== 0">
           <div
             v-for="(line, i) in store.dragData.fixLines.reduce(
               (r, item) => r.concat(item),
@@ -80,7 +80,7 @@
         </template>
 
         <div
-          v-if="showTrackList.length !== 0 && dropItemLeft !== 0"
+          v-if="store.trackList.length !== 0 && dropItemLeft !== 0"
           class="z-30 w-px absolute -top-5 bottom-0 bg-yellow-300 dark:bg-yellow-300"
           :style="{ left: `${dropItemLeft}px` }"
         />
@@ -90,10 +90,10 @@
 </template>
 
 <script setup lang="ts">
-import TimeLine from "./item/TimeLine.vue";
-import TrackLine from "./item/TrackLine.vue";
-import TrackListIcon from "./item/TrackListIcon.vue";
-import TrackPlayPoint from "./item/TrackPlayPoint.vue";
+import TimeLine from "./TimeLine.vue";
+import TrackLine from "./TrackLine.vue";
+import TrackListIcon from "./TrackListIcon.vue";
+import TrackPlayPoint from "./TrackPlayPoint.vue";
 import { getGridPixel, getSelectFrame } from "@/utils/canvasUtil";
 import { ref, computed } from "vue";
 import { useTrackState } from "@/stores/track";
@@ -126,31 +126,13 @@ const dropItemLeft = ref(0); // 目标left值
 const insertBefore = ref(true); // 之前插入还是之后插入
 const dragPoint = computed(() => store.dragData.dragPoint);
 
-const mainIndex = ref(0); // main 行下标
-
-const showTrackList = computed(() => {
-  return store.trackList.map((line, lineIndex) => {
-    line.main && (mainIndex.value = lineIndex);
-
-    const newList = line.list.map((item) => {
-      return {
-        ...item,
-        showWidth: `${getGridPixel(trackScale.value, item.end - item.start)}px`,
-        showLeft: `${getGridPixel(trackScale.value, item.start)}px`,
-      };
-    });
-    return {
-      ...line,
-      list: newList,
-    };
-  });
-});
 function setSelectTract(event: Event, line: number, index: number) {
   event.preventDefault();
   event.stopPropagation();
   store.selectTrackItem.line = line;
   store.selectTrackItem.index = index;
 }
+
 function handlerSelectFrame(frame: number) {
   const playFrame = frame - 1;
   const startFrame = playFrame < 0 ? 0 : playFrame;

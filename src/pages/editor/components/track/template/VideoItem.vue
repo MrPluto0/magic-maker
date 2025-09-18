@@ -4,10 +4,7 @@
       class="flex items-center text-xs pl-2 overflow-hidden h-5 leading-5 bg-[#4b4f54] text-white"
     >
       <i class="i-mdi-video mr-2 text-lg shrink-0"></i>
-      <span class="mr-2" v-if="resource">
-        [{{ resource.duration.toFixed(1) }}s]
-      </span>
-      <span class="shrink-0">{{ `${trackItem.name}` }}</span>
+      <span class="mr-4 shrink-0">{{ `${trackItem.name}` }}</span>
     </div>
     <div
       ref="container"
@@ -41,23 +38,19 @@
 <script setup lang="ts">
 import Loading from "@/components/Loading.vue";
 import { usePlayerState } from "@/stores/player";
-import { videoDecoder } from "@/utils/webcodecs";
 import type { VideoTrack } from "@/class/VideoTrack";
 import { getGridPixel } from "@/utils/canvasUtil";
 import { useTrackState } from "@/stores/track";
+import { decoder } from "@/class/Decoder";
 
-const props = defineProps({
-  trackItem: {
-    type: Object as PropType<VideoTrack>,
-  },
-});
+const { trackItem } = defineProps<{ trackItem: VideoTrack }>();
 const store = usePlayerState();
 const trackStore = useTrackState();
 
 const container = ref();
 const loading = ref(true);
 const thumbnails = ref([]);
-const resource = computed(() => props.trackItem.resource);
+const resource = computed(() => trackItem.resource);
 
 async function initVideo() {
   if (!resource.value) {
@@ -69,17 +62,7 @@ async function initVideo() {
     store.ingLoadingCount++;
     loading.value = true;
 
-    const unitWidth = getGridPixel(
-      trackStore.trackScale,
-      props.trackItem.frameCount
-    );
-    const imgCount = Math.ceil(unitWidth / 50);
-    const step = Math.ceil((resource.value.duration * 1e6) / imgCount);
-    const imgs = await videoDecoder.thumbnails(
-      props.trackItem,
-      trackStore.trackScale,
-      step
-    );
+    const imgs = await decoder.thumbnails(trackItem, trackStore.trackScale);
     thumbnails.value = imgs.map(({ img }) => {
       return URL.createObjectURL(img);
     });
@@ -89,7 +72,7 @@ async function initVideo() {
   }
 }
 
-watch(() => [props.trackItem, resource.value], initVideo, {
+watch(() => [trackItem, resource.value], initVideo, {
   immediate: true,
   flush: "post",
 });

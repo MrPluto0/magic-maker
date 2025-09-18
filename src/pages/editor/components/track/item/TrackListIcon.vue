@@ -25,27 +25,27 @@
 <script setup lang="ts">
 import { ref, watch } from "vue";
 import { TrackHeightMap } from "@/data/track";
-import { TrackLineItem } from "@/types/track";
+import type { TrackLineItem } from "@/types/track";
 import { IconMap } from "@/data/menu";
 
 const props = defineProps({
-  listData: {
-    type: Array as PropType<TrackLineItem[]>,
-    default() {
-      return [];
-    },
-  },
-  offsetTop: {
-    type: Number,
-    default: 0,
-  },
+	listData: {
+		type: Array as PropType<TrackLineItem[]>,
+		default() {
+			return [];
+		},
+	},
+	offsetTop: {
+		type: Number,
+		default: 0,
+	},
 });
 
 const iconList = ref();
 watch(
-  () => props.offsetTop,
-  () => {
-    iconList.value.scrollTop = props.offsetTop;
-  }
+	() => props.offsetTop,
+	() => {
+		iconList.value.scrollTop = props.offsetTop;
+	},
 );
 </script>

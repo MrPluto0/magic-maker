@@ -28,10 +28,10 @@
         <el-switch v-model="track.mute" />
       </AttrCol>
       <AttrCol name="字幕">
-        <el-switch v-model="track.drawSub" />
+        <el-switch v-model="track.subtitle.show" />
       </AttrCol>
     </div>
-    <template v-if="track.drawSub">
+    <template v-if="track.subtitle.show">
       <div class="flex">
         <AttrCol name="字号">
           <el-input-number
@@ -87,35 +87,26 @@
 <script lang="ts" setup>
 import { baseFps } from "@/data/track";
 import { useTrackState } from "@/stores/track";
-import AttrCol from "./AttrCol.vue";
+import AttrCol from "../AttrCol.vue";
 import type { AudioTrack } from "@/class/AudioTrack";
 import { debounce } from "lodash-es";
-import { audioDecoder, subtitleDecoder } from "@/utils/webcodecs";
 import { usePlayerState } from "@/stores/player";
+import { decoder } from "@/class/Decoder";
 
 const playerStore = usePlayerState();
 const trackStore = useTrackState();
 const track = computed(() => trackStore.selectTrack as AudioTrack);
 
 const handleReGenerate = () => {
-	ElMessage.info("前端模式下暂不支持重新生成功能");
+  ElMessage.info("前端模式下暂不支持重新生成功能");
 };
 
 watch(
-	() => track.value.volume,
-	debounce(() => {
-		playerStore.isPause = true;
-		audioDecoder.updateVolume(track.value, track.value.volume);
-	}, 100),
-);
-
-watch(
-	() => track.value.subtitle,
-	debounce(async () => {
-		playerStore.isPause = true;
-		await subtitleDecoder.decode(track.value);
-	}, 100),
-	{ deep: true },
+  () => [track.value.volume, track.value.subtitle],
+  debounce(() => {
+    playerStore.isPause = true;
+    decoder.decode(track.value, true);
+  }, 100)
 );
 </script>
 

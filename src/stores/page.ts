@@ -5,15 +5,10 @@ export const usePageState = defineStore(
   "page",
   () => {
     const pageTitle = ref("Magic Maker");
-    // 暗色模式
-    const isDark = ref(true);
-    const isLoading = ref(true);
-    // 属性宽度
-    const attrWidth = ref(320);
-    // 轨道高度
-    const trackHeight = ref(380);
-    // 素材区宽度
-    const resourceWidth = ref(370);
+    const isDark = ref(true); // 暗色模式
+    const attrWidth = ref(320); // 属性区宽度
+    const trackHeight = ref(380); // 素材轨道高度
+    const resourceWidth = ref(370); // 素材区宽度
 
     // AI设置表单
     const aiSettings = ref({
@@ -29,7 +24,6 @@ export const usePageState = defineStore(
     });
 
     return {
-      isLoading,
       pageTitle,
       isDark,
       attrWidth,

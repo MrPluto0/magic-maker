@@ -120,22 +120,22 @@ const route = useRoute();
 const showUserInfo = ref(false);
 
 const menu = [
-  {
-    name: "主页",
-    to: "/home",
-  },
-  {
-    name: "图像编辑",
-    to: "/draw",
-  },
-  {
-    name: "视频剪辑",
-    to: "/editor",
-  },
+	{
+		name: "主页",
+		to: "/home",
+	},
+	{
+		name: "图像编辑",
+		to: "/draw",
+	},
+	{
+		name: "视频剪辑",
+		to: "/editor",
+	},
 ];
 
 const openGithub = () => {
-  window.open("https://github.com/MrPluto0/magic-maker", "_blank");
+	window.open("https://github.com/MrPluto0/magic-maker", "_blank");
 };
 </script>
 

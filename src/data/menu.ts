@@ -1,10 +1,10 @@
 import type { TrackType } from "@/types/track";
 import type { Component } from "vue";
-import TextGenerate from "@/pages/editor/components/generate/TextGenerate.vue";
-import ImageGenerate from "@/pages/editor/components/generate/ImageGenerate.vue";
-import AudioGenerate from "@/pages/editor/components/generate/AudioGenerate.vue";
-import VideoGenerate from "@/pages/editor/components/generate/VideoGenerate.vue";
-import SpeechGenerate from "@/pages/editor/components/generate/SpeechGenerate.vue";
+import TextGenerate from "@/pages/editor/components/generate/template/TextGenerate.vue";
+import ImageGenerate from "@/pages/editor/components/generate/template/ImageGenerate.vue";
+import AudioGenerate from "@/pages/editor/components/generate/template/AudioGenerate.vue";
+import VideoGenerate from "@/pages/editor/components/generate/template/VideoGenerate.vue";
+import SpeechGenerate from "@/pages/editor/components/generate/template/SpeechGenerate.vue";
 
 export interface MenuItem {
   title: string;

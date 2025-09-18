@@ -42,32 +42,32 @@ import { useUserState } from "@/stores/user";
 const userStore = useUserState();
 
 const form = reactive({
-  username: "",
-  password: "",
-  email: "",
+	username: "",
+	password: "",
+	email: "",
 });
 
 const handleClose = () => {
-  userStore.showRegister = false;
+	userStore.showRegister = false;
 };
 
 const handleRegister = () => {
-  if (!form.username || !form.password) {
-    ElMessage.error("请输入账号和密码");
-    return;
-  }
+	if (!form.username || !form.password) {
+		ElMessage.error("请输入账号和密码");
+		return;
+	}
 
-  const success = userStore.register(form.username, form.password, form.email);
-  if (success) {
-    ElMessage.success("注册成功");
-  } else {
-    ElMessage.error("注册失败");
-  }
+	const success = userStore.register(form.username, form.password, form.email);
+	if (success) {
+		ElMessage.success("注册成功");
+	} else {
+		ElMessage.error("注册失败");
+	}
 };
 
 const handleLogin = () => {
-  userStore.showLogin = true;
-  userStore.showRegister = false;
+	userStore.showLogin = true;
+	userStore.showRegister = false;
 };
 </script>
 

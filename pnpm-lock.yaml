@@ -23,12 +23,9 @@ importers:
       '@vueuse/core':
         specifier: ^11.2.0
         version: 11.2.0(vue@3.5.11(typescript@4.7.4))
-      '@webav/av-canvas':
-        specifier: ^1.0.4
-        version: 1.0.4
       '@webav/av-cliper':
-        specifier: ^1.0.10
-        version: 1.0.10
+        specifier: ^1.2.1
+        version: 1.2.1
       '@webtoon/psd':
         specifier: ^0.4.0
         version: 0.4.0
@@ -126,9 +123,6 @@ importers:
       gh-pages:
         specifier: ^6.3.0
         version: 6.3.0
-      prettier:
-        specifier: ^2.8.0
-        version: 2.8.8
       typescript:
         specifier: ~4.7.4
         version: 4.7.4
@@ -1212,23 +1206,14 @@ packages:
   '@vueuse/shared@9.13.0':
     resolution: {integrity: sha512-UrnhU+Cnufu4S6JLCPZnkWh0WwZGUp72ktOF2DFptMlOs3TOdVv8xJN53zhHGARmVOsz5KqOls09+J1NR6sBKw==}
 
-  '@webav/av-canvas@1.0.4':
-    resolution: {integrity: sha512-ACOHJFq9Rdak9LVScIaW7ZN3CyqGmXFujCG8sc3af6V3tu0kxYepJlo2qEnQhUD2KIL2exzU2QxV/lwn5SnFKQ==}
+  '@webav/av-cliper@1.2.1':
+    resolution: {integrity: sha512-I+bCSyteJbvYQQ4N4xHpcaoauEWR6F5fbVZF3hZTDddVO5lFMb5OZdigUoDm8SK2dmgTOstna4QEi+0D170jfA==}
 
-  '@webav/av-cliper@1.0.10':
-    resolution: {integrity: sha512-R8PVLlGAT0WNvOIW+MPCkEbEJOefwtjeCFGfaAud+PGzLn/OzFDHohW1hgK7ESsffURjqAz/xn6jD1tTUYvAGQ==}
+  '@webav/internal-utils@1.2.1':
+    resolution: {integrity: sha512-L0/keoxVHlBrUWfAygOo3XZ6DmtDk9WnOqL1ZgRiJQ//kpRlN1eSInQq1uuxAgjfkWSZHDqbbhq+KcMnTiYPxg==}
 
-  '@webav/av-cliper@1.0.4':
-    resolution: {integrity: sha512-2ZzhsFi3xpqXfk6EoQnE4CwiTfkxgKQ6mF/0ChOfQMlNdeKOjlK9H6vK4uT197XZ12xsg7oQpUsll3BtJPt5VA==}
-
-  '@webav/internal-utils@1.0.10':
-    resolution: {integrity: sha512-V3TNloVaXnm1zkk3oT2XXUJjUqtcXMaYs3UHYmG0QGpDCvPmupA1I2Sy/QM6cpYJ/TtoDaQ/zEhyKnybZHRh+Q==}
-
-  '@webav/internal-utils@1.0.4':
-    resolution: {integrity: sha512-SQAvXuvkaCgTy71qH+tLAZGkBGUzOTa8euX4Yj96EfB7eOGIy2VxndEtPA42xdIj8BFVNMnWpEnpH779sFJ07A==}
-
-  '@webav/mp4box.js@0.5.4-fenghen':
-    resolution: {integrity: sha512-1NDZyNcB4Eu52tWhrRPGRTXpXUzWzh1xJE6jA0owj/Tlh8d9Bhsu2nsl9Dyheg1IhiFm3FfFoz0aK5dkCadqow==}
+  '@webav/mp4box.js@0.5.7':
+    resolution: {integrity: sha512-KgScEtDpiLnWvj1Rj8Ri9fDWxTjfdNr7cmY/PT88EmttHh6cLxMAeyD/W8Vydes4z7qV/c5VDAaP4cTlaO0E9g==}
 
   '@webtoon/psd@0.4.0':
     resolution: {integrity: sha512-ztriE8oFOamRrV9opBURDy+JMiyhur2//vOXsC5CgdnYCB0L1Lnaag4NzP8N+NFCj7uNz9JRYtPmAbQMSDLIsQ==}
@@ -2209,8 +2194,8 @@ packages:
   opfs-tools@0.4.3:
     resolution: {integrity: sha512-tIg2uPhh7Ax5wAmdQYsjsJG8475vErs0kC6NZIWD7EOv3wADE4KB8b2USPRtqCLyEO3B51NNg9bSKtx8phq1Vw==}
 
-  opfs-tools@0.6.1:
-    resolution: {integrity: sha512-UAopBwr64jzyrNUr4LWWhLGZY2dAzNIKX/CTI48wR5V88dx3aqx0DN+NdosMY9vZ0heb12ZMTPQ0XpoC4cfSOA==}
+  opfs-tools@0.7.2:
+    resolution: {integrity: sha512-ITMh4BnRCh/wFDFFaTsZOFLGUCoXbtn4KH1qh4S2LLF31+afqhXxz0NK74wqyRB5tbgnDD2SDcn7J4HeEVuvgg==}
 
   overlap-area@1.1.0:
     resolution: {integrity: sha512-3dlJgJCaVeXH0/eZjYVJvQiLVVrPO4U1ZGqlATtx6QGO3b5eNM6+JgUKa7oStBTdYuGTk7gVoABCW6Tp+dhRdw==}
@@ -2346,11 +2331,6 @@ packages:
   postcss@8.5.6:
     resolution: {integrity: sha512-3Ybi1tAuwAP9s0r1UQ2J4n5Y0G05bJkpUIO0/bI9MhwmD70S5aTWbXGBwxHrelT+XM1k6dM0pk+SwNkpTRN7Pg==}
     engines: {node: ^10 || ^12 || >=14}
-
-  prettier@2.8.8:
-    resolution: {integrity: sha512-tdN8qQGvNjw4CHbY+XXk0JgCXn9QiF21a55rBe5LJAU+kDyC4WQn4+awm2Xfk2lQMk5fKup9XgzTZtGkjBdP9Q==}
-    engines: {node: '>=10.13.0'}
-    hasBin: true
 
   pretty-ms@9.2.0:
     resolution: {integrity: sha512-4yf0QO/sllf/1zbZWYnvWw3NxCQwLXKzIj0G849LSufP15BXKM0rbD2Z3wVnkMfjdn/CB0Dpp444gYAACdsplg==}
@@ -4236,34 +4216,18 @@ snapshots:
       - '@vue/composition-api'
       - vue
 
-  '@webav/av-canvas@1.0.4':
+  '@webav/av-cliper@1.2.1':
     dependencies:
-      '@webav/av-cliper': 1.0.4
-      '@webav/internal-utils': 1.0.4
-
-  '@webav/av-cliper@1.0.10':
-    dependencies:
-      '@webav/internal-utils': 1.0.10
-      '@webav/mp4box.js': 0.5.4-fenghen
-      opfs-tools: 0.6.1
+      '@webav/internal-utils': 1.2.1
+      '@webav/mp4box.js': 0.5.7
+      opfs-tools: 0.7.2
       wave-resampler: 1.0.0
 
-  '@webav/av-cliper@1.0.4':
+  '@webav/internal-utils@1.2.1':
     dependencies:
-      '@webav/internal-utils': 1.0.4
-      '@webav/mp4box.js': 0.5.4-fenghen
-      opfs-tools: 0.6.1
-      wave-resampler: 1.0.0
+      '@webav/mp4box.js': 0.5.7
 
-  '@webav/internal-utils@1.0.10':
-    dependencies:
-      '@webav/mp4box.js': 0.5.4-fenghen
-
-  '@webav/internal-utils@1.0.4':
-    dependencies:
-      '@webav/mp4box.js': 0.5.4-fenghen
-
-  '@webav/mp4box.js@0.5.4-fenghen': {}
+  '@webav/mp4box.js@0.5.7': {}
 
   '@webtoon/psd@0.4.0': {}
 
@@ -5213,7 +5177,7 @@ snapshots:
 
   opfs-tools@0.4.3: {}
 
-  opfs-tools@0.6.1: {}
+  opfs-tools@0.7.2: {}
 
   overlap-area@1.1.0:
     dependencies:
@@ -5332,8 +5296,6 @@ snapshots:
       nanoid: 3.3.11
       picocolors: 1.1.1
       source-map-js: 1.2.1
-
-  prettier@2.8.8: {}
 
   pretty-ms@9.2.0:
     dependencies:

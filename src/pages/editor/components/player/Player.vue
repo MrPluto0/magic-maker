@@ -37,25 +37,19 @@
 </template>
 
 <script setup lang="ts">
-import PlayerMoveable from "./item/PlayerMoveable.vue";
-import PlayerControl from "./item/PlayerControl.vue";
+import PlayerMoveable from "./PlayerMoveable.vue";
+import PlayerControl from "./PlayerControl.vue";
 import { usePlayerState } from "@/stores/player";
 import { CanvasPlayer } from "@/class/CanvasPlayer";
 import { storeToRefs } from "pinia";
 import { useTrackState } from "@/stores/track";
 
-const props = defineProps({
+const props = defineProps<{
   containerSize: {
-    // 容器大小
-    type: Object,
-    default() {
-      return {
-        width: 0,
-        height: 0,
-      };
-    },
-  },
-});
+    width: number;
+    height: number;
+  };
+}>();
 
 const store = usePlayerState();
 const { playerWidth, playerHeight } = storeToRefs(store);

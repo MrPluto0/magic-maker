@@ -25,10 +25,10 @@
 <script setup lang="ts">
 import { useTrackState } from "@/stores/track";
 import { usePageState } from "@/stores/page";
-import VideoAttr from "./attributes/items/VideoAttr.vue";
-import ImageAttr from "./attributes/items/ImageAttr.vue";
-import AudioAttr from "./attributes/items/AudioAttr.vue";
-import TextAttr from "./attributes/items/TextAttr.vue";
+import VideoAttr from "./template/VideoAttr.vue";
+import ImageAttr from "./template/ImageAttr.vue";
+import AudioAttr from "./template/AudioAttr.vue";
+import TextAttr from "./template/TextAttr.vue";
 
 const pageStore = usePageState();
 const trackStore = useTrackState();

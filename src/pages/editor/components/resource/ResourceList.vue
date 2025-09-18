@@ -15,10 +15,10 @@
 <script setup lang="ts">
 import type { Resource } from "@/types/resource";
 import ResourceItem from "../resource/ResourceItem.vue";
-import { TrackType } from "@/types/track";
+import type { TrackType } from "@/types/track";
 
 defineProps<{
-  listData: Resource[];
-  type: TrackType;
+	listData: Resource[];
+	type: TrackType;
 }>();
 </script>

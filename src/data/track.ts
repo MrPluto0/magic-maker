@@ -10,31 +10,13 @@ export const TrackHeightMap = {
   audio: "h-12",
   text: "h-6",
   image: "h-10",
-};
+} as const;
 
 export const WaveOptions = {
   height: 28,
-  width: "100%",
-  splitChannels: false,
-  normalize: true,
   waveColor: "#007bff",
   progressColor: "#dd5e98",
   cursorColor: "#ddd5e9",
-  cursorWidth: 0,
-  barWidth: 1,
-  barGap: 1,
-  barRadius: 1,
-  barHeight: 0.6,
   barAlign: "bottom",
-  minPxPerSec: 1,
-  fillParent: true,
-  mediaControls: true,
-  autoplay: false,
   interact: false,
-  dragToSeek: false,
-  hideScrollbar: false,
-  audioRate: 0.1,
-  autoScroll: true,
-  autoCenter: true,
-  sampleRate: 8000,
 } as const;

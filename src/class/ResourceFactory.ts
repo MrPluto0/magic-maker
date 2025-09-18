@@ -6,10 +6,9 @@ import type {
   VideoResource,
   TextResource,
 } from "@/types/resource";
-import { videoDecoder, audioDecoder, imageDecoder } from "./webcodecs";
 import { FILE_SIZE_LIMITS } from "@/data/file";
-import { writeFileToOPFS } from "./file";
-import { MP4Clip } from "@webav/av-cliper";
+import { writeFileToOPFS } from "@/utils/file";
+import { AudioClip, ImgClip, MP4Clip } from "@webav/av-cliper";
 
 /**
  * 资源工厂类
@@ -51,10 +50,8 @@ export class ResourceFactory {
     resource: any
   ): Promise<VideoResource> {
     const url = URL.createObjectURL(file);
-    const clip = await videoDecoder.decodeFromStream(
-      file.stream(),
-      resource.id
-    );
+    const clip = new MP4Clip(file.stream());
+    await clip.ready;
     const meta = clip.meta;
 
     return {
@@ -74,10 +71,8 @@ export class ResourceFactory {
     resource: any
   ): Promise<AudioResource> {
     const url = URL.createObjectURL(file);
-    const clip = await audioDecoder.decodeFromStream(
-      file.stream(),
-      resource.id
-    );
+    const clip = new AudioClip(file.stream());
+    await clip.ready;
     const meta = clip.meta;
 
     return {
@@ -94,11 +89,8 @@ export class ResourceFactory {
     resource: any
   ): Promise<ImageResource> {
     const url = URL.createObjectURL(file);
-    const clip = await imageDecoder.decodeFromStream(
-      file.stream(),
-      resource.id,
-      file.type
-    );
+    const clip = new ImgClip({ stream: file.stream(), type: file.type as any });
+    await clip.ready;
     const meta = clip.meta;
 
     return {

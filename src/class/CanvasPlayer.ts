@@ -2,10 +2,8 @@ import { AudioTrack } from "@/class/AudioTrack";
 import { baseFps } from "@/data/track";
 import { usePlayerState } from "@/stores/player";
 import { useTrackState } from "@/stores/track";
-import type { Track } from "@/types/track";
+import type { DrawTrack } from "@/types/track";
 import { preciseInterval } from "@/utils/common";
-import { watch, reactive } from "vue";
-import type { Ref } from "vue";
 
 export class CanvasPlayer {
   playerStore = usePlayerState();
@@ -56,28 +54,26 @@ export class CanvasPlayer {
   async #render() {
     if (this.playerStore.ingLoadingCount !== 0) return;
 
-    const drawList: Track[] = [];
-    const audioList: AudioTrack[] = [];
+    const drawList: DrawTrack[] = [];
+    const playList: AudioTrack[] = [];
 
-    this.playerStore.playingTracks.forEach(async (trackItem) => {
+    this.playerStore.playingTracks.forEach((trackItem) => {
       if (trackItem instanceof AudioTrack) {
-        audioList.push(trackItem);
+        playList.push(trackItem);
       } else {
         drawList.unshift(trackItem);
       }
     });
 
-    // 最后绘制旁白音频的字幕
-    drawList.push(...audioList);
+    // // 最后绘制旁白音频的字幕
+    // drawList.push(...playList);
 
-    this.#renderCanvas(drawList);
-    if (!this.playerStore.isPause) {
-      this.#renderAudio(audioList);
-    }
+    this.#drawCanvas(drawList);
+    this.#playAudio(playList);
   }
 
-  // 将预渲染好的canvas进行渲播放器渲染
-  async #renderCanvas(tracks: Track[]) {
+  // 将预渲染好的canvas进行播放器渲染
+  async #drawCanvas(tracks: DrawTrack[]) {
     const offCanvas = new OffscreenCanvas(
       this.playerStore.playerWidth,
       this.playerStore.playerHeight
@@ -99,11 +95,14 @@ export class CanvasPlayer {
       );
     }
   }
-  async #renderAudio(tracks: AudioTrack[]) {
+
+  async #playAudio(tracks: AudioTrack[]) {
+    if (this.playerStore.isPause) return;
+
     const asList: AudioBufferSourceNode[] = [];
 
     for (const track of tracks) {
-      const as = await track.render(
+      const as = await track.play(
         this.audioContext,
         this.playerStore.playStartFrame
       );
@@ -133,6 +132,7 @@ export class CanvasPlayer {
     this.audioPlayAt = curAudioTime + addTime;
   }
 
+  // 开始播放音视频
   #play() {
     if (this.playerStore.playStartFrame >= this.trackState.frameCount) {
       this.playerStore.playStartFrame = 0;
@@ -142,11 +142,12 @@ export class CanvasPlayer {
     this.playerTimer = preciseInterval(() => {
       this.playerStore.playStartFrame++;
       if (this.playerStore.playStartFrame >= this.trackState.frameCount) {
-        this.#pause();
+        this.playerStore.isPause = true;
       }
     }, 1000 / baseFps);
   }
 
+  // 暂停播放音视频
   #pause() {
     this.playerTimer?.cancel();
     this.audioContext.suspend();

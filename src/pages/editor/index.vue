@@ -58,10 +58,10 @@ import { useProjectState } from "@/stores/project";
 import { clearHotKey, initEditorHotKey } from "@/plugins/installHotKey";
 import SplitLine from "@/components/SplitLine.vue";
 import CanvasPlayer from "./components/player/CanvasPlayer.vue";
-import GenerateContainer from "./components/GenerateContainer.vue";
-import UploadContainer from "./components/UploadContainer.vue";
-import TrackContainer from "./components/TrackContainer.vue";
-import AttributeContainer from "./components/AttributeContainer.vue";
+import GenerateContainer from "./components/generate/GenerateContainer.vue";
+import UploadContainer from "./components/resource/UploadContainer.vue";
+import TrackContainer from "./components/track/TrackContainer.vue";
+import AttributeContainer from "./components/attribute/AttributeContainer.vue";
 
 const pageStore = usePageState();
 const projectStore = useProjectState();
@@ -69,9 +69,7 @@ const timer = ref();
 
 onMounted(() => {
   initEditorHotKey();
-  timer.value = setInterval(async () => {
-    await projectStore.saveProject();
-  }, 30 * 1000);
+  timer.value = setInterval(projectStore.saveProject, 60 * 1000);
 });
 
 onUnmounted(() => {

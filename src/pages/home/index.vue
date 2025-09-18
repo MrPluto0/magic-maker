@@ -67,7 +67,7 @@ const showCreate = ref(false);
 const showUsage = ref(false);
 
 const openPage = () => {
-  window.open("https://www.gypsophlia.top/");
+	window.open("https://www.gypsophlia.top/");
 };
 </script>
 

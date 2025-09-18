@@ -29,7 +29,7 @@ import MenuList from "@/components/MenuList.vue";
 import { EditorMaterialMenu } from "@/data/menu";
 import { useResourceState } from "@/stores/resource";
 import type { UploadUserFile } from "element-plus";
-import ResourceList from "./resource/ResourceList.vue";
+import ResourceList from "./ResourceList.vue";
 
 const resourceStore = useResourceState();
 const fileList = ref<UploadUserFile[]>([]);
