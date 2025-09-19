@@ -177,9 +177,7 @@ function getComputedPosition(element: HTMLElement) {
 
 function onMouseDown(event: MouseEvent) {
   // 获取拖拽元素
-  dragElement = (event.target as HTMLElement).closest(
-    ".trackItem"
-  ) as HTMLElement;
+  dragElement = (event.target as HTMLElement).closest(".trackItem");
 
   if (!dragElement) {
     return;
@@ -355,10 +353,9 @@ function getInsertInfo(): InsertInfo {
   return { insertIndex, itemIndex, left, right, isNewLine, start, end };
 }
 
-// 获取吸附辅助线
+// 获取吸附辅助线，获取与拖拽元素left、right，距离小于distance的元素
 function getFixLine(x: number, distance = 10) {
-  // otherCoords、游标位置
-  // 先获取与拖拽元素left、right，距离小于distance的元素
+  // 获取与游标位置距离小于distance的其他track
   const result = [];
   otherCoords.forEach((coord) => {
     if (Math.abs(coord.left - x) <= distance) {
@@ -368,7 +365,7 @@ function getFixLine(x: number, distance = 10) {
       result.push({ position: coord.right, frame: coord.end });
     }
   });
-  // 获取与游标位置距离小于distance的元素
+  // 获取与游标位置距离小于distance的播放点位
   const trackPlayPointX = getGridPixel(
     store.trackScale,
     playerStore.playStartFrame

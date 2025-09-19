@@ -27,21 +27,20 @@ import TextItem from "../template/TextItem.vue";
 import ImageItem from "../template/ImageItem.vue";
 import { TrackHeightMap } from "@/data/track";
 import { useTrackState } from "@/stores/track";
-import { computed } from "vue";
 import { getGridPixel } from "@/utils/canvasUtil";
 import type { Track } from "@/types/track";
 
 const componentMap = new Map<string, any>([
-	["video", VideoItem],
-	["audio", AudioItem],
-	["text", TextItem],
-	["image", ImageItem],
+  ["video", VideoItem],
+  ["audio", AudioItem],
+  ["text", TextItem],
+  ["image", ImageItem],
 ]);
 
 const { lineIndex, itemIndex, trackItem } = defineProps<{
-	lineIndex: number;
-	itemIndex: number;
-	trackItem: Track;
+  lineIndex: number;
+  itemIndex: number;
+  trackItem: Track;
 }>();
 
 const store = useTrackState();
@@ -49,38 +48,38 @@ const store = useTrackState();
 const trackType = computed(() => trackItem.type);
 
 const isActive = computed(() => {
-	return (
-		store.selectTrackItem.line === lineIndex &&
-		store.selectTrackItem.index === itemIndex
-	);
+  return (
+    store.selectTrackItem.line === lineIndex &&
+    store.selectTrackItem.index === itemIndex
+  );
 });
 
 const isDragState = computed(() => {
-	return (
-		store.moveTrackData.lineIndex === lineIndex &&
-		store.moveTrackData.itemIndex === itemIndex
-	);
+  return (
+    store.moveTrackData.lineIndex === lineIndex &&
+    store.moveTrackData.itemIndex === itemIndex
+  );
 });
 
 function setSelectTract(event: Event) {
-	event.preventDefault();
-	event.stopPropagation();
-	store.selectTrackItem.line = lineIndex;
-	store.selectTrackItem.index = itemIndex;
+  event.preventDefault();
+  event.stopPropagation();
+  store.selectTrackItem.line = lineIndex;
+  store.selectTrackItem.index = itemIndex;
 }
 
 const itemClass = computed(() => {
-	const showWidth = `${getGridPixel(
-		store.trackScale,
-		trackItem.end - trackItem.start,
-	)}px`;
-	const showLeft = `${getGridPixel(store.trackScale, trackItem.start)}px`;
-	return {
-		width: showWidth,
-		left: isDragState
-			? `${parseInt(showLeft) + store.dragData.moveX}px`
-			: showLeft,
-		top: isDragState ? `${store.dragData.moveY}px` : "",
-	};
+  const showWidth = `${getGridPixel(
+    store.trackScale,
+    trackItem.end - trackItem.start
+  )}px`;
+  const showLeft = `${getGridPixel(store.trackScale, trackItem.start)}px`;
+  return {
+    width: showWidth,
+    left: isDragState
+      ? `${parseInt(showLeft) + store.dragData.moveX}px`
+      : showLeft,
+    top: isDragState ? `${store.dragData.moveY}px` : "",
+  };
 });
 </script>

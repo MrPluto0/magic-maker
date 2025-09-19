@@ -39,17 +39,9 @@ import { usePlayerState } from "@/stores/player";
 import { useTrackState } from "@/stores/track";
 import type { DrawTrack } from "@/types/track";
 
-defineProps({
-  canvasSize: {
-    type: Object,
-    default() {
-      return {
-        width: 0,
-        height: 0,
-      };
-    },
-  },
-});
+defineProps<{
+  canvasSize: { width: number; height: number };
+}>();
 
 const store = usePlayerState();
 const trackStore = useTrackState();
@@ -112,7 +104,6 @@ const targetList = computed(() => {
 });
 const draggableOptions = reactive({
   target: moveTarget,
-  className: "cc-move",
   container: moveContainer.value,
   ...defaultMoveOptions,
 });
@@ -178,12 +169,3 @@ watch(
   { immediate: true, flush: "post" }
 );
 </script>
-
-<style>
-body .cc-move .moveable-control {
-  @apply border w-6 h-6 border-yellow-400 bg-gray-50 -ml-3 -mt-3;
-}
-body .cc-move .moveable-line {
-  @apply bg-yellow-400 w-px;
-}
-</style>

@@ -54,15 +54,20 @@ export class ResourceFactory {
     await clip.ready;
     const meta = clip.meta;
 
+    const cover = await ResourceFactory.createCover(clip);
+    if (cover) {
+      writeFileToOPFS(resource.id + "_cover", cover);
+    }
+
     return {
       ...resource,
       type: "video",
       url,
+      cover,
       format: file.type,
       duration: meta.duration / 1e6,
       width: meta.width,
       height: meta.height,
-      cover: await ResourceFactory.genVideoCover(clip),
     };
   }
 
@@ -116,41 +121,31 @@ export class ResourceFactory {
     };
   }
 
-  private static async genVideoCover(clip: MP4Clip): Promise<string> {
-    try {
-      const { video } = await clip.tick(0);
+  private static async createCover(clip: MP4Clip): Promise<string> {
+    const { video } = await clip.tick(0);
 
-      if (!video) {
-        return "";
-      }
+    if (!video) return;
 
-      const canvas = document.createElement("canvas");
-      const ctx = canvas.getContext("2d");
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
 
-      canvas.width = video.displayWidth || video.codedWidth;
-      canvas.height = video.displayHeight || video.codedHeight;
+    canvas.width = video.displayWidth || video.codedWidth;
+    canvas.height = video.displayHeight || video.codedHeight;
 
-      ctx?.drawImage(video, 0, 0, canvas.width, canvas.height);
-      video.close();
+    ctx?.drawImage(video, 0, 0, canvas.width, canvas.height);
+    video.close();
 
-      return new Promise((resolve) => {
-        canvas.toBlob(
-          (blob) => {
-            canvas.remove();
-            if (blob) {
-              resolve(URL.createObjectURL(blob));
-            } else {
-              resolve("");
-            }
-          },
-          "image/jpeg",
-          0.8
-        );
-      });
-    } catch (error) {
-      console.error("Failed to generate thumbnail from WebCodecs:", error);
-      return "";
-    }
+    return new Promise((resolve) => {
+      canvas.toBlob(
+        (blob) => {
+          canvas.remove();
+          const url = blob && URL.createObjectURL(blob);
+          resolve(url);
+        },
+        "image/jpeg",
+        0.8
+      );
+    });
   }
 
   private static validateFile(file: File): void {
