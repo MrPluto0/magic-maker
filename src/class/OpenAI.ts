@@ -4,12 +4,17 @@ import type { ImagesResponse } from "openai/resources/images";
 import { usePageState } from "@/stores/page";
 
 // 单例模式
-export class OpenAIService {
-  private static instance: OpenAIService;
+class OpenAIService {
   private openai: OpenAI;
   private settings: Record<string, any> = {};
 
-  private constructor() {
+  constructor() {
+    this.init();
+  }
+
+  private init() {
+    if (this.openai) return;
+
     const page = usePageState();
     this.settings = page.aiSettings;
     if (!this.settings.apiKey) {
@@ -25,15 +30,8 @@ export class OpenAIService {
     });
   }
 
-  // 获取单例实例
-  public static getInstance(): OpenAIService {
-    if (!OpenAIService.instance) {
-      OpenAIService.instance = new OpenAIService();
-    }
-    return OpenAIService.instance;
-  }
-
-  public async uploadFile(file: File) {
+  async uploadFile(file: File) {
+    this.init();
     const response = await this.openai.files.create({
       file,
       purpose: "assistants",
@@ -42,7 +40,8 @@ export class OpenAIService {
   }
 
   // 聊天接口
-  public async chat(params: ChatParams) {
+  async chat(params: ChatParams) {
+    this.init();
     const {
       model = this.settings.textModel,
       messages,
@@ -64,7 +63,8 @@ export class OpenAIService {
   }
 
   // 生成图片接口
-  public async generateImage(params: ImageParams) {
+  async generateImage(params: ImageParams) {
+    this.init();
     const { model = this.settings.imageModel, ...otherParams } = params;
 
     const response = (await this.openai.images.generate({
@@ -78,3 +78,5 @@ export class OpenAIService {
     return response.data[0].url;
   }
 }
+
+export const openaiService = new OpenAIService();

@@ -38,7 +38,7 @@ import { useResourceState } from "@/stores/resource";
 import ResourceList from "../../resource/ResourceList.vue";
 import type { ImageResource } from "@/types/resource";
 import { ImageSizeList } from "@/data/constant";
-import { OpenAIService } from "@/class/OpenAI";
+import { openaiService } from "@/class/OpenAI";
 import { urlToFile } from "@/utils/file";
 
 const resourceStore = useResourceState();
@@ -62,8 +62,7 @@ const handleSubmit = async () => {
   loading.value = true;
 
   try {
-    const openai = OpenAIService.getInstance();
-    const url = await openai.generateImage({
+    const url = await openaiService.generateImage({
       prompt: form.prompt,
       n: 1,
       // @ts-expect-error
