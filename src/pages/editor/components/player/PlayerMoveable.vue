@@ -40,7 +40,7 @@ import { useTrackState } from "@/stores/track";
 import type { DrawTrack } from "@/types/track";
 
 defineProps<{
-  canvasSize: { width: number; height: number };
+  canvasSize?: { width: number; height: number };
 }>();
 
 const store = usePlayerState();

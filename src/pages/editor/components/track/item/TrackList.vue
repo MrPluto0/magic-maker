@@ -3,12 +3,13 @@
     class="trackList flex flex-1 flex-row w-full overflow-x-hidden overflow-y-auto relative"
   >
     <TrackListIcon :listData="store.trackList" :offsetTop="startY" />
+
     <div
       class="flex-1 overflow-x-scroll overflow-y-auto flex-col shrink-0 grow relative"
       ref="trackList"
       @scroll="handleScroll"
       @wheel="handleWheel"
-      @click="setSelectTract($event, -1, -1)"
+      @click="setSelectTract"
     >
       <TimeLine
         :start="startX"
@@ -36,17 +37,16 @@
             将素材拖拽到这里，开始编辑你的大作吧~
           </div>
         </template>
-        <div
-          v-else
-          class="z-10 pt-5 pb-5 min-w-full flex shrink-0 grow flex-col justify-center min-h-full"
-          :style="{ width: `${trackStyle.width}px` }"
-          id="track-container"
-        >
-          <template
-            v-for="(lineData, lineIndex) of store.trackList"
-            :key="lineData.list.reduce((r, item) => r + item.id, 'line')"
+
+        <template v-else>
+          <div
+            class="z-10 pt-5 pb-5 min-w-full flex shrink-0 grow flex-col justify-center min-h-full"
+            :style="{ width: `${trackStyle.width}px` }"
+            id="track-container"
           >
             <TrackLine
+              v-for="(lineData, lineIndex) of store.trackList"
+              :key="lineData.list.reduce((r, item) => r + item.id, 'line')"
               :style="{
                 'margin-left': `${offsetLine.left}px`,
               }"
@@ -63,8 +63,10 @@
               :isMain="lineData.main"
               :lineData="lineData.list"
             />
-          </template>
-        </div>
+          </div>
+        </template>
+
+        <!-- 播放点位 -->
         <TrackPlayPoint v-show="store.trackList.length !== 0" />
 
         <template v-if="store.trackList.length !== 0">
@@ -126,11 +128,9 @@ const dropItemLeft = ref(0); // 目标left值
 const insertBefore = ref(true); // 之前插入还是之后插入
 const dragPoint = computed(() => store.dragData.dragPoint);
 
-function setSelectTract(event: Event, line: number, index: number) {
-  event.preventDefault();
-  event.stopPropagation();
-  store.selectTrackItem.line = line;
-  store.selectTrackItem.index = index;
+function setSelectTract() {
+  store.selectTrackItem.line = -1;
+  store.selectTrackItem.index = -1;
 }
 
 function handlerSelectFrame(frame: number) {

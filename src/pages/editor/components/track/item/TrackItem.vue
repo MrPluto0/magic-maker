@@ -6,7 +6,7 @@
     :data-type="trackType"
     :data-line="lineIndex"
     :data-index="itemIndex"
-    @click="setSelectTract"
+    @click.stop="setSelectTract"
   >
     <!-- 操作手柄 -->
     <TrackHandler
@@ -61,25 +61,22 @@ const isDragState = computed(() => {
   );
 });
 
-function setSelectTract(event: Event) {
-  event.preventDefault();
-  event.stopPropagation();
+function setSelectTract() {
   store.selectTrackItem.line = lineIndex;
   store.selectTrackItem.index = itemIndex;
 }
 
 const itemClass = computed(() => {
-  const showWidth = `${getGridPixel(
+  const showWidth = getGridPixel(
     store.trackScale,
     trackItem.end - trackItem.start
-  )}px`;
-  const showLeft = `${getGridPixel(store.trackScale, trackItem.start)}px`;
+  );
+  const showLeft = getGridPixel(store.trackScale, trackItem.start);
+
   return {
-    width: showWidth,
-    left: isDragState
-      ? `${parseInt(showLeft) + store.dragData.moveX}px`
-      : showLeft,
-    top: isDragState ? `${store.dragData.moveY}px` : "",
+    width: `${showWidth}px`,
+    left: `${isDragState.value ? showLeft + store.dragData.moveX : showLeft}px`,
+    top: isDragState.value ? `${store.dragData.moveY}px` : "",
   };
 });
 </script>
