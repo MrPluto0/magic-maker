@@ -25,7 +25,8 @@ export default defineConfig({
     veauryVitePlugins({
       type: "vue",
     }),
-    VitePluginVueDevtools(),
+    // @vue/devtools-kit 7.7.7 在 Node 环境调 localStorage 导致 config 加载崩溃，暂禁用
+    // VitePluginVueDevtools(),
   ],
   resolve: {
     alias: {
@@ -39,12 +40,6 @@ export default defineConfig({
       "/api": {
         target: "https://ark.cn-beijing.volces.com/api/v3",
         rewrite: (path) => path.replace(/^\/api/, ""),
-        changeOrigin: true,
-      },
-      "/tos": {
-        target:
-          "https://ark-content-generation-v2-cn-beijing.tos-cn-beijing.volces.com",
-        rewrite: (path) => path.replace(/^\/tos/, ""),
         changeOrigin: true,
       },
     },

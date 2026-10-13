@@ -302,6 +302,12 @@ chore: 构建配置更新
 
 如需商业使用，请联系项目维护者获得授权。查看完整许可证内容请参考 [LICENSE](LICENSE) 文件。
 
+## 🔐 数据存储与安全说明
+
+- **项目数据**：项目 JSON（含资源元数据、轨道、画板数据）持久化在浏览器 **IndexedDB**（库名 `magic-maker`），媒体二进制存放在 **OPFS**，localStorage 仅保留布局/主题等轻量偏好（< 100KB）。
+- **API Key**：在“AI 设置”中填写的 API Key **仅保存在当前会话内存中，不写入任何持久化存储**，刷新页面后需重新填写。请勿将 Key 提交进代码仓库或分享给他人。
+- **数据清除**：在浏览器开发者工具 → Application 中清除 `IndexedDB → magic-maker` 与 `Origin Private File System` 即可彻底删除本地数据。
+
 ## 🙏 致谢
 
 - [Vue.js](https://vuejs.org/) - 渐进式 JavaScript 框架

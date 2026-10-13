@@ -33,7 +33,7 @@ const installRouter = {
 			routes: routes,
 		});
 
-		router.beforeEach((to, from, next) => {
+		router.beforeEach(async (to, from, next) => {
 			const projectStore = useProjectState();
 			const userStore = useUserState();
 			if (["/", "/home"].includes(to.path) || to.path.startsWith("/login")) {
@@ -45,6 +45,9 @@ const installRouter = {
 				userStore.showLogin = true;
 				return;
 			}
+
+			// 等待 IndexedDB hydrate 完成，避免误判“未选项目”
+			await projectStore.ready;
 
 			if (!projectStore.project) {
 				ElMessage.warning("请创建或选择现有项目后再继续操作");

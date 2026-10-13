@@ -4,10 +4,6 @@
         {
             "source": "/api/:path*",
             "destination": "https://ark.cn-beijing.volces.com/api/v3/:path*"
-        },
-        {
-            "source": "/tos/:path*",
-            "destination": "https://ark-content-generation-v2-cn-beijing.tos-cn-beijing.volces.com/:path*"
         }
     ]
 }

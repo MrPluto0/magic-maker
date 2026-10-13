@@ -8,6 +8,8 @@ export interface BaseResource {
 	type: TrackType;
 	createdAt: string;
 	url: string;
+	/** 原始二进制在 OPFS 中的 key（默认等于 id），持久化用，blob: url 不再落盘 */
+	opfsKey?: string;
 	meta?: Record<string, any>;
 }
 
@@ -34,7 +36,9 @@ export interface VideoResource extends BaseResource {
 	duration: number;
 	width: number;
 	height: number;
-	cover?: string; // 封面图
+	cover?: string; // 封面图（运行期 blob url）
+	/** 封面图在 OPFS 中的 key（默认 id + "_cover"） */
+	coverOpfsKey?: string;
 }
 
 // 文本资源

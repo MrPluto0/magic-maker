@@ -1,7 +1,7 @@
 <template>
   <div class="w-full h-full overflow-hidden flex flex-col gap-4">
     <div class="flex-1 w-full overflow-auto">
-      <ResourceList :list-data="resourceStore.speechList" type="speech" />
+      <ResourceList :list-data="speechList" type="speech" />
     </div>
 
     <div v-if="form.voiceUrl === 'custom'" class="text-xs text-left">
@@ -73,14 +73,11 @@
 
 <script lang="ts" setup>
 import { reactive, ref } from "vue";
-import { useResourceState } from "@/stores/resource";
 import ResourceList from "../../resource/ResourceList.vue";
 import Recorder from "recorder-core";
 import "recorder-core/src/engine/mp3";
 import "recorder-core/src/engine/mp3-engine";
 import "recorder-core/src/extensions/waveview";
-
-const resourceStore = useResourceState();
 
 // 输入表单
 const loading = ref(false);

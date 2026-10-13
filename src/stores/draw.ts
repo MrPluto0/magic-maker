@@ -12,10 +12,23 @@ import type {
 import { convertToExcalidrawElements } from "@pkg/excalidraw";
 import type { Material } from "@/types/draw";
 import { nanoid } from "nanoid";
-import { base64ToBlob, blobToFile, fetchToBase64 } from "@/utils/file";
+import { write } from "opfs-tools";
+import {
+	base64ToBlob,
+	blobToBase64,
+	fetchToBase64,
+	readBase64FromOPFS,
+} from "@/utils/file";
 import { cropShape } from "@/utils/cropper";
 import { updateFontFamily, updateTextProps } from "@/utils/psd";
 import { usePageState } from "./page";
+
+/** 画板图片在 OPFS 中的 key 前缀（customData.url 单一事实源） */
+const OPFS_DRAW_PREFIX = "draw_";
+
+/** 判断 customData.url 是否为 OPFS key（无协议前缀即视为 key） */
+const isOpfsKey = (url?: string | null): url is string =>
+	!!url && !/^(https?|blob|data):/i.test(url);
 
 export const useDrawStore = defineStore(
 	"draw",
@@ -217,24 +230,38 @@ export const useDrawStore = defineStore(
 		};
 
 		const saveDrawData = async () => {
+			if (!api.value) {
+				return eles.value;
+			}
 			const curEles = api.value.getSceneElements();
-			const files = api.value.getFiles();
+			const curFiles = api.value.getFiles();
 			for (const ele of curEles) {
-				if (ele.type === "image" && !ele?.customData?.url) {
-					const file = files[ele.fileId];
-					const blob = base64ToBlob(file.dataURL, file.mimeType);
-					const fileData = blobToFile(
-						blob,
-						`${new Date().toLocaleString()}.png`,
-					);
-					// 前端模式下使用本地URL
-					const localUrl = URL.createObjectURL(fileData);
-					//@ts-expect-error
-					ele.customData = {
-						url: localUrl,
-						...ele?.customData,
-					};
+				if (ele.type !== "image" || !ele.fileId) {
+					continue;
 				}
+				const url = (ele?.customData as any)?.url as string | undefined;
+				// 已持久化（OPFS key）或外部 http(s)/data 地址，无需处理
+				if (!url || isOpfsKey(url) || /^https?:/i.test(url) || /^data:/i.test(url)) {
+					continue;
+				}
+				// blob: 临时地址（手绘/裁剪/导入产生的图片）：二进制落 OPFS，customData.url 记 OPFS key
+				const file = curFiles[ele.fileId];
+				if (!file?.dataURL) {
+					continue;
+				}
+				const blob = base64ToBlob(file.dataURL, file.mimeType);
+				const opfsKey = `${OPFS_DRAW_PREFIX}${ele.fileId}`;
+				try {
+					await write(opfsKey, await blob.arrayBuffer());
+				} catch (error) {
+					console.error("画板图片写入 OPFS 失败:", opfsKey, error);
+					continue;
+				}
+				//@ts-expect-error Excalidraw 元素 customData 为只读声明，此处需要回写持久化 key
+				ele.customData = {
+					...(ele?.customData as any),
+					url: opfsKey,
+				};
 			}
 			eles.value = curEles.filter((item) => !item.isDeleted);
 			return eles.value;
@@ -244,12 +271,20 @@ export const useDrawStore = defineStore(
 			const initFiles = [];
 			for (const ele of initEles) {
 				if (ele.type === "image" && ele?.customData?.url) {
-					const base64 = await fetchToBase64(ele.customData.url);
-					initFiles.push({
-						id: ele.fileId,
-						dataURL: base64,
-						mimeType: "image/png",
-					});
+					const url = (ele.customData as any).url as string;
+					try {
+						// OPFS key 单一事实源：本地直读重建；其余地址走网络/会话内 fetch
+						const base64 = isOpfsKey(url)
+							? await readBase64FromOPFS(url)
+							: await fetchToBase64(url);
+						initFiles.push({
+							id: ele.fileId,
+							dataURL: base64,
+							mimeType: "image/png",
+						});
+					} catch (error) {
+						console.warn("恢复画板图片失败，已跳过:", ele.fileId, error);
+					}
 				}
 			}
 			if (api.value) {
@@ -293,14 +328,6 @@ export const useDrawStore = defineStore(
 			},
 		);
 
-		//@ts-expect-error
-		window.api = () => {
-			if (api.value) {
-				console.log(getSelected());
-			}
-			return api.value;
-		};
-
 		return {
 			loading,
 			api,
@@ -317,11 +344,5 @@ export const useDrawStore = defineStore(
 			initContent,
 			updateContent,
 		};
-	},
-	{
-		persist: {
-			storage: localStorage,
-			pick: ["state", "files", "eles"],
-		},
 	},
 );

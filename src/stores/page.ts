@@ -10,7 +10,10 @@ export const usePageState = defineStore(
     const trackHeight = ref(380); // 素材轨道高度
     const resourceWidth = ref(370); // 素材区宽度
 
-    // AI设置表单
+    // 轨道缩放比例（原裸 localStorage.trackS 收敛到此）
+    const trackScale = ref(60);
+
+    // AI设置表单：apiKey 仅存内存（会话级），不写入任何持久化存储
     const aiSettings = ref({
       apiKey: "",
       textModel: "doubao-seed-1-6-flash-250715",
@@ -29,10 +32,21 @@ export const usePageState = defineStore(
       attrWidth,
       trackHeight,
       resourceWidth,
+      trackScale,
       aiSettings,
     };
   },
   {
-    persist: true,
+    // 安全：aiSettings（含 apiKey）不参与持久化，仅当前会话有效
+    persist: {
+      pick: [
+        "pageTitle",
+        "isDark",
+        "attrWidth",
+        "trackHeight",
+        "resourceWidth",
+        "trackScale",
+      ],
+    },
   }
 );

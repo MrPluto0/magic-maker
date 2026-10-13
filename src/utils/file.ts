@@ -1,5 +1,7 @@
-import { file, write } from "opfs-tools";
-import { proxyUrl } from "./proxy";
+import { file as opfsFile, write } from "opfs-tools";
+
+// 供其他模块直接使用 OPFS 文件句柄
+export const file = opfsFile;
 
 interface FileUploadOptions {
   accept: string;
@@ -48,9 +50,16 @@ export async function createFileWriter(
   return fileHandle.createWritable();
 }
 
-// 将Base64数据转换为Blob对象
+// 将Base64数据转换为Blob对象（兼容完整 dataURL，自动剥离 "data:*/*;base64," 前缀）
 export function base64ToBlob(base64Data: string, contentType: string) {
   contentType = contentType || "";
+  if (base64Data.startsWith("data:")) {
+    const commaIndex = base64Data.indexOf(",");
+    if (base64Data.slice(5, commaIndex).includes("base64")) {
+      contentType = contentType || base64Data.slice(5, commaIndex);
+      base64Data = base64Data.slice(commaIndex + 1);
+    }
+  }
   const sliceSize = 1024;
   const byteCharacters = atob(base64Data);
   const byteArrays = [];
@@ -76,16 +85,33 @@ export function blobToFile(blob: Blob, fileName: string) {
   return file;
 }
 
+// 将Blob对象转换为base64 dataURL
+export function blobToBase64(blob: Blob): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onloadend = () => resolve(reader.result as string);
+    reader.onerror = reject;
+    reader.readAsDataURL(blob);
+  });
+}
+
+// 从 OPFS 读取文件并转为 base64 dataURL
+export async function readBase64FromOPFS(key: string): Promise<string> {
+  const f = await readFileFromOPFS(key);
+  const buffer = await f.arrayBuffer();
+  return blobToBase64(new Blob([buffer]));
+}
+
 // 将url转换为File对象
 export async function urlToFile(url: string, fileName: string) {
-  const response = await fetch(proxyUrl(url));
+  const response = await fetch(url);
   const blob = await response.blob();
   return blobToFile(blob, fileName);
 }
 
 // 通过URL获取Base64数据
 export const fetchToBase64 = async (url: string): Promise<string> => {
-  const data = await fetch(proxyUrl(url));
+  const data = await fetch(url);
   const blob = await data.blob();
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -101,8 +127,8 @@ export const fetchToBase64 = async (url: string): Promise<string> => {
 // 从URL读取并写入opfs
 export async function writeFileToOPFS(id: string, url: string) {
   if (url) {
-    const data = await fetch(proxyUrl(url));
-    await write(id, data.body);
+    const data = await fetch(url);
+    await write(id, data.body!);
     return file(id);
   }
 

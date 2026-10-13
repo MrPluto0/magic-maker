@@ -24,9 +24,11 @@ export class ResourceFactory {
       id: nanoid(),
       name: file.name,
       createdAt: new Date().toISOString(),
+      opfsKey: "",
     };
 
-    writeFileToOPFS(resource.id, URL.createObjectURL(file));
+    await writeFileToOPFS(resource.id, URL.createObjectURL(file));
+    resource.opfsKey = resource.id;
 
     try {
       if (file.type.startsWith("video/")) {
@@ -56,7 +58,18 @@ export class ResourceFactory {
 
     const cover = await ResourceFactory.createCover(clip);
     if (cover) {
-      writeFileToOPFS(resource.id + "_cover", cover);
+      await writeFileToOPFS(resource.id + "_cover", cover);
+      return {
+        ...resource,
+        type: "video",
+        url,
+        cover,
+        coverOpfsKey: resource.id + "_cover",
+        format: file.type,
+        duration: meta.duration / 1e6,
+        width: meta.width,
+        height: meta.height,
+      };
     }
 
     return {
@@ -121,7 +134,7 @@ export class ResourceFactory {
     };
   }
 
-  private static async createCover(clip: MP4Clip): Promise<string> {
+  private static async createCover(clip: MP4Clip): Promise<string | undefined> {
     const { video } = await clip.tick(0);
 
     if (!video) return;
@@ -139,8 +152,7 @@ export class ResourceFactory {
       canvas.toBlob(
         (blob) => {
           canvas.remove();
-          const url = blob && URL.createObjectURL(blob);
-          resolve(url);
+          resolve(blob ? URL.createObjectURL(blob) : undefined);
         },
         "image/jpeg",
         0.8

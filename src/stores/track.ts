@@ -3,6 +3,7 @@ import { defineStore } from "pinia";
 import type { Resource } from "@/types/resource";
 import { VideoTrack } from "@/class/VideoTrack";
 import { usePlayerState } from "./player";
+import { usePageState } from "./page";
 import { ImageTrack } from "@/class/ImageTrack";
 import { AudioTrack } from "@/class/AudioTrack";
 import { TextTrack } from "@/class/TextTrack";
@@ -16,9 +17,15 @@ export const useTrackState = defineStore(
   () => {
     const playStore = usePlayerState();
     const resourceStore = useResourceState();
+    const pageStore = usePageState();
 
-    // 轨道放大比例
-    const trackScale = ref(parseInt(localStorage.trackS || "60"));
+    // 轨道放大比例（持久化收敛到 page store，不再裸读 localStorage）
+    const trackScale = computed({
+      get: () => pageStore.trackScale,
+      set: (value: number) => {
+        pageStore.trackScale = value;
+      },
+    });
     const trackList = ref<TrackLineItem[]>([]);
 
     const copyData = ref<Track>();
@@ -300,13 +307,6 @@ export const useTrackState = defineStore(
       trackList.value.splice(0, trackList.value.length, ...newTrackList);
     };
 
-    // @ts-expect-error
-    window.clearTrack = () => {
-      trackList.value = [];
-      selectTrackItem.line = -1;
-      selectTrackItem.index = -1;
-    };
-
     return {
       moveTrackData,
       copyData,
@@ -331,7 +331,8 @@ export const useTrackState = defineStore(
   },
   {
     undo: {
-      watch: ["trackList", "trackScale"],
+      // trackScale 已收敛到 page store，撤销栈只跟踪轨道数据
+      watch: ["trackList"],
     },
   }
 );

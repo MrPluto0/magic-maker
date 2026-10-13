@@ -1,7 +1,7 @@
 import type { Resource } from "@/types/resource";
 import { defineStore } from "pinia";
 import type { TrackType } from "@/types/track";
-import { readUrlFromOPFS } from "@/utils/file";
+import { file, readUrlFromOPFS } from "@/utils/file";
 import { ResourceFactory } from "@/class/ResourceFactory";
 
 export const useResourceState = defineStore("resource", () => {
@@ -54,26 +54,48 @@ export const useResourceState = defineStore("resource", () => {
   };
 
   /**
-   * 移除资源
+   * 移除资源（同步清理 OPFS 中的原始文件与视频封面，避免存储泄漏）
    */
-  const removeResource = (id: string) => {
+  const removeResource = async (id: string) => {
+    const resource = getResourceById(id);
     const index = resources.value.findIndex((r) => r.id === id);
     if (index > -1) {
       resources.value.splice(index, 1);
       ElMessage.success("资源已删除");
     }
+    const opfsKeys = [
+      resource?.opfsKey || id,
+      ...(resource?.type === "video"
+        ? [resource.coverOpfsKey || `${id}_cover`]
+        : []),
+    ];
+    await Promise.all(
+      opfsKeys.map(async (key) => {
+        try {
+          if (await file(key).exists()) {
+            await file(key).remove();
+          }
+        } catch (error) {
+          console.warn("清理 OPFS 文件失败:", key, error);
+        }
+      })
+    );
   };
 
   /**
-   * 加载资源列表（用于项目加载）
+   * 加载资源列表（用于项目加载）：依据 opfsKey 从 OPFS 重建运行期 blob url
    */
   const loadResources = async (resourceList: Resource[]) => {
     for (const r of resourceList) {
-      if (r.url) {
-        r.url = await readUrlFromOPFS(r.id, r.url, r.type);
+      const opfsKey = r.opfsKey || r.id;
+      if (r.type !== "text") {
+        r.url = await readUrlFromOPFS(opfsKey, r.url, r.type);
       }
-      if (r.type === "video" && r.cover) {
-        r.cover = await readUrlFromOPFS(r.id + "_cover", r.cover, "image/jpeg");
+      if (r.type === "video") {
+        const coverKey = r.coverOpfsKey || `${opfsKey}_cover`;
+        if (r.cover || (await file(coverKey).exists())) {
+          r.cover = await readUrlFromOPFS(coverKey, r.cover, "image/jpeg");
+        }
       }
     }
     resources.value.splice(0, resources.value.length, ...resourceList);

@@ -15,6 +15,25 @@
 
       <div class="h-[50vh] overflow-auto pr-4">
         <div class="space-y-6 text-white">
+          <!-- 使用数据（真实统计） -->
+          <div class="section">
+            <h3 class="text-lg font-semibold mb-3 text-blue-300">
+              📊 我的使用数据
+            </h3>
+            <div class="grid grid-cols-4 gap-4 text-sm">
+              <div
+                v-for="item in statItems"
+                :key="item.label"
+                class="stat-item text-center p-3 rounded-lg bg-gray-800/60 border border-gray-700"
+              >
+                <div class="text-2xl font-bold text-blue-300 mb-1">
+                  {{ item.value }}
+                </div>
+                <div class="text-xs text-gray-300">{{ item.label }}</div>
+              </div>
+            </div>
+          </div>
+
           <!-- 项目介绍 -->
           <div class="section">
             <h3 class="text-lg font-semibold mb-3 text-blue-300">
@@ -262,6 +281,13 @@
 </template>
 
 <script lang="ts" setup>
+import { computed, onMounted, ref } from "vue";
+import { useProjectState } from "@/stores/project";
+import { useResourceState } from "@/stores/resource";
+import { useTrackState } from "@/stores/track";
+import { baseFps } from "@/data/track";
+import { repoGetExportCount } from "@/db/projectRepo";
+
 const props = defineProps<{
 	show: boolean;
 }>();
@@ -270,6 +296,54 @@ const emits = defineEmits(["update:show"]);
 const handleClose = () => {
 	emits("update:show", false);
 };
+
+// —— 使用数据聚合（来自 resource / project / track store 与 IDB meta） ——
+const projectStore = useProjectState();
+const resourceStore = useResourceState();
+const trackStore = useTrackState();
+
+const exportCount = ref(0);
+onMounted(async () => {
+	try {
+		exportCount.value = await repoGetExportCount();
+	} catch {
+		exportCount.value = 0;
+	}
+});
+
+const stats = computed(() => {
+	const byType = resourceStore.getResourceStats();
+	const resourceTotal =
+		byType.video + byType.audio + byType.image + byType.text;
+	// 项目列表内所有资源的时长合计（秒）
+	let totalSeconds = 0;
+	for (const p of projectStore.projectList) {
+		for (const r of p.resources || []) {
+			if (r.type === "video" || r.type === "audio") {
+				totalSeconds += r.duration || 0;
+			}
+		}
+	}
+	const currentDuration = Math.round(
+		trackStore.frameCount / baseFps,
+	);
+	return {
+		projects: projectStore.projectList.length,
+		resources: resourceTotal,
+		trackSeconds: Math.max(totalSeconds, currentDuration),
+		exports: exportCount.value,
+	};
+});
+
+const statItems = computed(() => [
+	{ label: "项目数", value: stats.value.projects },
+	{ label: "素材数", value: stats.value.resources },
+	{
+		label: "素材总时长",
+		value: `${stats.value.trackSeconds}s`,
+	},
+	{ label: "导出次数", value: stats.value.exports },
+]);
 </script>
 
 <style scoped lang="less">
