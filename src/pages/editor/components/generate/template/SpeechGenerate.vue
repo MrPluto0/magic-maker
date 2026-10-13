@@ -1,7 +1,7 @@
 <template>
   <div class="w-full h-full overflow-hidden flex flex-col gap-4">
     <div class="flex-1 w-full overflow-auto">
-      <ResourceList :list-data="speechList" type="speech" />
+      <ResourceList :list-data="speechList" type="audio" />
     </div>
 
     <div v-if="form.voiceUrl === 'custom'" class="text-xs text-left">
