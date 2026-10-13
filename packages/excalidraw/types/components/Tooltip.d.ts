@@ -25,4 +25,3 @@ export declare const Tooltip: ({
 	style,
 	disabled,
 }: TooltipProps) => JSX.Element | null;
-export {};

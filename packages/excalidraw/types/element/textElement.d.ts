@@ -179,4 +179,3 @@ export declare const getTextFromElements: (
 	elements: readonly ExcalidrawElement[],
 	separator?: string,
 ) => string;
-export {};

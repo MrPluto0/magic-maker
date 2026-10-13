@@ -58,4 +58,3 @@ export declare const StatsInner: import("react").MemoExoticComponent<
 		gridModeEnabled: boolean;
 	}) => JSX.Element
 >;
-export {};

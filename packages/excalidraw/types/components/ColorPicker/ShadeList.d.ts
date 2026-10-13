@@ -10,4 +10,3 @@ export declare const ShadeList: ({
 	onChange,
 	palette,
 }: ShadeListProps) => JSX.Element;
-export {};

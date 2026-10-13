@@ -23,4 +23,3 @@ export declare const TTDDialogPanel: ({
 	renderSubmitShortcut,
 	renderBottomRight,
 }: TTDDialogPanelProps) => JSX.Element;
-export {};

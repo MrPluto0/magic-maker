@@ -85,28 +85,28 @@
 </template>
 
 <script lang="ts" setup>
+import { debounce } from "lodash-es";
+import type { AudioTrack } from "@/class/AudioTrack";
+import { decoder } from "@/class/Decoder";
 import { baseFps } from "@/data/track";
+import { usePlayerState } from "@/stores/player";
 import { useTrackState } from "@/stores/track";
 import AttrCol from "../AttrCol.vue";
-import type { AudioTrack } from "@/class/AudioTrack";
-import { debounce } from "lodash-es";
-import { usePlayerState } from "@/stores/player";
-import { decoder } from "@/class/Decoder";
 
 const playerStore = usePlayerState();
 const trackStore = useTrackState();
 const track = computed(() => trackStore.selectTrack as AudioTrack);
 
 const handleReGenerate = () => {
-  ElMessage.info("前端模式下暂不支持重新生成功能");
+	ElMessage.info("前端模式下暂不支持重新生成功能");
 };
 
 watch(
-  () => [track.value.volume, track.value.subtitle],
-  debounce(() => {
-    playerStore.isPause = true;
-    decoder.decode(track.value, true);
-  }, 100)
+	() => [track.value.volume, track.value.subtitle],
+	debounce(() => {
+		playerStore.isPause = true;
+		decoder.decode(track.value, true);
+	}, 100),
 );
 </script>
 

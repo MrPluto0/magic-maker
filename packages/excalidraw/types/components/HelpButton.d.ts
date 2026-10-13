@@ -5,4 +5,3 @@ type HelpButtonProps = {
 	onClick?(): void;
 };
 export declare const HelpButton: (props: HelpButtonProps) => JSX.Element;
-export {};

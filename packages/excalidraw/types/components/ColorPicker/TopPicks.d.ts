@@ -12,4 +12,3 @@ export declare const TopPicks: ({
 	activeColor,
 	topPicks,
 }: TopPicksProps) => JSX.Element | null;
-export {};

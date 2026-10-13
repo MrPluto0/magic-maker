@@ -26,4 +26,3 @@ export declare const Picker: ({
 	onEyeDropperToggle,
 	onEscape,
 }: PickerProps) => JSX.Element;
-export {};

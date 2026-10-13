@@ -24,9 +24,9 @@
 
 <script setup lang="ts">
 import { ref, watch } from "vue";
+import { IconMap } from "@/data/menu";
 import { TrackHeightMap } from "@/data/track";
 import type { TrackLineItem } from "@/types/track";
-import { IconMap } from "@/data/menu";
 
 const props = defineProps({
 	listData: {

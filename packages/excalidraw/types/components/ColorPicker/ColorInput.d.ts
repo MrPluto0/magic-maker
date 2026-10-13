@@ -12,4 +12,3 @@ export declare const ColorInput: ({
 	label,
 	colorPickerType,
 }: ColorInputProps) => JSX.Element;
-export {};

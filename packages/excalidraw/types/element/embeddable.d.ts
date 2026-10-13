@@ -252,4 +252,3 @@ export declare const embeddableURLValidator: (
 	url: string | null | undefined,
 	validateEmbeddable: ExcalidrawProps["validateEmbeddable"],
 ) => boolean;
-export {};

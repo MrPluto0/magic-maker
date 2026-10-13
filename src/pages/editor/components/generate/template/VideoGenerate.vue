@@ -85,7 +85,7 @@ import ResourceList from "../../resource/ResourceList.vue";
 const resourceStore = useResourceState();
 
 const resource = computed(
-  () => resourceStore.getResourcesByType("video") as VideoResource[]
+	() => resourceStore.getResourcesByType("video") as VideoResource[],
 );
 
 const loading = ref(false);
@@ -93,35 +93,35 @@ const fileInputRef = ref<HTMLInputElement | null>(null);
 const uploadFileName = ref("");
 
 const form = reactive({
-  prompt: "",
-  imageUrl: "",
-  sizeStr: ImageSizeList[0].value,
+	prompt: "",
+	imageUrl: "",
+	sizeStr: ImageSizeList[0].value,
 });
 
 const triggerFileInput = () => {
-  fileInputRef.value?.click();
+	fileInputRef.value?.click();
 };
 
 const handleFileChange = (event: Event) => {
-  const target = event.target as HTMLInputElement;
-  const file = target.files?.[0];
-  if (file) {
-    uploadFileName.value = file.name;
-    form.imageUrl = URL.createObjectURL(file);
-  }
+	const target = event.target as HTMLInputElement;
+	const file = target.files?.[0];
+	if (file) {
+		uploadFileName.value = file.name;
+		form.imageUrl = URL.createObjectURL(file);
+	}
 };
 
 const handleSubmit = () => {
-  if (!form.prompt) {
-    ElMessage.error("请输入文字描述");
-    return;
-  }
+	if (!form.prompt) {
+		ElMessage.error("请输入文字描述");
+		return;
+	}
 
-  if (form.imageUrl) {
-    ElMessage.info("前端模式下暂不支持图片生成视频功能");
-  } else {
-    ElMessage.info("前端模式下暂不支持文字生成视频功能");
-  }
+	if (form.imageUrl) {
+		ElMessage.info("前端模式下暂不支持图片生成视频功能");
+	} else {
+		ElMessage.info("前端模式下暂不支持文字生成视频功能");
+	}
 };
 </script>
 

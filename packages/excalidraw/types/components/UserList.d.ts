@@ -31,4 +31,3 @@ export declare const UserList: React.MemoExoticComponent<
 		userToFollow,
 	}: UserListProps) => JSX.Element
 >;
-export {};

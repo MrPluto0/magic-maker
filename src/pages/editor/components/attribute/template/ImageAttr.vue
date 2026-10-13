@@ -58,20 +58,21 @@
 
 <script lang="ts" setup>
 // Removed API imports for frontend-only mode
+
+import type { ImageTrack } from "@/class/ImageTrack";
 import { baseFps } from "@/data/track";
 import { useTrackState } from "@/stores/track";
 import AttrCol from "../AttrCol.vue";
-import type { ImageTrack } from "@/class/ImageTrack";
 
 const trackStore = useTrackState();
 const track = computed(() => trackStore.selectTrack as ImageTrack);
 
 const handleReGenerate = () => {
-  ElMessage.info("前端模式下暂不支持重新生成功能");
+	ElMessage.info("前端模式下暂不支持重新生成功能");
 };
 
 const handleGenVideo = () => {
-  ElMessage.info("前端模式下暂不支持图片生成视频功能");
+	ElMessage.info("前端模式下暂不支持图片生成视频功能");
 };
 </script>
 

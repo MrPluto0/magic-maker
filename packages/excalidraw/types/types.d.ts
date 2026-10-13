@@ -835,4 +835,3 @@ export type Offsets = Partial<{
 	bottom: number;
 	left: number;
 }>;
-export {};

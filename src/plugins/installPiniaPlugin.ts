@@ -1,6 +1,6 @@
-import { createStack } from "@/utils/stack";
 import { cloneDeep, debounce } from "lodash-es";
-import type { PiniaPluginContext } from "pinia";
+import type { PiniaPluginContext, StateTree } from "pinia";
+import { createStack } from "@/utils/stack";
 
 type Store = PiniaPluginContext["store"];
 type Options = PiniaPluginContext["options"];
@@ -21,7 +21,7 @@ declare module "pinia" {
 		_resetStack: () => void;
 	}
 
-	export interface DefineStoreOptionsBase<S, Store> {
+	export interface DefineStoreOptionsBase<S extends StateTree, Store> {
 		undo?: {
 			watch?: Array<keyof S>;
 		};

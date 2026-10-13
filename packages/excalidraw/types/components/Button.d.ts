@@ -25,4 +25,3 @@ export declare const Button: ({
 	className,
 	...rest
 }: ButtonProps) => JSX.Element;
-export {};

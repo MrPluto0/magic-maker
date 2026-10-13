@@ -357,4 +357,3 @@ export type NonDeletedSceneElementsMap = Map<
 export type ElementsMapOrArray =
 	| readonly ExcalidrawElement[]
 	| Readonly<ElementsMap>;
-export {};

@@ -8,4 +8,3 @@ interface QuickSearchProps {
 export declare const QuickSearch: React.ForwardRefExoticComponent<
 	QuickSearchProps & React.RefAttributes<HTMLInputElement>
 >;
-export {};

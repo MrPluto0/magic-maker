@@ -1,9 +1,9 @@
-import { ref, toRefs, reactive } from "vue";
 import { defineStore } from "pinia";
-import { useTrackState } from "./track";
-import { useResourceState } from "./resource";
+import { reactive, ref, toRefs } from "vue";
 import { baseFps } from "@/data/track";
 import type { Track } from "@/types/track";
+import { useResourceState } from "./resource";
+import { useTrackState } from "./track";
 
 export const usePlayerState = defineStore("player", () => {
 	const trackStore = useTrackState();

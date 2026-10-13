@@ -19,4 +19,3 @@ export declare const fontPickerKeyHandler: ({
 	onSelect,
 	onHover,
 }: FontPickerKeyNavHandlerProps) => true | undefined;
-export {};

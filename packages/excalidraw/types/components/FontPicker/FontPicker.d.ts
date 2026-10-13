@@ -28,4 +28,3 @@ export declare const FontPicker: React.MemoExoticComponent<
 		onPopupChange,
 	}: FontPickerProps) => JSX.Element
 >;
-export {};

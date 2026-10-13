@@ -35,4 +35,3 @@ export declare const LibraryMenuSection: React.MemoExoticComponent<
 		itemsRenderedPerBatch,
 	}: Props) => JSX.Element
 >;
-export {};

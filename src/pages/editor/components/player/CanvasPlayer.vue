@@ -9,11 +9,11 @@
 </template>
 
 <script setup lang="ts">
-import Player from "./Player.vue";
-import { usePlayerState } from "@/stores/player";
+import { onMounted, reactive, ref, watch } from "vue";
 import { usePageState } from "@/stores/page";
-import { watch, ref, onMounted, reactive } from "vue";
+import { usePlayerState } from "@/stores/player";
 import { useTrackState } from "@/stores/track";
+import Player from "./Player.vue";
 
 const pageStore = usePageState();
 const store = usePlayerState();

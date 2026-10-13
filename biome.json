@@ -6,7 +6,8 @@
 		"useIgnoreFile": false
 	},
 	"files": {
-		"ignoreUnknown": false
+		"ignoreUnknown": false,
+		"includes": ["src/**", "!packages/excalidraw/**"]
 	},
 	"formatter": {
 		"enabled": true,
@@ -17,7 +18,36 @@
 		"rules": {
 			"recommended": true,
 			"correctness": {
-				"useHookAtTopLevel": "off"
+				"useHookAtTopLevel": "off",
+				"noUnusedVariables": "warn",
+				"noUnusedImports": "warn",
+				"noUnusedFunctionParameters": "warn",
+				"useParseIntRadix": "warn"
+			},
+			"suspicious": {
+				"noExplicitAny": "warn",
+				"noArrayIndexKey": "warn",
+				"noAssignInExpressions": "warn",
+				"noConfusingVoidType": "warn",
+				"noDoubleEquals": "warn",
+				"noGlobalIsNan": "warn"
+			},
+			"complexity": {
+				"noBannedTypes": "warn",
+				"noStaticOnlyClass": "off",
+				"useOptionalChain": "warn",
+				"useLiteralKeys": "warn",
+				"useIndexOf": "warn"
+			},
+			"style": {
+				"noNonNullAssertion": "warn",
+				"useTemplate": "warn"
+			},
+			"a11y": {
+				"noSvgWithoutTitle": "warn",
+				"noStaticElementInteractions": "warn",
+				"useKeyWithClickEvents": "warn",
+				"useButtonType": "warn"
 			}
 		}
 	},

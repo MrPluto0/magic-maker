@@ -12,4 +12,3 @@ type PenModeIconProps = {
 export declare const PenModeButton: (
 	props: PenModeIconProps,
 ) => JSX.Element | null;
-export {};

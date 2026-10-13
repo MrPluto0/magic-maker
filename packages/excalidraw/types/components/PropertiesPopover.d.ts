@@ -14,4 +14,3 @@ interface PropertiesPopoverProps {
 export declare const PropertiesPopover: React.ForwardRefExoticComponent<
 	PropertiesPopoverProps & React.RefAttributes<HTMLDivElement>
 >;
-export {};

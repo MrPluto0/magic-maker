@@ -10,4 +10,3 @@ type LaserPointerIconProps = {
 export declare const LaserPointerButton: (
 	props: LaserPointerIconProps,
 ) => JSX.Element;
-export {};

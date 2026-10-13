@@ -8,4 +8,3 @@ type LockIconProps = {
 	isMobile?: boolean;
 };
 export declare const HandButton: (props: LockIconProps) => JSX.Element;
-export {};

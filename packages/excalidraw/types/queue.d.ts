@@ -9,4 +9,3 @@ export declare class Queue {
 		...args: TArgs
 	): Promise<TValue>;
 }
-export {};

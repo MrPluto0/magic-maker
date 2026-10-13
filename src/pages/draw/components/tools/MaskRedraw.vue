@@ -40,8 +40,9 @@
 
 <script lang="ts" setup>
 // Removed API imports for frontend-only mode
-import { createStack } from "@/utils/stack";
+
 import hotkeys from "hotkeys-js";
+import { createStack } from "@/utils/stack";
 
 const props = defineProps<{
 	dataUrl: string;

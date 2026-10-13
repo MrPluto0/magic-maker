@@ -23,12 +23,12 @@
 </template>
 
 <script setup lang="ts">
-import { useTrackState } from "@/stores/track";
 import { usePageState } from "@/stores/page";
-import VideoAttr from "./template/VideoAttr.vue";
-import ImageAttr from "./template/ImageAttr.vue";
+import { useTrackState } from "@/stores/track";
 import AudioAttr from "./template/AudioAttr.vue";
+import ImageAttr from "./template/ImageAttr.vue";
 import TextAttr from "./template/TextAttr.vue";
+import VideoAttr from "./template/VideoAttr.vue";
 
 const pageStore = usePageState();
 const trackStore = useTrackState();
@@ -37,10 +37,10 @@ const trackStore = useTrackState();
 const TrackOptionsConfig: Record<string, any> = {};
 const attributeFiles = import.meta.glob("./options/*.ts", { eager: true });
 for (const path in attributeFiles) {
-  const name = path.match(/(?<=\/)(\w+)(?=\.ts)/) || [];
-  TrackOptionsConfig[name[0]] = (
-    attributeFiles[path] as { Options: Record<string, any> }
-  ).Options;
+	const name = path.match(/(?<=\/)(\w+)(?=\.ts)/) || [];
+	TrackOptionsConfig[name[0]] = (
+		attributeFiles[path] as { Options: Record<string, any> }
+	).Options;
 }
 
 const track = computed(() => trackStore.selectTrack);

@@ -20,11 +20,11 @@
 </template>
 
 <script setup lang="ts">
-import Loading from "@/components/Loading.vue";
 import type { ImageTrack } from "@/class/ImageTrack";
+import Loading from "@/components/Loading.vue";
 
 const props = defineProps<{
-  trackItem: ImageTrack;
+	trackItem: ImageTrack;
 }>();
 
 const resource = computed(() => props.trackItem.resource);

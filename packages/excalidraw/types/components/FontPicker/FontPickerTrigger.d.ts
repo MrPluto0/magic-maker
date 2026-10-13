@@ -6,4 +6,3 @@ interface FontPickerTriggerProps {
 export declare const FontPickerTrigger: ({
 	selectedFontFamily,
 }: FontPickerTriggerProps) => JSX.Element;
-export {};

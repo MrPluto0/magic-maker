@@ -74,8 +74,8 @@
 </template>
 
 <script lang="ts" setup>
-import MaterialList from "./MaterialList.vue";
 import type { Material } from "@/types/draw";
+import MaterialList from "./MaterialList.vue";
 
 interface IPage {
 	page: number;

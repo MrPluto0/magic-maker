@@ -36,12 +36,12 @@
 </template>
 
 <script setup lang="ts">
+import { decoder } from "@/class/Decoder";
+import type { VideoTrack } from "@/class/VideoTrack";
 import Loading from "@/components/Loading.vue";
 import { usePlayerState } from "@/stores/player";
-import type { VideoTrack } from "@/class/VideoTrack";
-import { getGridPixel } from "@/utils/canvasUtil";
 import { useTrackState } from "@/stores/track";
-import { decoder } from "@/class/Decoder";
+import { getGridPixel } from "@/utils/canvasUtil";
 
 const { trackItem } = defineProps<{ trackItem: VideoTrack }>();
 const store = usePlayerState();
@@ -53,34 +53,34 @@ const thumbnails = ref([]);
 const resource = computed(() => trackItem.resource);
 
 async function initVideo() {
-  if (!resource.value) {
-    console.error("Video resource not found");
-    return;
-  }
+	if (!resource.value) {
+		console.error("Video resource not found");
+		return;
+	}
 
-  try {
-    store.ingLoadingCount++;
-    loading.value = true;
+	try {
+		store.ingLoadingCount++;
+		loading.value = true;
 
-    const imgs = await decoder.thumbnails(trackItem, trackStore.trackScale);
-    thumbnails.value = imgs.map(({ img }) => {
-      return URL.createObjectURL(img);
-    });
-  } finally {
-    loading.value = false;
-    store.ingLoadingCount--;
-  }
+		const imgs = await decoder.thumbnails(trackItem, trackStore.trackScale);
+		thumbnails.value = imgs.map(({ img }) => {
+			return URL.createObjectURL(img);
+		});
+	} finally {
+		loading.value = false;
+		store.ingLoadingCount--;
+	}
 }
 
 watch(() => [trackItem, resource.value], initVideo, {
-  immediate: true,
-  flush: "post",
+	immediate: true,
+	flush: "post",
 });
 
 onUnmounted(() => {
-  thumbnails.value.forEach((item) => {
-    URL.revokeObjectURL(item);
-  });
+	thumbnails.value.forEach((item) => {
+		URL.revokeObjectURL(item);
+	});
 });
 </script>
 

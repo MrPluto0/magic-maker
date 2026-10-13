@@ -1,8 +1,8 @@
 import { OffscreenSprite } from "@webav/av-cliper";
+import { nanoid } from "nanoid";
 import { baseFps, UnitFrame2μs } from "@/data/track";
 import type { VideoResource } from "@/types/resource";
 import type { BaseTrack, TrackType } from "@/types/track";
-import { nanoid } from "nanoid";
 import { decoder } from "./Decoder";
 
 export class VideoTrack implements BaseTrack {

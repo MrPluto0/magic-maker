@@ -16,6 +16,6 @@
 import type { TextTrack } from "@/class/TextTrack";
 
 const props = defineProps<{
-  trackItem: TextTrack;
+	trackItem: TextTrack;
 }>();
 </script>

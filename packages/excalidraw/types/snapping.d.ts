@@ -184,4 +184,3 @@ export declare const getGridPoint: (
 	y: number,
 	gridSize: NullableGridSize,
 ) => [number, number];
-export {};

@@ -17,4 +17,3 @@ type TunnelsContextValue = {
 export declare const TunnelsContext: React.Context<TunnelsContextValue>;
 export declare const useTunnels: () => TunnelsContextValue;
 export declare const useInitializeTunnels: () => TunnelsContextValue;
-export {};

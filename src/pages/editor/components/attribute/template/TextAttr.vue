@@ -66,10 +66,10 @@
 </template>
 
 <script lang="ts" setup>
+import type { TextTrack } from "@/class/TextTrack";
 import { baseFps } from "@/data/track";
 import { useTrackState } from "@/stores/track";
 import AttrCol from "../AttrCol.vue";
-import type { TextTrack } from "@/class/TextTrack";
 import ColorPicker from "../color/ColorPicker.vue";
 
 const loading = ref(false);

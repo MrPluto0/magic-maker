@@ -148,12 +148,12 @@
 </template>
 
 <script lang="ts" setup>
-import { useRouter } from "vue-router";
 import { ElMessage } from "element-plus";
 import { onMounted, ref } from "vue";
-import { useUserState } from "@/stores/user";
-import { useProjectState } from "@/stores/project";
+import { useRouter } from "vue-router";
 import { usePageState } from "@/stores/page";
+import { useProjectState } from "@/stores/project";
+import { useUserState } from "@/stores/user";
 import type { IUser } from "@/types/user";
 
 defineProps<{

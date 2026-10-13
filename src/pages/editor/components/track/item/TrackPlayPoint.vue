@@ -12,10 +12,11 @@
 </template>
 
 <script setup lang="ts">
-import { getGridPixel, getSelectFrame } from "@/utils/canvasUtil";
 import { computed } from "vue";
-import { useTrackState } from "@/stores/track";
 import { usePlayerState } from "@/stores/player";
+import { useTrackState } from "@/stores/track";
+import { getGridPixel, getSelectFrame } from "@/utils/canvasUtil";
+
 const offsetLine = {
 	left: 10,
 };

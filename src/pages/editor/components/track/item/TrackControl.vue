@@ -28,8 +28,8 @@
 </template>
 
 <script setup lang="ts">
+import { computed, reactive } from "vue";
 import { useTrackState } from "@/stores/track";
-import { reactive, computed } from "vue";
 
 const props = defineProps({
 	modelValue: {

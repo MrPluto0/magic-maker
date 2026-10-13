@@ -34,49 +34,49 @@
 
 <script lang="ts" setup>
 import { reactive, ref } from "vue";
-import { useResourceState } from "@/stores/resource";
-import ResourceList from "../../resource/ResourceList.vue";
-import type { ImageResource } from "@/types/resource";
-import { ImageSizeList } from "@/data/constant";
 import { openaiService } from "@/class/OpenAI";
+import { ImageSizeList } from "@/data/constant";
+import { useResourceState } from "@/stores/resource";
+import type { ImageResource } from "@/types/resource";
 import { urlToFile } from "@/utils/file";
+import ResourceList from "../../resource/ResourceList.vue";
 
 const resourceStore = useResourceState();
 
 const loading = ref(false);
 const resource = computed(
-  () => resourceStore.getResourcesByType("image") as ImageResource[]
+	() => resourceStore.getResourcesByType("image") as ImageResource[],
 );
 
 const form = reactive({
-  prompt: "",
-  size: "",
+	prompt: "",
+	size: "",
 });
 
 const handleSubmit = async () => {
-  if (!form.prompt) {
-    ElMessage.error("请输入文字描述");
-    return;
-  }
+	if (!form.prompt) {
+		ElMessage.error("请输入文字描述");
+		return;
+	}
 
-  loading.value = true;
+	loading.value = true;
 
-  try {
-    const url = await openaiService.generateImage({
-      prompt: form.prompt,
-      n: 1,
-      // @ts-expect-error
-      size: form.size || "1024x1024",
-    });
+	try {
+		const url = await openaiService.generateImage({
+			prompt: form.prompt,
+			n: 1,
+			// @ts-expect-error
+			size: form.size || "1024x1024",
+		});
 
-    const file = await urlToFile(url, `generated-image-${Date.now()}.png`);
-    resourceStore.createResource(file, {
-      prompt: form.prompt,
-      size: form.size,
-    });
-  } finally {
-    loading.value = false;
-    form.prompt = "";
-  }
+		const file = await urlToFile(url, `generated-image-${Date.now()}.png`);
+		resourceStore.createResource(file, {
+			prompt: form.prompt,
+			size: form.size,
+		});
+	} finally {
+		loading.value = false;
+		form.prompt = "";
+	}
 };
 </script>

@@ -284,4 +284,3 @@ export declare class LinearElementEditor {
 		includeBoundText?: boolean,
 	) => [number, number, number, number, number, number];
 }
-export {};

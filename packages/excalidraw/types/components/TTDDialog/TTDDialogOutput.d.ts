@@ -9,4 +9,3 @@ export declare const TTDDialogOutput: ({
 	canvasRef,
 	loaded,
 }: TTDDialogOutputProps) => JSX.Element;
-export {};

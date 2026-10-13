@@ -46,4 +46,3 @@ export declare const MobileMenu: ({
 	UIOptions,
 	app,
 }: MobileMenuProps) => JSX.Element;
-export {};

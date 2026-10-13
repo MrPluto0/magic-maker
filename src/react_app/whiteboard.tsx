@@ -1,17 +1,17 @@
+import { Excalidraw, Footer, MainMenu, WelcomeScreen } from "@pkg/excalidraw";
 import { useDrawStore } from "@/stores/draw";
 import { selectFile } from "@/utils/file";
 import { psdToJson } from "@/utils/psd";
-import { Excalidraw, MainMenu, WelcomeScreen, Footer } from "@pkg/excalidraw";
 // 必须添加，不然样式混乱
 import "@pkg/excalidraw/src/index.css";
 
 import { GenerateMood } from "./generateMood";
 import "./whiteboard.less";
-import { actionPartRedraw } from "./actions/partRedraw";
-import { actionExtendDraw } from "./actions/extendDraw";
 import type { ExcalidrawImperativeAPI } from "@pkg/excalidraw/types/types";
-import { actionStyleRedraw } from "./actions/styleRedraw";
 import { ChineseFonts, EnglishFonts } from "@/data/fonts";
+import { actionExtendDraw } from "./actions/extendDraw";
+import { actionPartRedraw } from "./actions/partRedraw";
+import { actionStyleRedraw } from "./actions/styleRedraw";
 
 export default function () {
 	const store = useDrawStore();
@@ -76,7 +76,7 @@ export default function () {
 				name="test"
 				initialData={{
 					elements: store.eles,
-					appState: store.state,
+					appState: store.state as any,
 					scrollToContent: true,
 				}}
 				langCode="zh-CN"

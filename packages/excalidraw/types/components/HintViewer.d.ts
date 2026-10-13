@@ -13,4 +13,3 @@ export declare const HintViewer: ({
 	device,
 	app,
 }: HintViewerProps) => JSX.Element | null;
-export {};

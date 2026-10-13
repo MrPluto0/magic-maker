@@ -28,9 +28,9 @@
 </template>
 
 <script setup lang="ts">
-import { formatPlayerTime } from "@/utils/common";
 import { usePlayerState } from "@/stores/player";
 import { useTrackState } from "@/stores/track";
+import { formatPlayerTime } from "@/utils/common";
 
 const store = usePlayerState();
 const trackStore = useTrackState();

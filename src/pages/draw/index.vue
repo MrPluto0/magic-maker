@@ -46,12 +46,12 @@
 </template>
 
 <script lang="ts" setup>
-import MaterialContainer from "./components/MaterialContainer.vue";
-import TemplateContainer from "./components/TemplateContainer.vue";
+import { applyPureReactInVue } from "veaury";
 import Whiteboard from "@/react_app/whiteboard";
 import { useDrawStore } from "@/stores/draw";
 import { useProjectState } from "@/stores/project";
-import { applyPureReactInVue } from "veaury";
+import MaterialContainer from "./components/MaterialContainer.vue";
+import TemplateContainer from "./components/TemplateContainer.vue";
 
 const VWhiteboard = applyPureReactInVue(Whiteboard);
 const drawStore = useDrawStore();

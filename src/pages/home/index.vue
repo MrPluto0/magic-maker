@@ -53,13 +53,13 @@
 </template>
 
 <script lang="ts" setup>
-import { useUserState } from "@/stores/user";
-import { useProjectState } from "@/stores/project";
 import UsageBox from "@/components/dialogs/UsageBox.vue";
+import ContactIcon from "@/components/icons/ContactIcon.vue";
+import UsageIcon from "@/components/icons/UsageIcon.vue";
+import { useProjectState } from "@/stores/project";
+import { useUserState } from "@/stores/user";
 import NewProject from "./components/NewProject.vue";
 import ProjectList from "./components/ProjectList.vue";
-import UsageIcon from "@/components/icons/UsageIcon.vue";
-import ContactIcon from "@/components/icons/ContactIcon.vue";
 
 const userStore = useUserState();
 const projectStore = useProjectState();

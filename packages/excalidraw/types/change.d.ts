@@ -261,4 +261,3 @@ export declare class ElementsChange implements Change<SceneElementsMap> {
 	private static postProcess;
 	private static stripIrrelevantProps;
 }
-export {};

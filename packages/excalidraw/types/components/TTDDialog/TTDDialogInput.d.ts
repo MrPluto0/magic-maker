@@ -11,4 +11,3 @@ export declare const TTDDialogInput: ({
 	onChange,
 	onKeyboardSubmit,
 }: TTDDialogInputProps) => JSX.Element;
-export {};

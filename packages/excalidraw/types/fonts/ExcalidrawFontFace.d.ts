@@ -22,4 +22,3 @@ export declare class ExcalidrawFontFace {
 	private static getFormat;
 	private static normalizeBaseUrl;
 }
-export {};

@@ -10,4 +10,3 @@ export declare const FixedSideContainer: ({
 	side,
 	className,
 }: FixedSideContainerProps) => JSX.Element;
-export {};

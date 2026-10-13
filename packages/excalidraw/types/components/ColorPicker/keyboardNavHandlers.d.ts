@@ -32,4 +32,3 @@ export declare const colorPickerKeyNavHandler: ({
 	onEyeDropperToggle,
 	onEscape,
 }: ColorPickerKeyNavHandlerProps) => boolean;
-export {};

@@ -32,4 +32,3 @@ export declare const FontPickerList: React.MemoExoticComponent<
 		onClose,
 	}: FontPickerListProps) => JSX.Element
 >;
-export {};

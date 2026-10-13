@@ -20,8 +20,8 @@
 <script setup lang="ts">
 import { TrackHeightMap } from "@/data/track";
 import { useTrackState } from "@/stores/track";
-import TrackItem from "./TrackItem.vue";
 import type { Track, TrackType } from "@/types/track";
+import TrackItem from "./TrackItem.vue";
 
 const { lineIndex } = defineProps<{
 	isMain?: boolean;

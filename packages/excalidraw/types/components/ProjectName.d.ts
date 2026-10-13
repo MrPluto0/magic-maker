@@ -8,4 +8,3 @@ type Props = {
 	ignoreFocus?: boolean;
 };
 export declare const ProjectName: (props: Props) => JSX.Element;
-export {};

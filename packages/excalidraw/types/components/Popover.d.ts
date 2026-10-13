@@ -22,4 +22,3 @@ export declare const Popover: ({
 	viewportWidth,
 	viewportHeight,
 }: Props) => JSX.Element;
-export {};

@@ -1,8 +1,8 @@
-import { getTextRect } from "@/utils/common";
 import { ImgClip, OffscreenSprite } from "@webav/av-cliper";
+import { nanoid } from "nanoid";
 import { baseFps, UnitFrame2μs } from "@/data/track";
 import type { BaseTrack, TrackType } from "@/types/track";
-import { nanoid } from "nanoid";
+import { getTextRect } from "@/utils/common";
 
 export class TextTrack implements BaseTrack {
 	id: string;

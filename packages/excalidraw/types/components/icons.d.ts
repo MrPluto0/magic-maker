@@ -212,4 +212,3 @@ export declare const collapseUpIcon: JSX.Element;
 export declare const upIcon: JSX.Element;
 export declare const cropIcon: JSX.Element;
 export declare const elementLinkIcon: JSX.Element;
-export {};

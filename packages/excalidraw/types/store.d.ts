@@ -149,4 +149,3 @@ export declare class Snapshot {
 	 */
 	private createElementsSnapshot;
 }
-export {};

@@ -37,18 +37,18 @@
 </template>
 
 <script setup lang="ts">
-import PlayerMoveable from "./PlayerMoveable.vue";
-import PlayerControl from "./PlayerControl.vue";
-import { usePlayerState } from "@/stores/player";
-import { CanvasPlayer } from "@/class/CanvasPlayer";
 import { storeToRefs } from "pinia";
+import { CanvasPlayer } from "@/class/CanvasPlayer";
+import { usePlayerState } from "@/stores/player";
 import { useTrackState } from "@/stores/track";
+import PlayerControl from "./PlayerControl.vue";
+import PlayerMoveable from "./PlayerMoveable.vue";
 
 const props = defineProps<{
-  containerSize: {
-    width: number;
-    height: number;
-  };
+	containerSize: {
+		width: number;
+		height: number;
+	};
 }>();
 
 const store = usePlayerState();
@@ -59,15 +59,15 @@ const playerCanvas = ref();
 const player = ref();
 
 const scale = computed(() => {
-  let { width, height } = props.containerSize;
-  height -= 70; // 上下功能栏
-  width -= 10; //  左右功能栏
-  return Math.min(width / playerWidth.value, height / playerHeight.value);
+	let { width, height } = props.containerSize;
+	height -= 70; // 上下功能栏
+	width -= 10; //  左右功能栏
+	return Math.min(width / playerWidth.value, height / playerHeight.value);
 });
 
 onMounted(() => {
-  player.value = new CanvasPlayer({
-    player: playerCanvas,
-  });
+	player.value = new CanvasPlayer({
+		player: playerCanvas,
+	});
 });
 </script>

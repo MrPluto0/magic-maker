@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 import { useClickAway } from "react-use";
-import { useDrawStore } from "@/stores/draw";
 import { ColorList, GenerateKeywords } from "@/data/constant";
+import { useDrawStore } from "@/stores/draw";
 
 export function GenerateMood() {
 	const store = useDrawStore();

@@ -92,18 +92,18 @@
 </template>
 
 <script setup lang="ts">
+import { debounce } from "lodash-es";
+import { baseFps } from "@/data/track";
+import { usePlayerState } from "@/stores/player";
+import { useTrackState } from "@/stores/track";
+import type { Resource } from "@/types/resource";
+import type { Track } from "@/types/track";
+import { getGridPixel, getSelectFrame } from "@/utils/canvasUtil";
+import { checkTrackOverlap } from "@/utils/track";
 import TimeLine from "./TimeLine.vue";
 import TrackLine from "./TrackLine.vue";
 import TrackListIcon from "./TrackListIcon.vue";
 import TrackPlayPoint from "./TrackPlayPoint.vue";
-import { getGridPixel, getSelectFrame } from "@/utils/canvasUtil";
-import { useTrackState } from "@/stores/track";
-import { usePlayerState } from "@/stores/player";
-import { debounce } from "lodash-es";
-import type { Resource } from "@/types/resource";
-import { baseFps } from "@/data/track";
-import type { Track } from "@/types/track";
-import { checkTrackOverlap } from "@/utils/track";
 
 // ========================= 状态管理 =========================
 const store = useTrackState();
@@ -121,7 +121,7 @@ const startY = ref(0);
 // 计算属性
 const trackScale = computed(() => store.trackScale);
 const trackStyle = computed(() => ({
-  width: getGridPixel(trackScale.value, store.frameCount) + offsetLine.right,
+	width: getGridPixel(trackScale.value, store.frameCount) + offsetLine.right,
 }));
 
 // ========================= 拖放状态 =========================
@@ -134,131 +134,131 @@ const dragPoint = computed(() => store.dragData.dragPoint);
 let dragElement: HTMLElement;
 let curCoord = { left: 0, right: 0, start: 0, end: 0 };
 let otherCoords: { left: number; right: number; start: number; end: number }[] =
-  [];
+	[];
 let fixPosition = { left: 0, right: 0, start: 0, end: 0 };
 
 /**
  * 获取元素计算位置
  */
 function getComputedPosition(element: HTMLElement) {
-  const style = window.getComputedStyle(element);
-  return {
-    left: parseInt(style.left),
-    right: parseInt(style.left) + parseInt(style.width),
-  };
+	const style = window.getComputedStyle(element);
+	return {
+		left: parseInt(style.left),
+		right: parseInt(style.left) + parseInt(style.width),
+	};
 }
 
 /**
  * 检查轨道重叠并获取插入信息
  */
 function checkOverlapAndGetInsertInfo(
-  dragItem: Track,
-  lineIndex: number,
-  start: number,
-  end: number
+	dragItem: Track,
+	lineIndex: number,
+	start: number,
+	end: number,
 ) {
-  if (lineIndex >= store.trackList.length) {
-    return { hasOverlap: false, insertIndex: 0 };
-  }
+	if (lineIndex >= store.trackList.length) {
+		return { hasOverlap: false, insertIndex: 0 };
+	}
 
-  const line = store.trackList[lineIndex];
-  if (dragItem.type !== line.type) {
-    return { hasOverlap: true, insertIndex: 0 };
-  }
+	const line = store.trackList[lineIndex];
+	if (dragItem.type !== line.type) {
+		return { hasOverlap: true, insertIndex: 0 };
+	}
 
-  // 创建临时对象用于检测，只包含必要属性
-  const testItem = {
-    id: dragItem.id,
-    type: dragItem.type,
-    start,
-    end,
-  } as Track;
+	// 创建临时对象用于检测，只包含必要属性
+	const testItem = {
+		id: dragItem.id,
+		type: dragItem.type,
+		start,
+		end,
+	} as Track;
 
-  return checkTrackOverlap(
-    line.list.filter((item) => item.id !== dragItem.id),
-    testItem
-  );
+	return checkTrackOverlap(
+		line.list.filter((item) => item.id !== dragItem.id),
+		testItem,
+	);
 }
 
 /**
  * 获取插入行信息
  */
 function getInsertLineInfo() {
-  const center =
-    dragElement.offsetTop +
-    dragElement.offsetHeight / 2 +
-    (dragElement.offsetParent as HTMLElement)?.offsetTop;
-  const trackLines = Array.from(
-    document.querySelectorAll(".trackLine")
-  ) as HTMLElement[];
+	const center =
+		dragElement.offsetTop +
+		dragElement.offsetHeight / 2 +
+		(dragElement.offsetParent as HTMLElement)?.offsetTop;
+	const trackLines = Array.from(
+		document.querySelectorAll(".trackLine"),
+	) as HTMLElement[];
 
-  if (trackLines[0]?.offsetTop > center) {
-    return { isNewLine: true, insertIndex: 0 };
-  }
+	if (trackLines[0]?.offsetTop > center) {
+		return { isNewLine: true, insertIndex: 0 };
+	}
 
-  for (let i = 0; i < trackLines.length; i++) {
-    const elem = trackLines[i];
+	for (let i = 0; i < trackLines.length; i++) {
+		const elem = trackLines[i];
 
-    if (
-      elem.offsetTop <= center &&
-      elem.offsetTop + elem.offsetHeight >= center
-    ) {
-      return { isNewLine: false, insertIndex: i, elem };
-    }
+		if (
+			elem.offsetTop <= center &&
+			elem.offsetTop + elem.offsetHeight >= center
+		) {
+			return { isNewLine: false, insertIndex: i, elem };
+		}
 
-    if (i + 1 !== trackLines.length) {
-      const nextElem = trackLines[i + 1];
-      if (
-        elem.offsetTop + elem.offsetHeight <= center &&
-        nextElem.offsetTop >= center
-      ) {
-        return { isNewLine: true, insertIndex: i + 1 };
-      }
-    }
-  }
+		if (i + 1 !== trackLines.length) {
+			const nextElem = trackLines[i + 1];
+			if (
+				elem.offsetTop + elem.offsetHeight <= center &&
+				nextElem.offsetTop >= center
+			) {
+				return { isNewLine: true, insertIndex: i + 1 };
+			}
+		}
+	}
 
-  return { isNewLine: true, insertIndex: trackLines.length };
+	return { isNewLine: true, insertIndex: trackLines.length };
 }
 
 /**
  * 计算插入信息
  */
 function calculateInsertInfo() {
-  let { isNewLine, insertIndex, elem } = getInsertLineInfo();
-  const style = getComputedPosition(dragElement);
+	let { isNewLine, insertIndex, elem } = getInsertLineInfo();
+	const style = getComputedPosition(dragElement);
 
-  const left = fixPosition.left || style.left;
-  const right = fixPosition.right || style.right;
-  const start =
-    fixPosition.start || getSelectFrame(left, store.trackScale, baseFps);
-  const end =
-    fixPosition.end || getSelectFrame(right, store.trackScale, baseFps);
+	const left = fixPosition.left || style.left;
+	const right = fixPosition.right || style.right;
+	const start =
+		fixPosition.start || getSelectFrame(left, store.trackScale, baseFps);
+	const end =
+		fixPosition.end || getSelectFrame(right, store.trackScale, baseFps);
 
-  if (!elem) {
-    return { insertIndex, itemIndex: 0, left, right, isNewLine, start, end };
-  }
+	if (!elem) {
+		return { insertIndex, itemIndex: 0, left, right, isNewLine, start, end };
+	}
 
-  const dragItem = store.dragData.dataInfo as Track;
-  const { hasOverlap, insertIndex: itemIndex } = checkOverlapAndGetInsertInfo(
-    dragItem,
-    insertIndex,
-    start,
-    end
-  );
+	const dragItem = store.dragData.dataInfo as Track;
+	const { hasOverlap, insertIndex: itemIndex } = checkOverlapAndGetInsertInfo(
+		dragItem,
+		insertIndex,
+		start,
+		end,
+	);
 
-  if (hasOverlap) {
-    isNewLine = true;
-    const center = elem.offsetLeft + elem.offsetWidth / 2;
-    const dragCenter =
-      dragElement.offsetTop +
-      (dragElement.offsetParent as HTMLElement)?.offsetTop +
-      dragElement.offsetHeight / 2;
-    if (center < dragCenter) {
-      insertIndex -= 1;
-    }
-  }
+	if (hasOverlap) {
+		isNewLine = true;
+		const center = elem.offsetLeft + elem.offsetWidth / 2;
+		const dragCenter =
+			dragElement.offsetTop +
+			(dragElement.offsetParent as HTMLElement)?.offsetTop +
+			dragElement.offsetHeight / 2;
+		if (center < dragCenter) {
+			insertIndex -= 1;
+		}
+	}
 
-  return { insertIndex, itemIndex, left, right, isNewLine, start, end };
+	return { insertIndex, itemIndex, left, right, isNewLine, start, end };
 }
 
 // ========================= 吸附系统 =========================
@@ -266,68 +266,68 @@ function calculateInsertInfo() {
  * 获取吸附线
  */
 function getAdsorptionLines(x: number, distance = 10) {
-  const result = [];
+	const result = [];
 
-  // 检查与其他轨道的吸附
-  otherCoords.forEach((coord) => {
-    if (Math.abs(coord.left - x) <= distance) {
-      result.push({ position: coord.left, frame: coord.start });
-    }
-    if (Math.abs(coord.right - x) <= distance) {
-      result.push({ position: coord.right, frame: coord.end });
-    }
-  });
+	// 检查与其他轨道的吸附
+	otherCoords.forEach((coord) => {
+		if (Math.abs(coord.left - x) <= distance) {
+			result.push({ position: coord.left, frame: coord.start });
+		}
+		if (Math.abs(coord.right - x) <= distance) {
+			result.push({ position: coord.right, frame: coord.end });
+		}
+	});
 
-  // 检查与播放点的吸附
-  const playPointX = getGridPixel(store.trackScale, playerStore.playStartFrame);
-  if (Math.abs(playPointX - x) <= distance) {
-    result.push({ position: playPointX, frame: playerStore.playStartFrame });
-  }
+	// 检查与播放点的吸附
+	const playPointX = getGridPixel(store.trackScale, playerStore.playStartFrame);
+	if (Math.abs(playPointX - x) <= distance) {
+		result.push({ position: playPointX, frame: playerStore.playStartFrame });
+	}
 
-  return result;
+	return result;
 }
 
 /**
  * 应用吸附效果
  */
 function applyAdsorption(
-  { left, right }: { left: number; right: number },
-  lines: any[][]
+	{ left, right }: { left: number; right: number },
+	lines: any[][],
 ) {
-  fixPosition = { left: 0, right: 0, start: 0, end: 0 };
+	fixPosition = { left: 0, right: 0, start: 0, end: 0 };
 
-  if (lines[0].length === 0 && lines[1].length === 0) return;
+	if (lines[0].length === 0 && lines[1].length === 0) return;
 
-  const minLeftLine = lines[0].reduce(
-    (result, item) =>
-      Math.abs(item.position - left) < Math.abs(result.position - left)
-        ? item
-        : result,
-    { position: Number.MAX_SAFE_INTEGER, frame: 0 }
-  );
+	const minLeftLine = lines[0].reduce(
+		(result, item) =>
+			Math.abs(item.position - left) < Math.abs(result.position - left)
+				? item
+				: result,
+		{ position: Number.MAX_SAFE_INTEGER, frame: 0 },
+	);
 
-  const minRightLine = lines[1].reduce(
-    (result, item) =>
-      Math.abs(item.position - right) < Math.abs(result.position - right)
-        ? item
-        : result,
-    { position: Number.MAX_SAFE_INTEGER, frame: 0 }
-  );
+	const minRightLine = lines[1].reduce(
+		(result, item) =>
+			Math.abs(item.position - right) < Math.abs(result.position - right)
+				? item
+				: result,
+		{ position: Number.MAX_SAFE_INTEGER, frame: 0 },
+	);
 
-  if (
-    Math.abs(minLeftLine.position - left) <
-    Math.abs(minRightLine.position - right)
-  ) {
-    // 左对齐
-    fixPosition.left = minLeftLine.position;
-    fixPosition.start = minLeftLine.frame;
-    store.dragData.moveX = minLeftLine.position - curCoord.left;
-  } else {
-    // 右对齐
-    fixPosition.right = minRightLine.position;
-    fixPosition.end = minRightLine.frame;
-    store.dragData.moveX = minRightLine.position - curCoord.right;
-  }
+	if (
+		Math.abs(minLeftLine.position - left) <
+		Math.abs(minRightLine.position - right)
+	) {
+		// 左对齐
+		fixPosition.left = minLeftLine.position;
+		fixPosition.start = minLeftLine.frame;
+		store.dragData.moveX = minLeftLine.position - curCoord.left;
+	} else {
+		// 右对齐
+		fixPosition.right = minRightLine.position;
+		fixPosition.end = minRightLine.frame;
+		store.dragData.moveX = minRightLine.position - curCoord.right;
+	}
 }
 
 // ========================= 轨道操作 =========================
@@ -335,69 +335,69 @@ function applyAdsorption(
  * 执行轨道插入
  */
 function performTrackInsert(
-  insertInfo: ReturnType<typeof calculateInsertInfo>
+	insertInfo: ReturnType<typeof calculateInsertInfo>,
 ) {
-  const dragInfo = store.dragData.dataInfo as Track;
-  const startFrame = Math.max(
-    fixPosition.right !== 0
-      ? getSelectFrame(insertInfo.right, store.trackScale, baseFps) -
-          (dragInfo.end - dragInfo.start)
-      : getSelectFrame(insertInfo.left, store.trackScale, baseFps),
-    0
-  );
+	const dragInfo = store.dragData.dataInfo as Track;
+	const startFrame = Math.max(
+		fixPosition.right !== 0
+			? getSelectFrame(insertInfo.right, store.trackScale, baseFps) -
+					(dragInfo.end - dragInfo.start)
+			: getSelectFrame(insertInfo.left, store.trackScale, baseFps),
+		0,
+	);
 
-  // 更新轨道位置
-  dragInfo.end = startFrame + (dragInfo.end - dragInfo.start);
-  dragInfo.start = startFrame;
+	// 更新轨道位置
+	dragInfo.end = startFrame + (dragInfo.end - dragInfo.start);
+	dragInfo.start = startFrame;
 
-  // 找到并删除原位置
-  let deleteLineIndex = 0;
-  let deleteItemIndex = 0;
-  store.trackList.forEach((lineItem, lineIndex) => {
-    lineItem.list.forEach((item, itemIndex) => {
-      if (item.id === dragInfo.id) {
-        deleteLineIndex = lineIndex;
-        deleteItemIndex = itemIndex;
-      }
-    });
-  });
+	// 找到并删除原位置
+	let deleteLineIndex = 0;
+	let deleteItemIndex = 0;
+	store.trackList.forEach((lineItem, lineIndex) => {
+		lineItem.list.forEach((item, itemIndex) => {
+			if (item.id === dragInfo.id) {
+				deleteLineIndex = lineIndex;
+				deleteItemIndex = itemIndex;
+			}
+		});
+	});
 
-  store.trackList[deleteLineIndex].list.splice(deleteItemIndex, 1);
+	store.trackList[deleteLineIndex].list.splice(deleteItemIndex, 1);
 
-  // 插入到新位置
-  if (insertInfo.isNewLine) {
-    store.trackList.splice(insertInfo.insertIndex, 0, {
-      type: dragInfo.type,
-      list: [dragInfo],
-    });
-  } else {
-    store.trackList[insertInfo.insertIndex].list.splice(
-      insertInfo.itemIndex,
-      0,
-      dragInfo
-    );
-  }
+	// 插入到新位置
+	if (insertInfo.isNewLine) {
+		store.trackList.splice(insertInfo.insertIndex, 0, {
+			type: dragInfo.type,
+			list: [dragInfo],
+		});
+	} else {
+		store.trackList[insertInfo.insertIndex].list.splice(
+			insertInfo.itemIndex,
+			0,
+			dragInfo,
+		);
+	}
 
-  // 清理空行
-  const emptyLineIndex = store.trackList.findIndex(
-    (lineItem) => lineItem.list.length === 0
-  );
-  if (emptyLineIndex !== -1) {
-    store.trackList.splice(emptyLineIndex, 1);
-  }
+	// 清理空行
+	const emptyLineIndex = store.trackList.findIndex(
+		(lineItem) => lineItem.list.length === 0,
+	);
+	if (emptyLineIndex !== -1) {
+		store.trackList.splice(emptyLineIndex, 1);
+	}
 }
 
 // ========================= 交互处理 =========================
 function setSelectTract() {
-  store.selectTrackItem.line = -1;
-  store.selectTrackItem.index = -1;
+	store.selectTrackItem.line = -1;
+	store.selectTrackItem.index = -1;
 }
 
 function handlerSelectFrame(frame: number) {
-  const playFrame = frame - 1;
-  const startFrame = playFrame < 0 ? 0 : playFrame;
-  playerStore.isPause = true;
-  playerStore.playStartFrame = startFrame;
+	const playFrame = frame - 1;
+	const startFrame = playFrame < 0 ? 0 : playFrame;
+	playerStore.isPause = true;
+	playerStore.playStartFrame = startFrame;
 }
 
 // ========================= 视图交互 =========================
@@ -406,9 +406,9 @@ function handlerSelectFrame(frame: number) {
  * 滚动处理
  */
 function handleScroll() {
-  const { scrollLeft, scrollTop } = trackList.value;
-  startX.value = scrollLeft - offsetLine.left;
-  startY.value = scrollTop;
+	const { scrollLeft, scrollTop } = trackList.value;
+	startX.value = scrollLeft - offsetLine.left;
+	startY.value = scrollTop;
 }
 
 /**
@@ -416,15 +416,15 @@ function handleScroll() {
  */
 let maxDelta = 0;
 const setScale = debounce(() => {
-  store.trackScale -= maxDelta > 0 ? 10 : -10;
-  maxDelta = 0;
+	store.trackScale -= maxDelta > 0 ? 10 : -10;
+	maxDelta = 0;
 }, 100);
 
 function handleWheel(event: WheelEvent) {
-  if (event.ctrlKey || event.metaKey) {
-    maxDelta || (maxDelta = event.deltaY);
-    setScale();
-  }
+	if (event.ctrlKey || event.metaKey) {
+		maxDelta || (maxDelta = event.deltaY);
+		setScale();
+	}
 }
 
 // ========================= 鼠标事件处理 =========================
@@ -433,123 +433,123 @@ function handleWheel(event: WheelEvent) {
  * 计算拖拽位置和吸附
  */
 function calculateDragPosition(event: MouseEvent) {
-  store.dragData.moveX = event.pageX - store.dragData.dragPoint.x;
-  store.dragData.moveY = event.pageY - store.dragData.dragPoint.y;
+	store.dragData.moveX = event.pageX - store.dragData.dragPoint.x;
+	store.dragData.moveY = event.pageY - store.dragData.dragPoint.y;
 
-  const left = store.dragData.moveX + curCoord.left;
-  const right = store.dragData.moveX + curCoord.right;
+	const left = store.dragData.moveX + curCoord.left;
+	const right = store.dragData.moveX + curCoord.right;
 
-  store.dragData.fixLines = [
-    getAdsorptionLines(left),
-    getAdsorptionLines(right),
-  ];
-  applyAdsorption({ left, right }, store.dragData.fixLines);
+	store.dragData.fixLines = [
+		getAdsorptionLines(left),
+		getAdsorptionLines(right),
+	];
+	applyAdsorption({ left, right }, store.dragData.fixLines);
 }
 
 /**
  * 收集其他轨道坐标信息
  */
 function collectOtherTrackCoords(
-  excludeLineIndex: number,
-  excludeItemIndex: number
+	excludeLineIndex: number,
+	excludeItemIndex: number,
 ) {
-  otherCoords = [];
-  for (let i = 0; i < store.trackList.length; i++) {
-    for (let j = 0; j < store.trackList[i].list.length; j++) {
-      if (i !== excludeLineIndex || j !== excludeItemIndex) {
-        const item = store.trackList[i].list[j];
-        otherCoords.push({
-          start: item.start,
-          end: item.end,
-          left: getGridPixel(store.trackScale, item.start),
-          right: getGridPixel(store.trackScale, item.end),
-        });
-      }
-    }
-  }
+	otherCoords = [];
+	for (let i = 0; i < store.trackList.length; i++) {
+		for (let j = 0; j < store.trackList[i].list.length; j++) {
+			if (i !== excludeLineIndex || j !== excludeItemIndex) {
+				const item = store.trackList[i].list[j];
+				otherCoords.push({
+					start: item.start,
+					end: item.end,
+					left: getGridPixel(store.trackScale, item.start),
+					right: getGridPixel(store.trackScale, item.end),
+				});
+			}
+		}
+	}
 }
 function onMouseDown(event: MouseEvent) {
-  dragElement = (event.target as HTMLElement).closest(".trackItem");
-  if (!dragElement) return;
+	dragElement = (event.target as HTMLElement).closest(".trackItem");
+	if (!dragElement) return;
 
-  playerStore.isPause = true;
+	playerStore.isPause = true;
 
-  const lineIndex = Number(dragElement.dataset.line);
-  const index = Number(dragElement.dataset.index);
+	const lineIndex = Number(dragElement.dataset.line);
+	const index = Number(dragElement.dataset.index);
 
-  // 设置拖拽状态
-  store.dragData.dragPoint.x = event.pageX;
-  store.dragData.dragPoint.y = event.pageY;
-  store.dragData.dataInfo = store.trackList[lineIndex].list[index];
-  store.dragData.dragType = dragElement.dataset.type;
-  store.moveTrackData.lineIndex = lineIndex;
-  store.moveTrackData.itemIndex = index;
-  store.selectTrackItem.line = -1;
-  store.selectTrackItem.index = 0;
+	// 设置拖拽状态
+	store.dragData.dragPoint.x = event.pageX;
+	store.dragData.dragPoint.y = event.pageY;
+	store.dragData.dataInfo = store.trackList[lineIndex].list[index];
+	store.dragData.dragType = dragElement.dataset.type;
+	store.moveTrackData.lineIndex = lineIndex;
+	store.moveTrackData.itemIndex = index;
+	store.selectTrackItem.line = -1;
+	store.selectTrackItem.index = 0;
 
-  const dragItem = store.trackList[lineIndex].list[index];
-  curCoord = {
-    start: dragItem.start,
-    end: dragItem.end,
-    left: getGridPixel(store.trackScale, dragItem.start),
-    right: getGridPixel(store.trackScale, dragItem.end),
-  };
+	const dragItem = store.trackList[lineIndex].list[index];
+	curCoord = {
+		start: dragItem.start,
+		end: dragItem.end,
+		left: getGridPixel(store.trackScale, dragItem.start),
+		right: getGridPixel(store.trackScale, dragItem.end),
+	};
 
-  // 收集其他轨道坐标
-  collectOtherTrackCoords(lineIndex, index);
+	// 收集其他轨道坐标
+	collectOtherTrackCoords(lineIndex, index);
 }
 
 function onMouseMove(event: MouseEvent) {
-  if (!dragElement) return;
-  calculateDragPosition(event);
+	if (!dragElement) return;
+	calculateDragPosition(event);
 }
 
 function onMouseUp(event: MouseEvent) {
-  if (!dragElement) return;
+	if (!dragElement) return;
 
-  calculateDragPosition(event);
+	calculateDragPosition(event);
 
-  const insertInfo = calculateInsertInfo();
-  performTrackInsert(insertInfo);
+	const insertInfo = calculateInsertInfo();
+	performTrackInsert(insertInfo);
 
-  dragElement = null;
-  resetDragState();
+	dragElement = null;
+	resetDragState();
 }
 
 // ========================= 拖放与状态管理 =========================
 function setDropLineLeft(event: MouseEvent) {
-  const trackListElement = trackListContainer.value as HTMLDivElement;
-  const { left } = trackListElement.getBoundingClientRect();
-  const { clientX } = event;
-  const { x: offsetX } = dragPoint.value;
-  const itemLeft = clientX - left - offsetX;
-  dropItemLeft.value = itemLeft < 0 ? 0 : itemLeft;
+	const trackListElement = trackListContainer.value as HTMLDivElement;
+	const { left } = trackListElement.getBoundingClientRect();
+	const { clientX } = event;
+	const { x: offsetX } = dragPoint.value;
+	const itemLeft = clientX - left - offsetX;
+	dropItemLeft.value = itemLeft < 0 ? 0 : itemLeft;
 }
 
 async function onDrop() {
-  const startFrame = getSelectFrame(
-    dropItemLeft.value,
-    store.trackScale,
-    baseFps
-  );
-  const track = await store.createTrack(
-    store.dragData.dataInfo as Resource,
-    startFrame
-  );
-  store.addTrack(track);
-  resetDragState();
+	const startFrame = getSelectFrame(
+		dropItemLeft.value,
+		store.trackScale,
+		baseFps,
+	);
+	const track = await store.createTrack(
+		store.dragData.dataInfo as Resource,
+		startFrame,
+	);
+	store.addTrack(track);
+	resetDragState();
 }
 
 /**
  * 重置拖拽状态
  */
 function resetDragState() {
-  store.dragData.fixLines = [];
-  store.moveTrackData.lineIndex = -1;
-  store.moveTrackData.itemIndex = -1;
-  store.dragData.moveX = 0;
-  store.dragData.moveY = 0;
-  dropItemLeft.value = 0;
-  store.dragData.dataInfo = {} as Resource;
+	store.dragData.fixLines = [];
+	store.moveTrackData.lineIndex = -1;
+	store.moveTrackData.itemIndex = -1;
+	store.dragData.moveX = 0;
+	store.dragData.moveY = 0;
+	dropItemLeft.value = 0;
+	store.dragData.dataInfo = {} as Resource;
 }
 </script>

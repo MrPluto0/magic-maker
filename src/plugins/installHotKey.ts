@@ -1,7 +1,7 @@
-import { useTrackState } from "@/stores/track";
 import hotkeys from "hotkeys-js";
 import { usePlayerState } from "@/stores/player";
 import { useProjectState } from "@/stores/project";
+import { useTrackState } from "@/stores/track";
 
 const projectStore = useProjectState();
 const trackStore = useTrackState();

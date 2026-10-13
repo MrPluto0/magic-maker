@@ -14,4 +14,3 @@ interface ButtonIconProps {
 export declare const ButtonIcon: import("react").ForwardRefExoticComponent<
 	ButtonIconProps & import("react").RefAttributes<HTMLButtonElement>
 >;
-export {};

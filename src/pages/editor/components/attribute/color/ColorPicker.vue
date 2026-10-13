@@ -20,8 +20,8 @@
 </template>
 
 <script setup lang="ts">
-import defaultColors from "./colorSet";
 import { Sketch } from "@ckpack/vue-color";
+import defaultColors from "./colorSet";
 
 const props = defineProps({
 	modelValue: {

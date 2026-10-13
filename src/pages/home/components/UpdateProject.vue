@@ -30,6 +30,7 @@
 
 <script lang="ts" setup>
 import { useProjectState } from "@/stores/project";
+
 // Removed API imports for frontend-only mode
 
 const props = defineProps<{

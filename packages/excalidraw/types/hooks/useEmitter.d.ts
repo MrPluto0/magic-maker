@@ -1,5 +1,5 @@
 import type { Emitter } from "../emitter";
-export declare const useEmitter: <TEvent extends unknown>(
+export declare const useEmitter: <TEvent>(
 	emitter: Emitter<[TEvent]>,
 	initialState: TEvent,
 ) => TEvent;

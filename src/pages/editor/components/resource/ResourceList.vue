@@ -14,8 +14,8 @@
 
 <script setup lang="ts">
 import type { Resource } from "@/types/resource";
-import ResourceItem from "../resource/ResourceItem.vue";
 import type { TrackType } from "@/types/track";
+import ResourceItem from "../resource/ResourceItem.vue";
 
 defineProps<{
 	listData: Resource[];

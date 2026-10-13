@@ -10,4 +10,3 @@ export declare const ScrollableList: ({
 	placeholder,
 	children,
 }: ScrollableListProps) => JSX.Element;
-export {};

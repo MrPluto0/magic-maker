@@ -46,4 +46,3 @@ export declare const insertToEditor: ({
 	text?: string | undefined;
 	shouldSaveMermaidDataToStorage?: boolean | undefined;
 }) => void;
-export {};

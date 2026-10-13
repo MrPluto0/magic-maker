@@ -163,7 +163,6 @@ export declare namespace OpenAIInput {
 		 */
 		user?: string;
 	}
-	export {};
 }
 export declare namespace OpenAIOutput {
 	export interface ChatCompletion {
@@ -263,5 +262,4 @@ export declare namespace OpenAIOutput {
 		readonly param: string | null | undefined;
 		readonly type: string | undefined;
 	}
-	export {};
 }

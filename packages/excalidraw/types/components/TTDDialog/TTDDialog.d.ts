@@ -39,4 +39,3 @@ export declare const TTDDialogBase: import("react").FC<
 		__fallback?: boolean | undefined;
 	}
 >;
-export {};

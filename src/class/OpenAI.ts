@@ -1,82 +1,82 @@
 import OpenAI from "openai";
-import type { ChatParams, ImageParams } from "@/types/ai";
 import type { ImagesResponse } from "openai/resources/images";
 import { usePageState } from "@/stores/page";
+import type { ChatParams, ImageParams } from "@/types/ai";
 
 // 单例模式
 class OpenAIService {
-  private openai: OpenAI;
-  private settings: Record<string, any> = {};
+	private openai: OpenAI;
+	private settings: Record<string, any> = {};
 
-  constructor() {
-    this.init();
-  }
+	constructor() {
+		this.init();
+	}
 
-  private init() {
-    if (this.openai) return;
+	private init() {
+		if (this.openai) return;
 
-    const page = usePageState();
-    this.settings = page.aiSettings;
-    if (!this.settings.apiKey) {
-      ElMessage.error("请先在用户设置中填写 API Key和Model ID");
-      return;
-    }
+		const page = usePageState();
+		this.settings = page.aiSettings;
+		if (!this.settings.apiKey) {
+			ElMessage.error("请先在用户设置中填写 API Key和Model ID");
+			return;
+		}
 
-    this.openai = new OpenAI({
-      // 允许浏览器中使用
-      dangerouslyAllowBrowser: true,
-      apiKey: this.settings.apiKey,
-      baseURL: location.origin + "/api",
-    });
-  }
+		this.openai = new OpenAI({
+			// 允许浏览器中使用
+			dangerouslyAllowBrowser: true,
+			apiKey: this.settings.apiKey,
+			baseURL: location.origin + "/api",
+		});
+	}
 
-  async uploadFile(file: File) {
-    this.init();
-    const response = await this.openai.files.create({
-      file,
-      purpose: "assistants",
-    });
-    return response.id; // 返回文件ID
-  }
+	async uploadFile(file: File) {
+		this.init();
+		const response = await this.openai.files.create({
+			file,
+			purpose: "assistants",
+		});
+		return response.id; // 返回文件ID
+	}
 
-  // 聊天接口
-  async chat(params: ChatParams) {
-    this.init();
-    const {
-      model = this.settings.textModel,
-      messages,
-      thinking = false,
-      ...otherParams
-    } = params;
+	// 聊天接口
+	async chat(params: ChatParams) {
+		this.init();
+		const {
+			model = this.settings.textModel,
+			messages,
+			thinking = false,
+			...otherParams
+		} = params;
 
-    const response = await this.openai.chat.completions.create({
-      messages,
-      model,
-      // @ts-expect-error
-      thinking: {
-        type: thinking ? "enabled" : "disabled",
-      },
-      ...otherParams,
-    });
+		const response = await this.openai.chat.completions.create({
+			messages,
+			model,
+			// @ts-expect-error
+			thinking: {
+				type: thinking ? "enabled" : "disabled",
+			},
+			...otherParams,
+		});
 
-    return response;
-  }
+		return response;
+	}
 
-  // 生成图片接口
-  async generateImage(params: ImageParams) {
-    this.init();
-    const { model = this.settings.imageModel, ...otherParams } = params;
+	// 生成图片接口
+	async generateImage(params: ImageParams) {
+		this.init();
+		const { model = this.settings.imageModel, ...otherParams } = params;
 
-    const response = (await this.openai.images.generate({
-      model,
-      response_format: "url",
-      // @ts-expect-error
-      watermark: false,
-      ...otherParams,
-    })) as ImagesResponse;
+		const response = (await this.openai.images.generate({
+			model,
+			response_format: "url",
+			// @ts-expect-error
+			watermark: false,
+			...otherParams,
+		})) as ImagesResponse;
 
-    return response.data[0].url;
-  }
+		return response.data[0].url;
+	}
 }
 
 export const openaiService = new OpenAIService();

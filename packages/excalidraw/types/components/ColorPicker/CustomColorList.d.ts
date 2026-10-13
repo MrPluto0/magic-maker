@@ -11,4 +11,3 @@ export declare const CustomColorList: ({
 	onChange,
 	label,
 }: CustomColorListProps) => JSX.Element;
-export {};

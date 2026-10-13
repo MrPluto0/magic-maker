@@ -9,4 +9,3 @@ type IslandProps = {
 export declare const Island: React.ForwardRefExoticComponent<
 	IslandProps & React.RefAttributes<HTMLDivElement>
 >;
-export {};

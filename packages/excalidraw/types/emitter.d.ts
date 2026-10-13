@@ -13,4 +13,3 @@ export declare class Emitter<T extends any[] = []> {
 	trigger(...payload: T): this;
 	clear(): void;
 }
-export {};

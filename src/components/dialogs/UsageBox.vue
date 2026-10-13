@@ -282,11 +282,11 @@
 
 <script lang="ts" setup>
 import { computed, onMounted, ref } from "vue";
+import { baseFps } from "@/data/track";
+import { repoGetExportCount } from "@/db/projectRepo";
 import { useProjectState } from "@/stores/project";
 import { useResourceState } from "@/stores/resource";
 import { useTrackState } from "@/stores/track";
-import { baseFps } from "@/data/track";
-import { repoGetExportCount } from "@/db/projectRepo";
 
 const props = defineProps<{
 	show: boolean;
@@ -324,9 +324,7 @@ const stats = computed(() => {
 			}
 		}
 	}
-	const currentDuration = Math.round(
-		trackStore.frameCount / baseFps,
-	);
+	const currentDuration = Math.round(trackStore.frameCount / baseFps);
 	return {
 		projects: projectStore.projectList.length,
 		resources: resourceTotal,

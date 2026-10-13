@@ -17,4 +17,3 @@ export declare const ExcalidrawLogo: ({
 	size,
 	withText,
 }: LogoProps) => JSX.Element;
-export {};

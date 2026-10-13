@@ -48,4 +48,3 @@ type ToolButtonProps =
 export declare const ToolButton: React.ForwardRefExoticComponent<
 	ToolButtonProps & React.RefAttributes<unknown>
 >;
-export {};

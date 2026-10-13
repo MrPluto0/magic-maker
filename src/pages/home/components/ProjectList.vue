@@ -51,9 +51,9 @@
 </template>
 
 <script lang="ts" setup>
+import { useRouter } from "vue-router";
 import { useProjectState } from "@/stores/project";
 import type { IProject } from "@/types/project";
-import { useRouter } from "vue-router";
 import UpdateProject from "./UpdateProject.vue";
 
 const router = useRouter();

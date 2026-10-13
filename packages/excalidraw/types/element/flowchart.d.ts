@@ -49,4 +49,3 @@ export declare const isNodeInFlowchart: (
 	element: ExcalidrawFlowchartNodeElement,
 	elementsMap: ElementsMap,
 ) => boolean;
-export {};

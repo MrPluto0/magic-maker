@@ -1,8 +1,8 @@
-import { baseFps, UnitFrame2μs } from "@/data/track";
 import { OffscreenSprite } from "@webav/av-cliper";
+import { nanoid } from "nanoid";
+import { baseFps, UnitFrame2μs } from "@/data/track";
 import type { AudioResource } from "@/types/resource";
 import type { BaseTrack, TrackType } from "@/types/track";
-import { nanoid } from "nanoid";
 import { decoder } from "./Decoder";
 
 /**
@@ -100,9 +100,7 @@ export class AudioTrack implements BaseTrack {
 			chan0Buf.length,
 			DEFAULT_AUDIO_CONF.sampleRate,
 		);
-		// @ts-expect-error
 		buf.copyToChannel(chan0Buf, 0);
-		// @ts-expect-error
 		buf.copyToChannel(chan1Buf ?? chan0Buf, 1);
 		const audioSource = ctx.createBufferSource();
 		audioSource.buffer = buf;

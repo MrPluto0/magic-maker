@@ -97,10 +97,7 @@ export declare const jotaiStore: {
 				m?: undefined;
 		  };
 };
-export declare const useAtomWithInitialValue: <
-	T extends unknown,
-	A extends PrimitiveAtom<T>,
->(
+export declare const useAtomWithInitialValue: <T, A extends PrimitiveAtom<T>>(
 	atom: A,
 	initialValue: T | (() => T),
 ) => readonly [

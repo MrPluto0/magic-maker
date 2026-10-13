@@ -35,4 +35,3 @@ export declare const renderSpreadsheet: (
 	x: number,
 	y: number,
 ) => ChartElements;
-export {};

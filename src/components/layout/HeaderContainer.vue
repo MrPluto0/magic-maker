@@ -102,11 +102,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, h } from "vue";
+import { h, ref } from "vue";
+import { useRoute, useRouter } from "vue-router";
 import { usePageState } from "@/stores/page";
-import { useUserState } from "@/stores/user";
 import { useProjectState } from "@/stores/project";
-import { useRouter, useRoute } from "vue-router";
+import { useUserState } from "@/stores/user";
 import LoginBox from "../dialogs/LoginBox.vue";
 import RegisterBox from "../dialogs/RegisterBox.vue";
 import UserBox from "../dialogs/UserBox.vue";

@@ -86,4 +86,3 @@ export declare const copyTextToSystemClipboard: (
 	text: string | null,
 	clipboardEvent?: ClipboardEvent | null,
 ) => Promise<void>;
-export {};

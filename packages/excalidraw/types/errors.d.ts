@@ -31,4 +31,3 @@ export declare class WorkerInTheMainChunkError extends Error {
 export declare class ExcalidrawError extends Error {
 	constructor(message: string);
 }
-export {};

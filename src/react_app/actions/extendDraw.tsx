@@ -1,8 +1,8 @@
-import ExtendDraw from "@/pages/draw/components/tools/ExtendDraw.vue";
-import { useDrawStore } from "@/stores/draw";
 import type { ExcalidrawImageElement } from "@pkg/excalidraw/types/element/types";
 import type { ExcalidrawImperativeAPI } from "@pkg/excalidraw/types/types";
 import { createApp } from "vue";
+import ExtendDraw from "@/pages/draw/components/tools/ExtendDraw.vue";
+import { useDrawStore } from "@/stores/draw";
 
 export const actionExtendDraw = async (api: ExcalidrawImperativeAPI) => {
 	api.registerAction({

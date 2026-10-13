@@ -1,12 +1,11 @@
 import path from "node:path";
 import { fileURLToPath, URL } from "node:url";
-import { defineConfig } from "vite";
-import AutoImport from "unplugin-auto-import/vite";
-import Components from "unplugin-vue-components/vite";
-import { ElementPlusResolver } from "unplugin-vue-components/resolvers";
 import UnoCSS from "unocss/vite";
-import VitePluginVueDevtools from "vite-plugin-vue-devtools";
+import AutoImport from "unplugin-auto-import/vite";
+import { ElementPlusResolver } from "unplugin-vue-components/resolvers";
+import Components from "unplugin-vue-components/vite";
 import veauryVitePlugins from "veaury/vite/esm/index.mjs";
+import { defineConfig } from "vite";
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -32,6 +31,40 @@ export default defineConfig({
     alias: {
       "@": fileURLToPath(new URL("./src", import.meta.url)),
       "@pkg": path.resolve(__dirname, "./packages"),
+    },
+  },
+  build: {
+    rollupOptions: {
+      output: {
+        // 产物瘦身：大依赖分包，提升缓存命中与首屏加载
+        manualChunks(id: string) {
+          if (id.includes("node_modules")) {
+            if (
+              /[\\/]node_modules[\\/](react|react-dom|react-use|react-reconciler|scheduler|veaury)[\\/]/.test(
+                id
+              )
+            ) {
+              return "vendor-react";
+            }
+            if (/[\\/]node_modules[\\/]@webav[\\/]/.test(id)) {
+              return "vendor-webav";
+            }
+            if (/[\\/]node_modules[\\/](openai)[\\/]/.test(id)) {
+              return "vendor-openai";
+            }
+            if (
+              /[\\/]node_modules[\\/](element-plus|@element-plus|@vueuse)[\\/]/
+                .test(id)
+            ) {
+              return "vendor-element-plus";
+            }
+          }
+          if (id.includes(`${path.sep}packages${path.sep}excalidraw`)) {
+            return "excalidraw";
+          }
+          return undefined;
+        },
+      },
     },
   },
   server: {

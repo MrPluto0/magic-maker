@@ -23,4 +23,3 @@ type TextFieldProps = {
 export declare const TextField: import("react").ForwardRefExoticComponent<
 	TextFieldProps & import("react").RefAttributes<HTMLInputElement>
 >;
-export {};

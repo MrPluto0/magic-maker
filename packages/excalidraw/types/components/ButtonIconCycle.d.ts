@@ -1,5 +1,5 @@
 /// <reference types="react" />
-export declare const ButtonIconCycle: <T extends unknown>({
+export declare const ButtonIconCycle: <T>({
 	options,
 	value,
 	onChange,

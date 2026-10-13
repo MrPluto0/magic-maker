@@ -53,27 +53,27 @@
 </template>
 
 <script setup lang="ts">
+import SplitLine from "@/components/SplitLine.vue";
+import { clearHotKey, initEditorHotKey } from "@/plugins/installHotKey";
 import { usePageState } from "@/stores/page";
 import { useProjectState } from "@/stores/project";
-import { clearHotKey, initEditorHotKey } from "@/plugins/installHotKey";
-import SplitLine from "@/components/SplitLine.vue";
-import CanvasPlayer from "./components/player/CanvasPlayer.vue";
+import AttributeContainer from "./components/attribute/AttributeContainer.vue";
 import GenerateContainer from "./components/generate/GenerateContainer.vue";
+import CanvasPlayer from "./components/player/CanvasPlayer.vue";
 import UploadContainer from "./components/resource/UploadContainer.vue";
 import TrackContainer from "./components/track/TrackContainer.vue";
-import AttributeContainer from "./components/attribute/AttributeContainer.vue";
 
 const pageStore = usePageState();
 const projectStore = useProjectState();
 const timer = ref();
 
 onMounted(() => {
-  initEditorHotKey();
-  timer.value = setInterval(projectStore.saveProject, 60 * 1000);
+	initEditorHotKey();
+	timer.value = setInterval(projectStore.saveProject, 60 * 1000);
 });
 
 onUnmounted(() => {
-  clearHotKey();
-  clearInterval(timer.value);
+	clearHotKey();
+	clearInterval(timer.value);
 });
 </script>

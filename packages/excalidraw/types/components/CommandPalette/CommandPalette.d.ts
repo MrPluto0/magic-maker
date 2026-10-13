@@ -18,4 +18,3 @@ export declare const CommandPalette: ((
 ) => JSX.Element | null) & {
 	defaultItems: typeof defaultItems;
 };
-export {};

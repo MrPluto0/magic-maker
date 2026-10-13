@@ -21,4 +21,3 @@ export declare const ContextMenu: React.MemoExoticComponent<
 		onClose,
 	}: ContextMenuProps) => JSX.Element
 >;
-export {};

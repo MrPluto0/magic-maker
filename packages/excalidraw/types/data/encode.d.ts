@@ -71,4 +71,3 @@ export declare const decompressData: <T extends Record<string, any>>(
 	/** data can be anything so the caller must decode it */
 	data: Uint8Array;
 }>;
-export {};

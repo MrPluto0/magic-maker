@@ -129,10 +129,7 @@ export declare const easeToValuesRAF: <
 	onEnd?: (() => void) | undefined;
 	onCancel?: (() => void) | undefined;
 }) => () => void;
-export declare const chunk: <T extends unknown>(
-	array: readonly T[],
-	size: number,
-) => T[][];
+export declare const chunk: <T>(array: readonly T[], size: number) => T[][];
 export declare const selectNode: (node: Element) => void;
 export declare const removeSelection: () => void;
 export declare const distance: (x: number, y: number) => number;
@@ -355,10 +352,7 @@ export declare function invariant(
 /**
  * Memoizes on values of `opts` object (strict equality).
  */
-export declare const memoize: <
-	T extends Record<string, any>,
-	R extends unknown,
->(
+export declare const memoize: <T extends Record<string, any>, R>(
 	func: (opts: T) => R,
 ) => ((opts: T) => R) & {
 	clear: () => void;
@@ -461,4 +455,3 @@ export declare class PromisePool<T> {
 	);
 	all(): PromiseLike<T[]>;
 }
-export {};

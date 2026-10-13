@@ -27,4 +27,3 @@ export declare const ColorPicker: ({
 	updateData,
 	appState,
 }: ColorPickerProps) => JSX.Element;
-export {};

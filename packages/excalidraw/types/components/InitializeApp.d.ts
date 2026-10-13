@@ -7,4 +7,3 @@ interface Props {
 	theme?: Theme;
 }
 export declare const InitializeApp: (props: Props) => JSX.Element;
-export {};

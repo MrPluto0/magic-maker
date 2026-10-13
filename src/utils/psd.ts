@@ -1,8 +1,8 @@
-import * as _ from "lodash-es";
-import Psd from "@webtoon/psd";
-import { nanoid } from "nanoid";
 import { convertToExcalidrawElements } from "@pkg/excalidraw";
 import type { ExcalidrawElement } from "@pkg/excalidraw/types/element/types";
+import Psd from "@webtoon/psd";
+import * as _ from "lodash-es";
+import { nanoid } from "nanoid";
 import { ChineseFonts, EnglishFonts } from "@/data/fonts";
 
 export async function psdToJson(file: File) {

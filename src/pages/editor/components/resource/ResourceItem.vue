@@ -81,12 +81,12 @@
 </template>
 
 <script setup lang="ts">
+import { ref } from "vue";
+import { VideoTrack } from "@/class/VideoTrack";
+import { useResourceState } from "@/stores/resource";
 import { useTrackState } from "@/stores/track";
 import type { AudioResource, Resource } from "@/types/resource";
 import type { TrackType } from "@/types/track";
-import { useResourceState } from "@/stores/resource";
-import { ref } from "vue";
-import { VideoTrack } from "@/class/VideoTrack";
 
 const props = defineProps<{
 	resource: Resource;

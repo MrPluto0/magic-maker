@@ -44,4 +44,3 @@ export declare const restoreLibraryItems: (
 	libraryItems: ImportedDataState["libraryItems"],
 	defaultStatus: LibraryItem["status"],
 ) => LibraryItem[];
-export {};

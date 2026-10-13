@@ -14,4 +14,3 @@ export declare const Avatar: ({
 	src,
 	className,
 }: AvatarProps) => JSX.Element;
-export {};

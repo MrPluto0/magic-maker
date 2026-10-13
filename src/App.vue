@@ -14,8 +14,8 @@
 
 <script setup lang="ts">
 import { Combinator } from "@webav/av-cliper";
-import { useProjectState } from "./stores/project";
 import HeaderContainer from "./components/layout/HeaderContainer.vue";
+import { useProjectState } from "./stores/project";
 
 const project = useProjectState();
 

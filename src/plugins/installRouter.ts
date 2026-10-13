@@ -1,6 +1,6 @@
-import { createRouter, createWebHashHistory } from "vue-router";
-import type { RouteRecordRaw } from "vue-router";
 import type { App } from "vue";
+import type { RouteRecordRaw } from "vue-router";
+import { createRouter, createWebHashHistory } from "vue-router";
 import { useProjectState } from "@/stores/project";
 import { useUserState } from "@/stores/user";
 
