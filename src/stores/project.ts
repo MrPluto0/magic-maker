@@ -2,7 +2,6 @@ import { Combinator, ImgClip, OffscreenSprite } from "@webav/av-cliper";
 import { ElLoading } from "element-plus";
 import { nanoid } from "nanoid";
 import { defineStore } from "pinia";
-import { useRoute } from "vue-router";
 import { AudioTrack } from "@/class/AudioTrack";
 import { baseFps } from "@/data/track";
 import {
@@ -16,7 +15,6 @@ import {
 import type { Resource } from "@/types/resource";
 import type { Track, TrackLineItem } from "@/types/track";
 import { createFileWriter, selectFile } from "@/utils/file";
-import { useDrawStore } from "./draw";
 import { usePlayerState } from "./player";
 import { useResourceState } from "./resource";
 import { useTrackState } from "./track";
@@ -25,10 +23,8 @@ import { useTrackState } from "./track";
 export type ProjectData = ProjectRecord;
 
 export const useProjectState = defineStore("project", () => {
-	const route = useRoute();
 	const trackStore = useTrackState();
 	const playerStore = usePlayerState();
-	const drawStore = useDrawStore();
 	const resourceStore = useResourceState();
 
 	const lastSaveTime = ref<string>();
@@ -70,11 +66,6 @@ export const useProjectState = defineStore("project", () => {
 				updatedAt: new Date().toISOString(),
 				resources: resourceStore.resources,
 				trackData: trackStore.trackList,
-				// 仅在画板页保存时刷新 drawData，其余页面保留最近一次画板数据
-				drawData:
-					route.path === "/draw"
-						? await drawStore.saveDrawData()
-						: project.value.drawData || [],
 			};
 
 			const index = projectList.value.findIndex((p) => p.id === projectData.id);
@@ -109,9 +100,6 @@ export const useProjectState = defineStore("project", () => {
 
 			// 加载轨道数据
 			await trackStore.loadTrackData(projectData.trackData || []);
-
-			// 加载画板数据
-			await drawStore.initContent(projectData.drawData || []);
 
 			console.log("Loaded project", project.value);
 		} catch (error) {

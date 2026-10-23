@@ -1,16 +1,16 @@
-import path from "node:path";
 import { fileURLToPath, URL } from "node:url";
 import UnoCSS from "unocss/vite";
+import vue from "@vitejs/plugin-vue";
 import AutoImport from "unplugin-auto-import/vite";
 import { ElementPlusResolver } from "unplugin-vue-components/resolvers";
 import Components from "unplugin-vue-components/vite";
-import veauryVitePlugins from "veaury/vite/esm/index.mjs";
 import { defineConfig } from "vite";
 
 // https://vitejs.dev/config/
 export default defineConfig({
   base: "./",
   plugins: [
+    vue(),
     AutoImport({
       ignore: ["h"], //解决h报错
       imports: ["vue"],
@@ -20,17 +20,12 @@ export default defineConfig({
       resolvers: [ElementPlusResolver()],
     }),
     UnoCSS(),
-    // 兼容vue和react
-    veauryVitePlugins({
-      type: "vue",
-    }),
     // @vue/devtools-kit 7.7.7 在 Node 环境调 localStorage 导致 config 加载崩溃，暂禁用
     // VitePluginVueDevtools(),
   ],
   resolve: {
     alias: {
       "@": fileURLToPath(new URL("./src", import.meta.url)),
-      "@pkg": path.resolve(__dirname, "./packages"),
     },
   },
   build: {
@@ -39,13 +34,6 @@ export default defineConfig({
         // 产物瘦身：大依赖分包，提升缓存命中与首屏加载
         manualChunks(id: string) {
           if (id.includes("node_modules")) {
-            if (
-              /[\\/]node_modules[\\/](react|react-dom|react-use|react-reconciler|scheduler|veaury)[\\/]/.test(
-                id
-              )
-            ) {
-              return "vendor-react";
-            }
             if (/[\\/]node_modules[\\/]@webav[\\/]/.test(id)) {
               return "vendor-webav";
             }
@@ -58,9 +46,6 @@ export default defineConfig({
             ) {
               return "vendor-element-plus";
             }
-          }
-          if (id.includes(`${path.sep}packages${path.sep}excalidraw`)) {
-            return "excalidraw";
           }
           return undefined;
         },

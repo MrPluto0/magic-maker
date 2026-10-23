@@ -70,9 +70,6 @@
             注册日期：{{ form.createAt }}
           </div>
           <div>
-            <el-button type="warning" @click="handleLogout"
-              >退 出 登 录</el-button
-            >
             <el-button type="primary" @click="handleSave"
               >保 存 信 息</el-button
             >
@@ -150,10 +147,7 @@
 <script lang="ts" setup>
 import { ElMessage } from "element-plus";
 import { onMounted, ref } from "vue";
-import { useRouter } from "vue-router";
 import { usePageState } from "@/stores/page";
-import { useProjectState } from "@/stores/project";
-import { useUserState } from "@/stores/user";
 import type { IUser } from "@/types/user";
 
 defineProps<{
@@ -161,36 +155,18 @@ defineProps<{
 }>();
 
 const emits = defineEmits(["update:show"]);
-const userStore = useUserState();
-const proStore = useProjectState();
 const pageStore = usePageState();
-const router = useRouter();
 
 const form = ref<IUser>({} as IUser);
 const fileInputRef = ref<HTMLInputElement | null>(null);
 
 const handleSave = () => {
-	// 前端模式下仅更新本地状态
-	if (form.value?.username) {
-		userStore.userInfo.name = form.value.username;
-	}
+	// 本地模式：用户信息仅保存在当前会话内存中
 	ElMessage.success("保存成功");
 };
 
 const handleClose = () => {
 	emits("update:show", false);
-};
-
-const handleLogout = () => {
-	userStore.isLogin = false;
-	userStore.authInfo = {
-		accessToken: "",
-		tokenType: "",
-	};
-	proStore.project = null;
-	handleClose();
-	router.push("/");
-	ElMessage.success("退出成功");
 };
 
 const triggerUpload = () => {
@@ -205,7 +181,7 @@ const handleUploadAvatar = (e: any) => {
 			ElMessage.error("文件大小超过5MB，请重新上传");
 			return;
 		}
-		// 前端模式下使用本地URL
+		// 本地模式使用本地URL
 		const localUrl = URL.createObjectURL(file);
 		form.value.avatarUrl = localUrl;
 		ElMessage.success("头像更新成功");
@@ -213,11 +189,10 @@ const handleUploadAvatar = (e: any) => {
 };
 
 onMounted(() => {
-	// 前端模式下使用默认用户信息
 	form.value = {
 		id: 1,
-		username: userStore.userInfo.name || "本地用户",
-		nickname: userStore.userInfo.name || "本地用户",
+		username: "本地用户",
+		nickname: "本地用户",
 		avatarUrl: "",
 		email: "",
 		phone: "",

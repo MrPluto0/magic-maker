@@ -29,13 +29,7 @@
     </div>
     <div class="flex w-2/5 flex-row-reverse">
       <div class="flex items-center gap-4">
-        <template
-          v-if="
-            userStore.isLogin &&
-            projectStore.project?.id &&
-            route.path !== '/home'
-          "
-        >
+        <template v-if="projectStore.project?.id && route.path !== '/home'">
           <div class="text-xs">上次保存：{{ projectStore.lastSaveTime }}</div>
 
           <el-dropdown class="outline-none">
@@ -80,23 +74,15 @@
         <div class="flex items-center gap-4 text-[20px]">
           <i class="i-mdi-github cursor-pointer" @click="openGithub"></i>
 
-          <el-button
-            v-if="!userStore.isLogin"
-            type="primary"
-            @click="userStore.showLogin = true"
-            >登录</el-button
-          >
           <i
-            v-else
             class="i-mdi-account cursor-pointer"
+            title="本地用户 / AI 设置"
             @click="showUserInfo = true"
           ></i>
         </div>
       </div>
     </div>
 
-    <LoginBox />
-    <RegisterBox />
     <UserBox v-model:show="showUserInfo" />
   </header>
 </template>
@@ -106,13 +92,9 @@ import { h, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { usePageState } from "@/stores/page";
 import { useProjectState } from "@/stores/project";
-import { useUserState } from "@/stores/user";
-import LoginBox from "../dialogs/LoginBox.vue";
-import RegisterBox from "../dialogs/RegisterBox.vue";
 import UserBox from "../dialogs/UserBox.vue";
 
 const pageStore = usePageState();
-const userStore = useUserState();
 const projectStore = useProjectState();
 const router = useRouter();
 const route = useRoute();
@@ -123,10 +105,6 @@ const menu = [
 	{
 		name: "主页",
 		to: "/home",
-	},
-	{
-		name: "图像编辑",
-		to: "/draw",
 	},
 	{
 		name: "视频剪辑",

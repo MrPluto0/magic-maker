@@ -9,7 +9,6 @@ export interface IProject {
 	updatedAt: string;
 	resources: Resource[];
 	trackData: TrackLineItem[];
-	drawData?: any[];
 	version: string;
 }
 

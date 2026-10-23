@@ -1,5 +1,6 @@
+// 本地模式用户信息（无账号体系，仅用于个人资料展示表单）
 export interface IUser {
-	id?: number;
+	id: number;
 	username: string;
 	nickname: string;
 	avatarUrl: string;

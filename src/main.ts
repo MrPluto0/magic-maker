@@ -5,7 +5,6 @@ import "virtual:uno.css";
 import "./styles/index.less";
 
 import piniaPluginPersistedstate from "pinia-plugin-persistedstate";
-import installExcalidraw from "@/plugins/installExcalidraw";
 import installPiniaPlugin from "@/plugins/installPiniaPlugin"; // Pinia 状态监控
 import installRouter from "@/plugins/installRouter"; // 路由注册
 
@@ -17,6 +16,5 @@ pinia.use(piniaPluginPersistedstate);
 app.use(pinia);
 
 app.use(installRouter);
-app.use(installExcalidraw);
 
 app.mount("#app");

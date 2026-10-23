@@ -28,9 +28,9 @@
       </div>
 
       <div class="flex gap-16">
-        <div class="cursor-pointer" @click="showUsage = true">
-          <div class="font-semibold mb-4">产品介绍</div>
-          <UsageIcon />
+        <div>
+          <div class="font-semibold mb-4 text-gray-400">产品介绍</div>
+          <div class="text-xs text-gray-400">即将上线</div>
         </div>
         <div class="cursor-pointer" @click="openPage">
           <div class="font-semibold mb-4">关于我自己</div>
@@ -42,29 +42,21 @@
     <div class="container-box flex-1 !p-6 flex flex-col overflow-hidden">
       <div class="flex-1 flex gap-20 overflow-hidden">
         <div class="h-full flex-1 overflow-hidden">
-          <ProjectList v-if="userStore.isLogin" />
-          <el-empty class="h-3/4" v-else description="请先登录" />
+          <ProjectList />
         </div>
       </div>
     </div>
-
-    <UsageBox v-if="showUsage" v-model:show="showUsage" />
   </div>
 </template>
 
 <script lang="ts" setup>
-import UsageBox from "@/components/dialogs/UsageBox.vue";
 import ContactIcon from "@/components/icons/ContactIcon.vue";
-import UsageIcon from "@/components/icons/UsageIcon.vue";
 import { useProjectState } from "@/stores/project";
-import { useUserState } from "@/stores/user";
 import NewProject from "./components/NewProject.vue";
 import ProjectList from "./components/ProjectList.vue";
 
-const userStore = useUserState();
 const projectStore = useProjectState();
 const showCreate = ref(false);
-const showUsage = ref(false);
 
 const openPage = () => {
 	window.open("https://www.gypsophlia.top/");

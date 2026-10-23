@@ -2,7 +2,6 @@ import type { App } from "vue";
 import type { RouteRecordRaw } from "vue-router";
 import { createRouter, createWebHashHistory } from "vue-router";
 import { useProjectState } from "@/stores/project";
-import { useUserState } from "@/stores/user";
 
 const routes: Array<RouteRecordRaw> = [
 	{
@@ -19,11 +18,6 @@ const routes: Array<RouteRecordRaw> = [
 		name: "editor",
 		component: () => import("@/pages/editor/index.vue"),
 	},
-	{
-		path: "/draw",
-		name: "draw",
-		component: () => import("@/pages/draw/index.vue"),
-	},
 ];
 
 const installRouter = {
@@ -35,14 +29,8 @@ const installRouter = {
 
 		router.beforeEach(async (to, from, next) => {
 			const projectStore = useProjectState();
-			const userStore = useUserState();
-			if (["/", "/home"].includes(to.path) || to.path.startsWith("/login")) {
+			if (["/", "/home"].includes(to.path)) {
 				next();
-				return;
-			}
-			if (!userStore.isLogin) {
-				ElMessage.warning("请先登录再继续操作");
-				userStore.showLogin = true;
 				return;
 			}
 
