@@ -15,7 +15,8 @@ export class CanvasPlayer {
 	});
 
 	player: Ref<HTMLCanvasElement>; // 播放器
-	playerTimer: any = 0;
+	#rafId = 0;
+	#intervalId = 0;
 	playerContext: ImageBitmapRenderingContext | null = null;
 
 	audioPlayAt = 0;
@@ -48,6 +49,13 @@ export class CanvasPlayer {
 				}
 			},
 		);
+
+		// 标签页隐藏/可见切换时，在 rAF 与定时器兜底之间切换
+		document.addEventListener("visibilitychange", () => {
+			if (!this.playerStore.isPause) {
+				this.#startTickLoop();
+			}
+		});
 	}
 
 	// 绘制
@@ -143,26 +151,50 @@ export class CanvasPlayer {
 		// 音画天然同源，消除定步长 playStartFrame++ 累积的漂移（60fps 素材丢帧同理）
 		this.#startWallTime =
 			this.audioContext.currentTime - this.playerStore.playStartFrame / baseFps;
-		const tick = () => {
-			if (this.playerStore.isPause) return;
-			const frame = Math.round(
-				(this.audioContext.currentTime - this.#startWallTime) * baseFps,
-			);
-			if (frame !== this.playerStore.playStartFrame) {
-				this.playerStore.playStartFrame = frame;
-			}
-			if (this.playerStore.playStartFrame >= this.trackState.frameCount) {
-				this.playerStore.isPause = true;
-				return;
-			}
-			this.playerTimer = requestAnimationFrame(tick);
-		};
-		this.playerTimer = requestAnimationFrame(tick);
+		this.#startTickLoop();
+	}
+
+	/** 前台用 rAF 满帧率推进；标签页隐藏时 rAF 完全停摆，切到定时器兜底，
+	 * 保证后台播放时帧推进与音频排程不中断（音画同源的换算不变） */
+	#startTickLoop() {
+		this.#stopTickLoop();
+		if (document.hidden) {
+			this.#intervalId = window.setInterval(() => this.#tick(), 1000 / baseFps);
+		} else {
+			const raf = () => {
+				if (!this.#tick()) return;
+				this.#rafId = requestAnimationFrame(raf);
+			};
+			this.#rafId = requestAnimationFrame(raf);
+		}
+	}
+
+	#stopTickLoop() {
+		cancelAnimationFrame(this.#rafId);
+		clearInterval(this.#intervalId);
+		this.#rafId = 0;
+		this.#intervalId = 0;
+	}
+
+	/** 推进一帧。返回 false 表示播放已结束或已暂停，调用方应停止循环 */
+	#tick(): boolean {
+		if (this.playerStore.isPause) return false;
+		const frame = Math.round(
+			(this.audioContext.currentTime - this.#startWallTime) * baseFps,
+		);
+		if (frame !== this.playerStore.playStartFrame) {
+			this.playerStore.playStartFrame = frame;
+		}
+		if (this.playerStore.playStartFrame >= this.trackState.frameCount) {
+			this.playerStore.isPause = true;
+			return false;
+		}
+		return true;
 	}
 
 	// 暂停播放音视频
 	#pause() {
-		cancelAnimationFrame(this.playerTimer);
+		this.#stopTickLoop();
 		this.audioContext.suspend();
 		for (const asn of this.playingAudioCache) {
 			asn.stop();

@@ -49,6 +49,10 @@ Vue 3.5.44 / Vite 8（rolldown，构建 30s→4s）/ pinia 4 / @webav/av-cliper 
 - **删 mock 登录/注册/配额**：`stores/user.ts`、`LoginBox/RegisterBox/UsageBox.vue`、路由登录门禁；头部登录按钮移除，产品介绍占位「即将上线」，用户盒保留本地资料表单与 AI 设置（BYOK）。
 - **dist 体积**：11436 KB（基线 3519866）→ 3448 KB，**-69.8%**（验收线 ≥40%）。
 
+## W3.5 后台播放修复（2026-10-23）
+
+W1 时钟改 rAF 后，标签页/窗口隐藏时 rAF 完全停摆 → 帧不走、音频不排程，后台播放无声。修复：`CanvasPlayer` 监听 `visibilitychange`，前台 rAF 满帧率推进、隐藏时切 `setInterval`（1000/baseFps）兜底；帧号仍从 audioContext.currentTime 反推，音画同源不变。探针验证：切后台 2s 帧号 28→96 且音频持续调度，回前台/暂停行为正常。
+
 ## 已知问题（非阻断）
 
 1. 偶发 `generate thumbnails aborted`：缩略图生成被刷新/撤销打断时的 WebAV 内部 abort，无功能影响。
