@@ -265,7 +265,7 @@ export const useProjectState = defineStore("project", () => {
 				}),
 			);
 
-			com.addSprite(watermark);
+			// 水印已通过 sprites.unshift 加入，这里不能再 addSprite 一次（双加 bug）
 
 			console.log("合成耗时", performance.now() - start, "ms");
 

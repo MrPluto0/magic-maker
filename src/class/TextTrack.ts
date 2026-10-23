@@ -13,6 +13,8 @@ export class TextTrack implements BaseTrack {
 	start: number;
 	end: number;
 	format: string;
+	offsetL = 0;
+	offsetR = 0;
 	// 绘制信息
 	centerX = 0;
 	centerY = 0;
@@ -50,7 +52,6 @@ export class TextTrack implements BaseTrack {
 
 		this.calcSize();
 	}
-	[k: string]: any;
 	calcSize() {
 		const { width, height } = getTextRect({
 			text: this.text,
@@ -177,10 +178,11 @@ export class TextTrack implements BaseTrack {
 		const clip = new ImgClip(imageBitmap);
 		await clip.ready;
 		const spr = new OffscreenSprite(clip);
-		// TODO：需要支持裁剪
+		// duration 用 end-start（时间轴上的实际时长）而非 frameCount：
+		// 分割/裁剪后 frameCount 仍是原始素材长度，会导致导出文本时长错误
 		spr.time = {
 			offset: this.start * UnitFrame2μs,
-			duration: this.frameCount * UnitFrame2μs,
+			duration: (this.end - this.start) * UnitFrame2μs,
 		};
 		spr.rect.x = 0;
 		spr.rect.y = 0;

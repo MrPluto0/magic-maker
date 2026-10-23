@@ -10,8 +10,9 @@ export interface BaseTrack {
 	name: string;
 	start: number; // 在轨道上的起始位置，单位为帧
 	end: number; // 在轨道上的结束位置
-	frameCount: number; // 总帧数
-	[k: string]: any;
+	frameCount: number; // 总帧数（原始素材长度）
+	offsetL: number; // 相对素材原点的左侧裁剪帧数
+	offsetR: number; // 相对素材原点的右侧裁剪帧数
 }
 
 // 轨道类型

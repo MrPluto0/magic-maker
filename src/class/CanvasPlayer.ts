@@ -3,7 +3,6 @@ import { baseFps } from "@/data/track";
 import { usePlayerState } from "@/stores/player";
 import { useTrackState } from "@/stores/track";
 import type { DrawTrack } from "@/types/track";
-import { preciseInterval } from "@/utils/common";
 
 export class CanvasPlayer {
 	playerStore = usePlayerState();
@@ -20,6 +19,7 @@ export class CanvasPlayer {
 	playerContext: ImageBitmapRenderingContext | null = null;
 
 	audioPlayAt = 0;
+	#startWallTime = 0;
 	audioContext: AudioContext = new AudioContext();
 	captureAudioDest = this.audioContext.createMediaStreamDestination();
 	playingAudioCache: Set<AudioBufferSourceNode> = new Set();
@@ -139,17 +139,30 @@ export class CanvasPlayer {
 		}
 		this.audioContext.resume();
 		this.audioPlayAt = 0;
-		this.playerTimer = preciseInterval(() => {
-			this.playerStore.playStartFrame++;
+		// 时间基准推算：音频在 AudioContext 时钟上排程，视频帧号从同一时钟反推，
+		// 音画天然同源，消除定步长 playStartFrame++ 累积的漂移（60fps 素材丢帧同理）
+		this.#startWallTime =
+			this.audioContext.currentTime - this.playerStore.playStartFrame / baseFps;
+		const tick = () => {
+			if (this.playerStore.isPause) return;
+			const frame = Math.round(
+				(this.audioContext.currentTime - this.#startWallTime) * baseFps,
+			);
+			if (frame !== this.playerStore.playStartFrame) {
+				this.playerStore.playStartFrame = frame;
+			}
 			if (this.playerStore.playStartFrame >= this.trackState.frameCount) {
 				this.playerStore.isPause = true;
+				return;
 			}
-		}, 1000 / baseFps);
+			this.playerTimer = requestAnimationFrame(tick);
+		};
+		this.playerTimer = requestAnimationFrame(tick);
 	}
 
 	// 暂停播放音视频
 	#pause() {
-		this.playerTimer?.cancel();
+		cancelAnimationFrame(this.playerTimer);
 		this.audioContext.suspend();
 		for (const asn of this.playingAudioCache) {
 			asn.stop();

@@ -3,6 +3,7 @@ import { UnitFrame2μs } from "@/data/track";
 import type { Track } from "@/types/track";
 import { getGridPixel } from "@/utils/canvasUtil";
 import { readFileFromOPFS } from "@/utils/file";
+import { splitClipBoundaries } from "@/utils/track";
 import { AudioTrack } from "./AudioTrack";
 import { ImageTrack } from "./ImageTrack";
 import { VideoTrack } from "./VideoTrack";
@@ -130,15 +131,20 @@ class Decoder {
 		if (offsetL === 0 && offsetR === 0) {
 			return originClip;
 		}
-		// 使用start裁剪视频
-		const start = offsetL * UnitFrame2μs;
+		const { startUs, endUs } = splitClipBoundaries(
+			offsetL,
+			offsetR,
+			frameCount,
+		);
+		// 使用start裁剪视频（取分割后的右半段）
 		const clip =
-			offsetL === 0 ? originClip : (await originClip.split(start))[1];
+			startUs === 0 ? originClip : (await originClip.split(startUs))[1];
 
-		// const end = (frameCount - offsetR - offsetL) * UnitFrame2μs;
-		// return offsetR === 0 ? clip : (await clip.split(end))[0];
-		await clip.ready;
-		return clip;
+		// 使用end裁剪收尾（取第二次分割后的左半段），否则右半段时长超出
+		// end-start，导出时 Combinator 报 "time" out of bounds
+		const trimmed = offsetR === 0 ? clip : (await clip.split(endUs))[0];
+		await trimmed.ready;
+		return trimmed;
 	}
 }
 

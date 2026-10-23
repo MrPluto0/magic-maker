@@ -68,12 +68,19 @@ export default function PiniaUndo({
 
 	store._undo = () => {
 		preventUpdateOnSubscribe = true;
-		store.$patch(stack.undo());
+		// $patch 会把快照里的数组/对象按引用并入 state，若不重新克隆，
+		// undo 后的编辑会原地改写栈内历史快照，导致后续 undo 失效
+		store.$patch(cloneDeep(stack.undo()));
+		// $subscribe 为 flush: 'sync'，回调已在 $patch 期间同步消费标记；
+		// 若本次 patch 未触发订阅（快照与当前状态相同），标记必须在这里复位，
+		// 否则后续所有状态变更都会被永久抑制、undo 栈不再前进
+		preventUpdateOnSubscribe = false;
 	};
 
 	store._redo = () => {
 		preventUpdateOnSubscribe = true;
-		store.$patch(stack.redo());
+		store.$patch(cloneDeep(stack.redo()));
+		preventUpdateOnSubscribe = false;
 	};
 
 	store._resetStack = () => {
