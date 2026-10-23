@@ -13,7 +13,7 @@ export class VideoTrack implements BaseTrack {
 	format: string;
 	frameCount: number;
 	start: number;
-	end: any;
+	end: number;
 	centerX: number;
 	centerY: number;
 	scale: number;

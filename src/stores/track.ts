@@ -281,7 +281,7 @@ export const useTrackState = defineStore(
 					const item = trackLine.list[j];
 
 					const track = await createTrack(
-						item.resource,
+						item.resource as Resource,
 						item.start,
 						(item as any)?.volume ?? 1,
 					);

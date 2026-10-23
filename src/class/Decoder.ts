@@ -1,5 +1,6 @@
 import { AudioClip, ImgClip, MP4Clip } from "@webav/av-cliper";
 import { UnitFrame2μs } from "@/data/track";
+import type { VideoResource } from "@/types/resource";
 import type { Track } from "@/types/track";
 import { getGridPixel } from "@/utils/canvasUtil";
 import { readFileFromOPFS } from "@/utils/file";
@@ -120,7 +121,10 @@ class Decoder {
 
 		const unitWidth = getGridPixel(scale, track.frameCount);
 		const imgCount = Math.ceil(unitWidth / 50);
-		const step = Math.ceil((track.resource.duration * 1e6) / imgCount);
+		// MP4Clip 只会来自视频轨
+		const step = Math.ceil(
+			((track.resource as VideoResource).duration * 1e6) / imgCount,
+		);
 		return clip.thumbnails(100, { step });
 	}
 

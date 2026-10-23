@@ -1,13 +1,14 @@
 import { ImgClip, OffscreenSprite } from "@webav/av-cliper";
 import { nanoid } from "nanoid";
 import { baseFps, UnitFrame2μs } from "@/data/track";
+import type { TextResource } from "@/types/resource";
 import type { BaseTrack, TrackType } from "@/types/track";
 import { getTextRect } from "@/utils/common";
 
 export class TextTrack implements BaseTrack {
 	id: string;
 	type: TrackType = "text";
-	resource: any;
+	resource: Pick<TextResource, "name" | "type" | "id"> & { text?: string };
 	name: string;
 	frameCount: number;
 	start: number;
