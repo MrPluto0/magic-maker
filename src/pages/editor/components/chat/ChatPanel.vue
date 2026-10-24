@@ -1,15 +1,27 @@
 <template>
-	<div class="flex flex-col flex-1 min-h-0">
+	<div class="relative flex flex-col flex-1 min-h-0">
 		<!-- 会话条 -->
 		<div
 			class="flex-none flex items-center gap-2 px-4 py-2.5 border-b border-[#e9ecf2] dark:border-[#27272a]"
 		>
 			<span class="w-1.5 h-1.5 rounded-full bg-white shrink-0" />
-			<span class="font-mono text-[10px] text-[#767d88] truncate">
-				会话 {{ sessionId }} · {{ pageStore.pageTitle }}
-			</span>
+			<button
+				class="font-mono text-[10px] text-[#767d88] truncate hover:text-white"
+				title="会话历史"
+				@click="historyOpen = !historyOpen"
+			>
+				会话 {{ agentStore.currentSessionId.slice(0, 4) }} · {{ pageStore.pageTitle }}
+			</button>
 			<button
 				class="ml-auto text-[11px] text-[#767d88] rounded px-1.5 py-1 hover:text-white hover:bg-white/6 shrink-0"
+				:class="historyOpen ? 'text-white bg-white/6' : ''"
+				title="会话历史"
+				@click="historyOpen = !historyOpen"
+			>
+				历史
+			</button>
+			<button
+				class="text-[11px] text-[#767d88] rounded px-1.5 py-1 hover:text-white hover:bg-white/6 shrink-0"
 				title="查看素材与 AI 生成"
 				@click="pageStore.editorLeftTab = 'asset'"
 			>
@@ -22,6 +34,40 @@
 				新会话
 			</button>
 		</div>
+
+		<!-- 会话历史下拉（ChatGPT 式列表：标题 + 时间，可切可删） -->
+			<div
+				v-if="historyOpen"
+				class="absolute left-2 right-2 top-[52px] z-30 border border-[#2e2e33] rounded-md bg-[#0d0d0d] overflow-hidden"
+			>
+				<div
+					v-if="sortedSessions.length === 0"
+					class="px-3.5 py-3 text-[12px] leading-relaxed text-[#767d88]"
+				>
+					还没有历史会话。
+				</div>
+				<div
+					v-for="sItem in sortedSessions"
+					:key="sItem.id"
+					class="group flex items-center gap-2 px-3.5 py-2.5 cursor-pointer border-b border-[#1c1c1f] last:border-b-0 hover:bg-[#1a1a1a]"
+					:class="sItem.id === agentStore.currentSessionId ? 'bg-[#1a1a1a]' : ''"
+					@click="onPickSession(sItem.id)"
+				>
+					<span class="min-w-0 flex flex-col gap-0.5">
+						<span class="text-[12.5px] truncate" :class="sItem.id === agentStore.currentSessionId ? 'text-white' : 'text-[#c9ccd1]'">
+							{{ sItem.title }}
+						</span>
+						<span class="font-mono text-[9.5px] text-[#767d88]">{{ formatTs(sItem.updatedAt) }}</span>
+					</span>
+					<button
+						class="ml-auto shrink-0 text-[11px] text-[#767d88] opacity-0 group-hover:opacity-100 hover:text-[#e5484d] px-1"
+						title="删除会话"
+						@click.stop="agentStore.deleteSession(sItem.id)"
+					>
+						✕
+					</button>
+				</div>
+			</div>
 
 		<!-- 消息流 -->
 		<div
@@ -152,8 +198,7 @@
 </template>
 
 <script setup lang="ts">
-import { nanoid } from "nanoid";
-import { computed, nextTick, ref, watch } from "vue";
+import { computed, nextTick, onMounted, ref, watch } from "vue";
 import { toolRegistry } from "@/class/agentTools";
 import { useAgentState } from "@/stores/agent";
 import { usePageState } from "@/stores/page";
@@ -163,7 +208,26 @@ import AgentToolCard from "./AgentToolCard.vue";
 const pageStore = usePageState();
 const agentStore = useAgentState();
 
-const sessionId = nanoid(4);
+const historyOpen = ref(false);
+
+const sortedSessions = computed(() =>
+	[...agentStore.sessions].sort((a, b) => b.updatedAt - a.updatedAt),
+);
+
+function formatTs(ts: number): string {
+	const d = new Date(ts);
+	const pad = (n: number) => String(n).padStart(2, "0");
+	return `${d.getMonth() + 1}/${d.getDate()} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
+function onPickSession(id: string) {
+	agentStore.switchSession(id);
+	historyOpen.value = false;
+}
+
+onMounted(() => {
+	agentStore.loadSessions();
+});
 const draft = ref("");
 const manualOpen = ref(false);
 const manualTool = ref("delete_range");

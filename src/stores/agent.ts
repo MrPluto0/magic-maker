@@ -1,7 +1,7 @@
 import { nanoid } from "nanoid";
 import OpenAI from "openai";
 import { defineStore } from "pinia";
-import { ref } from "vue";
+import { nextTick, ref, watch } from "vue";
 import type {
 	AgentLLM,
 	AgentMessage,
@@ -25,6 +25,7 @@ import {
 } from "@/plugins/undoGate";
 import type { ChatEntry, CommandGroupInfo } from "@/types/agent";
 import { usePageState } from "./page";
+import { useProjectState } from "./project";
 
 /**
  * agent 对话 store（docs/PHASE2_DESIGN §2 / §4）。
@@ -51,6 +52,128 @@ export const useAgentState = defineStore("agent", () => {
 		stepCount: number;
 		pendingConfirm?: string;
 	} | null>(null);
+
+	/* --------------------------- 对话历史（IDB） --------------------------- */
+	// 会话快照：entries/groups 可 JSON 序列化；conversation 是 LLM 链（续聊记忆）。
+	// 恢复的会话命令组不可 undo（EditCommand 是活对象，不落盘）→ 标 invalid，
+	// 与「手操覆盖失效」同一语义：Cmd+Z 仍可回退到组级快照。
+
+	interface ChatSessionSnapshot {
+		id: string;
+		title: string;
+		updatedAt: number;
+		entries: ChatEntry[];
+		groups: CommandGroupInfo[];
+		conversation: AgentMessage[];
+	}
+
+	const sessions = ref<ChatSessionSnapshot[]>([]);
+	const currentSessionId = ref(nanoid(8));
+	let switchGuard = false;
+	let persistTimer: ReturnType<typeof setTimeout> | null = null;
+
+	function sessionsKey(): string | null {
+		const pid = useProjectState().project?.id;
+		return pid ? `chat_sessions_${pid}` : null;
+	}
+
+	function sessionTitle(list: ChatEntry[]): string {
+		const first = list.find((e) => e.kind === "user");
+		const text = first && "text" in first ? first.text : "";
+		return text ? text.slice(0, 24) : "新会话";
+	}
+
+	async function persistSessions() {
+		const key = sessionsKey();
+		if (!key) return;
+		const snap: ChatSessionSnapshot = {
+			id: currentSessionId.value,
+			title: sessionTitle(entries.value),
+			updatedAt: Date.now(),
+			entries: JSON.parse(JSON.stringify(entries.value)),
+			groups: JSON.parse(JSON.stringify(groups.value)),
+			conversation: JSON.parse(JSON.stringify(conversation)),
+		};
+		const idx = sessions.value.findIndex((s) => s.id === snap.id);
+		if (idx >= 0) {
+			sessions.value.splice(idx, 1, snap);
+		} else {
+			sessions.value.unshift(snap);
+		}
+		try {
+			const { setMeta } = await import("@/db/idb");
+			await setMeta(key, JSON.parse(JSON.stringify(sessions.value)));
+		} catch (error) {
+			console.error("Persist chat sessions error:", error);
+		}
+	}
+
+	function schedulePersist() {
+		if (switchGuard) return;
+		if (persistTimer) clearTimeout(persistTimer);
+		persistTimer = setTimeout(persistSessions, 600);
+	}
+
+	watch([entries, groups], schedulePersist, { deep: true });
+
+	/** 进入编辑器时载入本项目历史会话（含当前会话的续聊记忆） */
+	async function loadSessions() {
+		const key = sessionsKey();
+		if (!key) return;
+		try {
+			const { getMeta } = await import("@/db/idb");
+			const list = await getMeta<ChatSessionSnapshot[]>(key);
+			sessions.value = list ?? [];
+			const cur = sessions.value.find((s) => s.id === currentSessionId.value);
+			if (cur && entries.value.length === 0) {
+				restoreSnapshot(cur);
+			}
+		} catch (error) {
+			console.error("Load chat sessions error:", error);
+		}
+	}
+
+	function restoreSnapshot(snap: ChatSessionSnapshot) {
+		switchGuard = true;
+		entries.value = JSON.parse(JSON.stringify(snap.entries));
+		groups.value = (
+			JSON.parse(JSON.stringify(snap.groups)) as CommandGroupInfo[]
+		).map((g) => ({ ...g, invalid: true }));
+		conversation = JSON.parse(JSON.stringify(snap.conversation ?? []));
+		activeLLM = null;
+		runningTurn.value = null;
+		pendingConfirm = null;
+		currentSessionId.value = snap.id;
+		nextTick(() => {
+			switchGuard = false;
+		});
+	}
+
+	/** 切换历史会话 */
+	function switchSession(id: string) {
+		if (id === currentSessionId.value) return;
+		const target = sessions.value.find((s) => s.id === id);
+		if (!target) return;
+		switchSessionGuarded(() => restoreSnapshot(target));
+	}
+
+	async function switchSessionGuarded(fn: () => void) {
+		if (persistTimer) clearTimeout(persistTimer);
+		await persistSessions(); // 先固化当前会话
+		fn();
+	}
+
+	function deleteSession(id: string) {
+		sessions.value = sessions.value.filter((s) => s.id !== id);
+		const key = sessionsKey();
+		if (!key) return;
+		import("@/db/idb")
+			.then(({ setMeta }) =>
+				setMeta(key, JSON.parse(JSON.stringify(sessions.value))),
+			)
+			.catch((e) => console.error("Delete chat session error:", e));
+		if (id === currentSessionId.value) newSession();
+	}
 
 	// 回合内的命令引用（不序列化，进程内存活）
 	const groupCommands = new Map<string, EditCommand[]>();
@@ -642,6 +765,8 @@ export const useAgentState = defineStore("agent", () => {
 	}
 
 	function newSession() {
+		// 换新会话 id：旧会话由 watch 落盘留在历史列表，新会话另起一条
+		currentSessionId.value = nanoid(8);
 		entries.value = [];
 		conversation = [];
 		activeLLM = null;
@@ -653,6 +778,11 @@ export const useAgentState = defineStore("agent", () => {
 		entries,
 		groups,
 		runningTurn,
+		sessions,
+		currentSessionId,
+		loadSessions,
+		switchSession,
+		deleteSession,
 		toolNames: [...toolRegistry.keys()] as string[],
 		send,
 		manualRunTool,
