@@ -5,9 +5,18 @@ import { createStack } from "@/utils/stack";
 type Store = PiniaPluginContext["store"];
 type Options = PiniaPluginContext["options"];
 
-interface Serializer {
+/**
+ * 快照序列化器（按 store 注入，见 DefineStoreOptionsBase.undo.serializer）：
+ * - serialize：watch 的状态 → 可存储的字符串（如纯数据 JSON）
+ * - deserialize：字符串 → 纯数据
+ * - restore：可选。类实例状态不能走 $patch（会丢原型、方法变 undefined），
+ *   由 store 用自身方法（如 trackStore.loadTrackData）重建；缺省走 $patch。
+ * 插件本身不感知任何具体 store，保持通用。
+ */
+export interface Serializer {
 	serialize: (value: any) => string;
 	deserialize: (value: string) => any;
+	restore?: (store: any, value: any) => void | Promise<void>;
 }
 
 type PluginOptions = PiniaPluginContext & {
@@ -24,75 +33,89 @@ declare module "pinia" {
 	export interface DefineStoreOptionsBase<S extends StateTree, Store> {
 		undo?: {
 			watch?: Array<keyof S>;
+			/** 注入后撤销栈存序列化快照；缺省 cloneDeep 快照 + $patch 恢复 */
+			serializer?: Serializer;
 		};
 	}
 }
 
 /**
- * Removes properties from the store state.
- * @param options The options object defining the store passed to `defineStore()`.
- * @param store The store the plugin is augmenting.
- * @param serializer Custome serializer to serialize state before storing it in the undo stack.
- * @returns {object} State of the store without omitted keys.
+ * 生成当前 watch 状态的快照。
+ * 有 serializer 时栈里存序列化后的字符串（小且类型安全），
+ * 否则退回 cloneDeep（兼容未注入序列化器的 store）。
  */
-function removeOmittedKeys(
+function snapshotState(
 	options: Options,
 	store: Store,
-	serializer: Serializer = {
-		serialize: JSON.stringify,
-		deserialize: JSON.parse,
-	},
-): Store["$state"] {
-	const clone = {};
-	options.undo.watch.forEach((key) => {
-		// clone[key] = serializer.deserialize(serializer.serialize(store[key]));
-		clone[key] = cloneDeep(store[key]);
+	serializer?: Serializer,
+): Record<string, any> {
+	const clone: Record<string, any> = {};
+	options.undo!.watch.forEach((key) => {
+		const value = store[key];
+		clone[key as string] = serializer
+			? serializer.serialize(value)
+			: cloneDeep(value);
 	});
 	return clone;
+}
+
+/** 恢复快照：有 restore 钩子时经 deserialize + store 方法重建，否则 $patch */
+async function applySnapshot(
+	store: Store,
+	snap: Record<string, any>,
+	serializer?: Serializer,
+) {
+	if (serializer?.restore) {
+		const data: Record<string, any> = {};
+		for (const key of Object.keys(snap)) {
+			data[key] = serializer.deserialize(snap[key]);
+		}
+		await serializer.restore(store, data);
+		return;
+	}
+	// $patch 会把快照里的数组/对象按引用并入 state，若不重新克隆，
+	// undo 后的编辑会原地改写栈内历史快照，导致后续 undo 失效
+	store.$patch(cloneDeep(snap));
 }
 
 export default function PiniaUndo({
 	store,
 	options,
-	serializer,
+	serializer: pluginSerializer,
 }: PluginOptions) {
 	if (!options?.undo?.watch) return;
 	if (options.undo.watch.length == 0) return;
 
-	let stack = createStack(removeOmittedKeys(options, store, serializer));
-	let preventUpdateOnSubscribe = false;
+	const serializer = pluginSerializer ?? options.undo.serializer;
+
+	let stack = createStack(snapshotState(options, store, serializer));
+	// 恢复期间抑制订阅。restore 可能触发多次同步 mutation（如 splice 整轨重建），
+	// 用计数器而非布尔标记，保证整个恢复过程（含 await 段）都被抑制且必然复位
+	let suppressDepth = 0;
 	const pushStack = debounce(() => {
-		const state = removeOmittedKeys(options, store, serializer);
-		stack.push(state);
+		stack.push(snapshotState(options, store, serializer));
 	}, 500);
 
-	store._undo = () => {
-		preventUpdateOnSubscribe = true;
-		// $patch 会把快照里的数组/对象按引用并入 state，若不重新克隆，
-		// undo 后的编辑会原地改写栈内历史快照，导致后续 undo 失效
-		store.$patch(cloneDeep(stack.undo()));
-		// $subscribe 为 flush: 'sync'，回调已在 $patch 期间同步消费标记；
-		// 若本次 patch 未触发订阅（快照与当前状态相同），标记必须在这里复位，
-		// 否则后续所有状态变更都会被永久抑制、undo 栈不再前进
-		preventUpdateOnSubscribe = false;
+	const restore = async (snap: Record<string, any>) => {
+		suppressDepth += 1;
+		try {
+			await applySnapshot(store, snap, serializer);
+		} finally {
+			suppressDepth = 0;
+		}
 	};
 
-	store._redo = () => {
-		preventUpdateOnSubscribe = true;
-		store.$patch(cloneDeep(stack.redo()));
-		preventUpdateOnSubscribe = false;
-	};
+	store._undo = () => restore(stack.undo());
+
+	store._redo = () => restore(stack.redo());
 
 	store._resetStack = () => {
-		stack = createStack(removeOmittedKeys(options, store, serializer));
+		stack = createStack(snapshotState(options, store, serializer));
 	};
 
 	store.$subscribe(
-		(mutations) => {
-			if (preventUpdateOnSubscribe) {
-				preventUpdateOnSubscribe = false;
-				return;
-			}
+		() => {
+			if (suppressDepth > 0) return;
 			pushStack();
 		},
 		{

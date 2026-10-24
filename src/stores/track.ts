@@ -6,8 +6,9 @@ import { ImageTrack } from "@/class/ImageTrack";
 import { TextTrack } from "@/class/TextTrack";
 import { VideoTrack } from "@/class/VideoTrack";
 import type { Resource } from "@/types/resource";
-import type { Track, TrackLineItem } from "@/types/track";
+import type { Track, TrackLineData, TrackLineItem } from "@/types/track";
 import { checkTrackOverlap } from "@/utils/track";
+import { plainifyTrackList, rebuildTrackList } from "@/utils/trackData";
 import { usePageState } from "./page";
 import { usePlayerState } from "./player";
 import { useResourceState } from "./resource";
@@ -264,45 +265,18 @@ export const useTrackState = defineStore(
 		}
 
 		/**
-		 * 加载轨道数据
+		 * 加载轨道数据（纯数据 → 类实例的同构重建）。
+		 * 项目恢复（IDB 草稿）与 undo 序列化重建共用这条链路：
+		 * createTrack → decoder.decode（clipMap 按 resource.id 缓存，不重复解码）
+		 * → Object.assign 回填快照字段 → 重挂 store 里的活资源实例。
 		 */
-		const loadTrackData = async (trackData: TrackLineItem[]) => {
-			const newTrackList: TrackLineItem[] = [];
-
-			for (let i = 0; i < trackData.length; i++) {
-				const trackLine = trackData[i];
-				const trackLineList: Track[] = [];
-
-				if (trackLine.list.length === 0) {
-					continue;
-				}
-
-				for (let j = 0; j < trackLine.list.length; j++) {
-					const item = trackLine.list[j];
-
-					const track = await createTrack(
-						item.resource as Resource,
-						item.start,
-						(item as any)?.volume ?? 1,
-					);
-
-					// 复制其他属性
-					const id = track.id;
-					Object.assign(track, item);
-
-					// 重新加载资源，例如本地文件的URL会重新构建
-					track.resource = resourceStore.getResourceById(item.resource.id);
-					track.id = id;
-
-					trackLineList.push(track);
-				}
-
-				newTrackList.push({
-					main: trackLine.main,
-					type: trackLine.type,
-					list: trackLineList,
-				});
-			}
+		const loadTrackData = async (trackData: TrackLineData[]) => {
+			const newTrackList = await rebuildTrackList(
+				trackData,
+				(resource, startFrame, volume) =>
+					createTrack(resource as Resource, startFrame, volume),
+				(data) => resourceStore.getResourceById(data.resource.id),
+			);
 
 			trackList.value.splice(0, trackList.value.length, ...newTrackList);
 		};
@@ -331,8 +305,18 @@ export const useTrackState = defineStore(
 	},
 	{
 		undo: {
-			// trackScale 已收敛到 page store，撤销栈只跟踪轨道数据
+			// trackScale 已收敛到 page store，撤销栈只跟踪轨道数据。
+			// W4：栈里只存 TrackData 纯数据 JSON（不再 cloneDeep 类实例快照），
+			// 恢复经 loadTrackData 重建类实例（$patch 会丢原型、方法变 undefined）
 			watch: ["trackList"],
+			serializer: {
+				serialize: (trackList: TrackLineItem[]) =>
+					JSON.stringify(plainifyTrackList(trackList)),
+				deserialize: (json: string) => JSON.parse(json),
+				restore: async (store, value) => {
+					await store.loadTrackData(value.trackList);
+				},
+			},
 		},
 	},
 );
