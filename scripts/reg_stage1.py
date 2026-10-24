@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""magic-maker 无头回归（TEST_CHECKLIST 17 项）。
+"""magic-maker 无头回归（TEST_CHECKLIST 18 项）。
 
 用法：先在仓库起 `pnpm dev --port 5175 --strictPort`，然后 `python3 reg_stage1.py`。
 依赖：python3 + playwright（channel=chrome）+ ffmpeg（fixture 缺失时自动生成）。
@@ -321,6 +321,71 @@ def run():
              ok17a, json.dumps(durs, ensure_ascii=False))
         r = page.evaluate(JS_EXPORT)
         step(17, "文本轨 → 导出成功", r["ok"], f"bytes={r['writes']}")
+
+        # 18 W4：undo → 导出 → 再 undo → 导出（TrackData 序列化重建回归）
+        # 探针：钩 decoder.decode，统计调用数与缓存未命中数（未命中 = 真 OPFS 读 + 解码）
+        page.evaluate(f"""
+          async () => {{
+            const pinia = {pin};
+            const {{ decoder }} = await import('/src/class/Decoder.ts');
+            if (!window.__decodeProbe) {{
+              const probe = {{ calls: 0, misses: 0 }};
+              window.__decodeProbe = probe;
+              const orig = decoder.decode.bind(decoder);
+              decoder.decode = async (track, force) => {{
+                probe.calls += 1;
+                if (!decoder.getClip(track)) probe.misses += 1;
+                return orig(track, force);
+              }};
+            }}
+            const ts = pinia._s.get('track'); const ps = pinia._s.get('player');
+            ps.playStartFrame = 30;
+            const vi = ts.trackList.findIndex(l => l.type === 'video');
+            ts.selectTrackItem.line = vi; ts.selectTrackItem.index = 0;
+            await ts.splitTrack();
+          }}
+        """)
+        time.sleep(0.8)
+        probe_base = page.evaluate(
+            "() => ({ ...window.__decodeProbe })")
+        video_state = lambda: page.evaluate(f"""
+          () => {{
+            const pinia = {pin};
+            const vl = pinia._s.get('track').trackList.find(l => l.type === 'video');
+            return {{ n: vl.list.length,
+              combine: typeof vl.list[0].combine === 'function',
+              offsetL: vl.list[0].offsetL, offsetR: vl.list[0].offsetR }};
+          }}
+        """)
+        after_split = video_state()
+
+        page.evaluate(f"() => {{ {pin}._s.get('track')._undo(); }}")
+        time.sleep(1.0)
+        after_undo1 = video_state()
+        probe_u1 = page.evaluate("() => ({ ...window.__decodeProbe })")
+        r1 = page.evaluate(JS_EXPORT)
+
+        page.evaluate(f"() => {{ {pin}._s.get('track')._undo(); }}")
+        time.sleep(1.0)
+        after_undo2 = video_state()
+        probe_u2 = page.evaluate("() => ({ ...window.__decodeProbe })")
+        r2 = page.evaluate(JS_EXPORT)
+
+        no_redecode = (
+            probe_u1["misses"] == probe_base["misses"]
+            and probe_u2["misses"] == probe_base["misses"]
+        )
+        step(18, "undo → 导出 → 再 undo → 导出（序列化重建）",
+             after_split["n"] == 2
+             and after_undo1["n"] == 1 and after_undo1["combine"]
+             and after_undo2["combine"]
+             and r1["ok"] and r2["ok"] and no_redecode,
+             json.dumps({
+                 "split": after_split, "undo1": after_undo1,
+                 "undo2": after_undo2,
+                 "decode": {"base": probe_base, "u1": probe_u1, "u2": probe_u2},
+                 "bytes1": r1["writes"], "bytes2": r2["writes"],
+             }, ensure_ascii=False))
 
         # 6 保存
         page.evaluate(f"() => {{ {pin}._s.get('project').saveProject(); }}")

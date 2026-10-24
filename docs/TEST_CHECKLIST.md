@@ -1,10 +1,10 @@
 # 回归验证清单
 
 > 执行环境：无头 Chrome（Playwright 驱动，`channel="chrome"`），dev server `pnpm dev --port 5175 --strictPort`。
-> 最近执行：2026-10-23（阶段一 W3 收口）。脚本：`scripts/reg_stage1.py`（无头驱动，通过 pinia store 驱动剪辑动作 + 快捷键路径，导出经 stub `showSaveFilePicker` 捕获字节；fixture 由 ffmpeg 自动生成）。
-> 历史基线：2026-10-13（P0-9，14 项 12 ✅）；2026-10-23 W1（19 项全过，D1 阻断 bug 修复）。
+> 最近执行：2026-10-24（阶段二 W4 收口，18 项全过）。脚本：`scripts/reg_stage1.py`（无头驱动，通过 pinia store 驱动剪辑动作 + 快捷键路径，导出经 stub `showSaveFilePicker` 捕获字节；fixture 由 ffmpeg 自动生成）。
+> 历史基线：2026-10-23（阶段一 W3 收口，17 项）；2026-10-13（P0-9，14 项 12 ✅）；2026-10-23 W1（19 项全过，D1 阻断 bug 修复）。
 
-## 用例（17 项全过；#9/#10 随 Excalidraw 白板裁剪退役）
+## 用例（18 项全过；#9/#10 随 Excalidraw 白板裁剪退役）
 
 | # | 步骤 | 预期 | 结果 | 备注 |
 |---|------|------|------|------|
@@ -19,12 +19,22 @@
 | **16** | **分割 → undo → 导出** | 撤销回单段后导出成功，Track 原型方法完整 | ✅ | 180138 bytes；undo 插件两处缺陷已修（见 W1 记录） |
 | 17a | 文本轨分割后 `combine()` 时长 | duration = (end-start)×帧时长，而非 frameCount | ✅ | 0.5s / 1.5s 两段均正确（原 D1b TODO） |
 | **17** | **文本轨 → 导出** | 导出成功且文本时长正确 | ✅ | 180154 bytes |
-| 6 | 保存（ctrl+s） | IDB 记录更新（3 资源/4 轨道线） | ✅ | |
-| 7 | 刷新页面恢复 | 项目/资源/轨道从 IDB+OPFS 重建 | ✅ | res=3, lines=4 |
+| **18** | **undo → 导出 → 再 undo → 导出**（W4 序列化重建） | 分割后 undo 回单段、`combine` 原型方法完整，两次导出均产出字节；探针证实 undo 重建零重复解码 | ✅ | 180138 bytes ×2；decode 探针 calls +3/+3（video/image/audio 各一次），misses +0（全走 clipMap 缓存） |
+| 6 | 保存（ctrl+s） | IDB 记录更新（3 资源/3 轨道线） | ✅ | W4 起 #18 的两次 undo 会回退掉文本轨，保存 3 线为预期 |
+| 7 | 刷新页面恢复 | 项目/资源/轨道从 IDB+OPFS 重建 | ✅ | res=3, lines=3 |
 | 5 | 剪辑：快进→分割(S)（快捷键路径） | 片段正确分裂 | ✅ | video 段数 1→2 |
 | 11 | localStorage 占用 < 100KB | | ✅ | 127 bytes |
 | 14 | 删除资源 | 列表移除 + OPFS 文件同步删除 | ✅ | |
 | 12 | grep 无 `/tos` 残留 | 无命中 | ✅ | src/vite.config/vercel.json 均 0 命中 |
+
+## W4 undo 序列化重建（2026-10-24，修 D2）
+
+撤销栈不再 `cloneDeep` 类实例快照（不类型安全、快照大、丢原型），改为纯数据序列化 + 重建：
+
+1. **TrackData 纯数据投影**（`types/track.d.ts`）：平铺可序列化字段（resource 引用、offsetL/R、绘制/样式属性）；`src/utils/trackData.ts` 提供 `plainifyTrack(List)`（只取自有可枚举字段，方法/getter 不进快照）与 `rebuildTrack(List)`（工厂/资源解析器注入，纯函数可单测，`tests/track-data.spec.ts` 10 例）。
+2. **插件 serializer 接入**（`installPiniaPlugin.ts`）：按 store 的 `undo.serializer` 注入 `{ serialize, deserialize, restore }`；栈里存 serialize 产物（JSON 字符串），恢复优先走 `restore`（track store 侧调 `loadTrackData` 重建类实例），缺省仍 `$patch`。抑制订阅的布尔标记升级为 `suppressDepth` 计数（重建含异步段且触发多次同步 mutation）。`_undo/_redo/_resetStack` 接口、热键、栈深 20、500ms 去抖均不变。
+3. **重建链路共用**：`loadTrackData` 重构为复用 `rebuildTrackList`，项目恢复（IDB 草稿）与 undo 走同一条 `createTrack → decode → Object.assign → 重挂资源` 链路；快照 id 回填，片段身份在 undo 前后稳定。
+4. **解码复用验证**：reg #18 探针钩 `decoder.decode`，两次 undo 共 6 次 decode 调用全部命中 `clipMap`（misses +0），无重复 OPFS 读/解码。
 
 ## W1 修复（2026-10-23）
 
