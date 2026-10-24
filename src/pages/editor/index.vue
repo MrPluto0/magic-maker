@@ -2,9 +2,9 @@
   <div class="flex flex-col flex-1 w-full h-full overflow-hidden">
     <EditorTopbar />
 
-    <!-- 主区：左(对话 | 素材) · 中(播放器) · 右(属性) -->
+    <!-- 主区：左(对话 | 素材·通栏全高) · 右(上：播放器+属性 / 下：时间轴对齐右区) -->
     <div class="main flex flex-1 min-h-0">
-      <!-- LEFT：Agent 对话面板 + 素材（生成/上传）tab 切换 -->
+      <!-- LEFT：Agent 对话面板 + 素材（生成/上传）tab 切换，通栏占满顶栏以下全高 -->
       <aside
         class="left flex flex-col min-h-0 border-r border-[#e9ecf2] dark:border-[#27272a] bg-[#fefefe] dark:bg-night"
         :style="{ width: `${pageStore.resourceWidth}px` }"
@@ -51,8 +51,8 @@
         }"
       />
 
-      <!-- CENTER：画布 + 走带控制 -->
-      <section class="flex flex-col flex-1 min-w-0 bg-black">
+      <!-- RIGHT：上（播放器 | 属性）· 下（时间轴，与右区对齐，不延伸到左栏下方） -->
+      <section class="flex flex-col flex-1 min-w-0 min-h-0">
         <div class="flex flex-1 flex-row flex-nowrap min-h-0">
           <CanvasPlayer />
           <SplitLine
@@ -65,20 +65,20 @@
           />
           <AttributeContainer />
         </div>
+
+        <SplitLine
+          v-model:new-height="pageStore.trackHeight"
+          direction="horizontal"
+          :limit-size="{
+            minHeight: 200,
+            maxHeight: 500,
+          }"
+        />
+
+        <!-- TIMELINE -->
+        <TrackContainer />
       </section>
     </div>
-
-    <SplitLine
-      v-model:new-height="pageStore.trackHeight"
-      direction="horizontal"
-      :limit-size="{
-        minHeight: 200,
-        maxHeight: 500,
-      }"
-    />
-
-    <!-- TIMELINE -->
-    <TrackContainer />
   </div>
 </template>
 
