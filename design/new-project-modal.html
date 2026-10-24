@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MAGIC MAKER — 新建项目弹窗设计稿</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --black:#000000; --deep:#030303; --surface:#1a1a1a;
+  --border:#27272a; --border2:#2e2e33;
+  --white:#ffffff; --slate:#767d88; --muted:#a7a7a7; --silver:#c9ccd1;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,'Liberation Mono','Courier New',monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{height:100%;}
+body{
+  font-family:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,'PingFang SC','Microsoft YaHei',sans-serif;
+  color:var(--white);-webkit-font-smoothing:antialiased;letter-spacing:-0.16px;
+  background:var(--black);overflow:hidden;
+}
+button,input,textarea{font-family:inherit;color:inherit;}
+button{cursor:pointer;border:none;background:none;}
+.lbl{font-size:11px;font-weight:450;letter-spacing:0.35px;text-transform:uppercase;color:var(--slate);}
+.mono{font-family:var(--mono);letter-spacing:0;}
+
+/* --- backdrop page (home, dimmed) --- */
+.bg{position:absolute;inset:0;filter:brightness(.38) saturate(.8);}
+nav{
+  display:flex;align-items:center;gap:40px;padding:0 48px;height:72px;
+  background:linear-gradient(180deg,rgba(0,0,0,.85),rgba(0,0,0,0));
+}
+.wordmark{font-size:15px;font-weight:600;letter-spacing:0.4px;display:flex;align-items:center;gap:10px;}
+.wordmark .dot{width:8px;height:8px;background:var(--white);}
+nav .spacer{flex:1;}
+.btn-solid{font-size:14px;font-weight:600;color:#000;background:var(--white);padding:10px 20px;border-radius:4px;}
+.hero{
+  height:92vh;display:flex;flex-direction:column;justify-content:flex-end;
+  padding:0 48px 72px;position:relative;overflow:hidden;
+  background:
+    radial-gradient(120% 90% at 78% 12%,rgba(96,116,148,.55) 0%,rgba(0,0,0,0) 52%),
+    radial-gradient(70% 60% at 18% 88%,rgba(148,120,90,.28) 0%,rgba(0,0,0,0) 60%),
+    linear-gradient(180deg,#0a0c10 0%,#14171d 46%,#030303 100%);
+}
+.hero h1{font-size:96px;font-weight:400;line-height:1.0;letter-spacing:-3.2px;}
+.hero h1 em{font-style:normal;color:var(--slate);}
+
+/* --- overlay --- */
+.overlay{
+  position:fixed;inset:0;z-index:10;
+  background:rgba(0,0,0,.62);
+  display:grid;place-items:center;
+}
+/* zero shadow — depth via border + backdrop, per RunwayML */
+.dialog{
+  width:520px;max-width:calc(100vw - 48px);
+  background:#0a0a0b;
+  border:1px solid var(--border2);border-radius:8px;
+  overflow:hidden;
+}
+.dlg-head{
+  display:flex;align-items:flex-start;justify-content:space-between;
+  padding:28px 28px 0;
+}
+.dlg-head .lbl{display:block;margin-bottom:12px;}
+.dlg-head h2{font-size:24px;font-weight:400;line-height:1.0;letter-spacing:-0.5px;}
+.dlg-head .x{
+  width:28px;height:28px;border-radius:4px;color:var(--slate);
+  display:grid;place-items:center;font-size:14px;margin:-4px -8px 0 0;
+}
+.dlg-head .x:hover{color:var(--white);background:rgba(255,255,255,.06);}
+.mode{display:flex;gap:2px;margin:22px 28px 0;border:1px solid var(--border2);border-radius:4px;overflow:hidden;width:max-content;}
+.mode button{
+  font-size:12px;font-weight:600;color:var(--slate);
+  padding:7px 14px;letter-spacing:-0.1px;
+}
+.mode button.on{background:rgba(255,255,255,.08);color:var(--white);}
+.dlg-body{padding:22px 28px 4px;display:flex;flex-direction:column;gap:18px;}
+.field{display:flex;flex-direction:column;gap:8px;}
+.field label{font-size:10px;font-weight:450;letter-spacing:0.35px;text-transform:uppercase;color:var(--slate);}
+.inbox{border:1px solid var(--border2);border-radius:4px;background:var(--deep);transition:border-color .15s;}
+.inbox:focus-within{border-color:var(--silver);}
+.inbox input{width:100%;background:none;border:none;outline:none;font-size:14px;padding:11px 13px;letter-spacing:-0.16px;}
+.inbox textarea{width:100%;background:none;border:none;outline:none;resize:none;font-size:13px;line-height:1.45;padding:11px 13px;letter-spacing:-0.16px;color:var(--silver);}
+.inbox ::placeholder{color:var(--muted);opacity:.75;}
+.hint{font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:0;}
+.dlg-foot{
+  display:flex;align-items:center;gap:10px;
+  padding:20px 28px 24px;margin-top:6px;
+}
+.dlg-foot .spacer{flex:1;}
+.btn-ghost{font-size:14px;font-weight:600;color:var(--slate);padding:9px 18px;border-radius:4px;}
+.btn-ghost:hover{color:var(--white);}
+.btn-create{font-size:14px;font-weight:600;color:#000;background:var(--white);padding:10px 22px;border-radius:4px;display:flex;align-items:center;gap:10px;}
+.btn-create kbd{font-family:var(--mono);font-size:10px;font-weight:400;background:rgba(0,0,0,.14);border-radius:3px;padding:1px 6px;letter-spacing:0;}
+/* import-json mode hint block (secondary tab preview) */
+.drop{
+  border:1px dashed var(--border2);border-radius:6px;
+  padding:26px 16px;text-align:center;color:var(--slate);
+}
+.drop .big{font-size:13px;font-weight:600;color:var(--silver);margin-top:8px;}
+.drop .sub{font-size:11px;margin-top:5px;letter-spacing:0;}
+</style>
+</head>
+<body>
+
+<!-- dimmed home behind -->
+<div class="bg" aria-hidden="true">
+  <nav>
+    <div class="wordmark"><span class="dot"></span>MAGIC MAKER</div>
+    <div class="spacer"></div>
+    <button class="btn-solid">新建项目</button>
+  </nav>
+  <header class="hero">
+    <span class="lbl">Local-first video studio</span>
+    <h1 style="margin-top:24px;">素材进，<br>电影出。<em style="font-size:44px;letter-spacing:-1px;line-height:1.2;display:block;margin-top:18px;">一切发生在你的机器上。</em></h1>
+  </header>
+</div>
+
+<!-- MODAL -->
+<div class="overlay">
+  <div class="dialog" role="dialog" aria-modal="true">
+    <div class="dlg-head">
+      <div>
+        <span class="lbl">项目</span>
+        <h2>新建项目</h2>
+      </div>
+      <button class="x" title="关闭">✕</button>
+    </div>
+
+    <div class="mode">
+      <button class="on">手动创建</button>
+      <button>导入 JSON</button>
+    </div>
+
+    <div class="dlg-body">
+      <div class="field">
+        <label>项目名称</label>
+        <div class="inbox">
+          <input placeholder="例如：城市夜行记" value="城市夜行记">
+        </div>
+      </div>
+      <div class="field">
+        <label>描述 <span class="mono" style="text-transform:none;letter-spacing:0;color:var(--muted)">— 可选</span></label>
+        <div class="inbox">
+          <textarea rows="3" placeholder="一句话记录这支片子的方向…">胶片质感的城市夜景短片，配 AI 生成的环境音与字幕轨道。</textarea>
+        </div>
+      </div>
+      <span class="hint">项目将以 JSON 保存在本机 — 不经过任何云端。</span>
+    </div>
+
+    <div class="dlg-foot">
+      <span class="hint">ESC 关闭</span>
+      <div class="spacer"></div>
+      <button class="btn-ghost">取消</button>
+      <button class="btn-create">创建项目 <kbd>⏎</kbd></button>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

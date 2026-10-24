@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MAGIC MAKER — 首页设计稿</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ============ RunwayML design tokens ============ */
+:root{
+  --black:#000000;
+  --deep:#030303;
+  --surface:#1a1a1a;
+  --border:#27272a;
+  --white:#ffffff;
+  --slate:#767d88;
+  --slate2:#7d848e;
+  --muted:#a7a7a7;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,'Liberation Mono','Courier New',monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{background:var(--black);}
+body{
+  font-family:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,'PingFang SC','Microsoft YaHei',sans-serif;
+  color:var(--white);
+  -webkit-font-smoothing:antialiased;
+  letter-spacing:-0.16px;
+}
+a{color:inherit;text-decoration:none;}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit;}
+
+/* micro label — weight 450 craft */
+.lbl{
+  font-size:11px;font-weight:450;letter-spacing:0.35px;
+  text-transform:uppercase;color:var(--slate);
+}
+.lbl-lg{font-size:14px;font-weight:500;letter-spacing:0.35px;text-transform:uppercase;}
+
+/* ============ NAV ============ */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:50;
+  display:flex;align-items:center;gap:40px;
+  padding:0 48px;height:72px;
+  background:linear-gradient(180deg,rgba(0,0,0,.85),rgba(0,0,0,0));
+}
+.wordmark{
+  font-size:15px;font-weight:600;letter-spacing:0.4px;
+  display:flex;align-items:center;gap:10px;
+}
+.wordmark .dot{width:8px;height:8px;background:var(--white);}
+.nav-links{display:flex;gap:28px;margin-left:8px;}
+.nav-links a{font-size:14px;font-weight:400;color:var(--slate);letter-spacing:-0.16px;transition:color .15s;}
+.nav-links a.on,.nav-links a:hover{color:var(--white);}
+nav .spacer{flex:1;}
+.btn-ghost{
+  font-size:14px;font-weight:600;letter-spacing:-0.16px;
+  color:var(--slate);padding:9px 18px;border-radius:4px;
+  border:1px solid transparent;transition:color .15s;
+}
+.btn-ghost:hover{color:var(--white);}
+.btn-line{
+  font-size:14px;font-weight:600;letter-spacing:-0.16px;
+  color:var(--white);padding:9px 18px;border-radius:4px;
+  border:1px solid var(--border);
+}
+.btn-solid{
+  font-size:14px;font-weight:600;letter-spacing:-0.16px;
+  color:#000;background:var(--white);padding:10px 20px;border-radius:4px;
+}
+
+/* ============ HERO ============ */
+.hero{
+  position:relative;height:92vh;min-height:640px;
+  display:flex;flex-direction:column;justify-content:flex-end;
+  overflow:hidden;
+}
+.hero-media{
+  position:absolute;inset:0;
+  /* cinematic still placeholder — the "photography" */
+  background:
+    radial-gradient(120% 90% at 78% 12%, rgba(96,116,148,.55) 0%, rgba(0,0,0,0) 52%),
+    radial-gradient(70% 60% at 18% 88%, rgba(148,120,90,.28) 0%, rgba(0,0,0,0) 60%),
+    radial-gradient(90% 70% at 50% 55%, rgba(30,34,42,.9) 0%, rgba(0,0,0,0) 70%),
+    linear-gradient(180deg,#0a0c10 0%,#14171d 46%,#030303 100%);
+}
+.hero-media::after{
+  content:"";position:absolute;inset:0;
+  background:linear-gradient(180deg,rgba(0,0,0,.55) 0%,rgba(0,0,0,0) 30%,rgba(0,0,0,0) 55%,#000 100%);
+}
+.hero-inner{
+  position:relative;z-index:2;
+  padding:0 48px 72px;max-width:1600px;width:100%;
+}
+.hero-kicker{display:flex;align-items:center;gap:16px;margin-bottom:28px;}
+.hero-kicker .rule{width:56px;height:1px;background:var(--slate);}
+.hero h1{
+  font-size:96px;font-weight:400;line-height:1.0;letter-spacing:-3.2px;
+  max-width:13em;
+}
+.hero h1 em{
+  display:block;font-style:normal;color:var(--slate);
+  font-size:52px;letter-spacing:-1px;margin-top:26px;line-height:1.15;
+}
+.hero-sub{
+  margin-top:28px;max-width:520px;
+  font-size:16px;line-height:1.4;color:var(--slate);letter-spacing:-0.16px;
+}
+.hero-cta{display:flex;gap:12px;margin-top:36px;align-items:center;}
+.hero-meta{
+  position:absolute;right:48px;bottom:72px;z-index:2;text-align:right;
+  display:flex;flex-direction:column;gap:6px;
+}
+.hero-meta .num{font-family:var(--mono);font-size:13px;color:var(--muted);letter-spacing:0;}
+
+/* ============ INTRO STRIP ============ */
+.intro{
+  display:grid;grid-template-columns:1fr 1.6fr;gap:64px;
+  padding:104px 48px 96px;max-width:1600px;margin:0 auto;
+}
+.intro h2{font-size:40px;font-weight:400;line-height:1.1;letter-spacing:-1px;}
+.intro p{font-size:16px;line-height:1.45;color:var(--slate);max-width:56ch;}
+.intro .stack{display:flex;flex-direction:column;gap:20px;}
+.spec-row{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);
+  border:1px solid var(--border);border-radius:8px;overflow:hidden;
+}
+.spec-cell{background:var(--black);padding:24px 20px;display:flex;flex-direction:column;gap:8px;}
+.spec-cell .v{font-size:24px;font-weight:400;letter-spacing:-0.6px;}
+.spec-cell .v small{font-size:13px;color:var(--muted);letter-spacing:0;font-family:var(--mono);}
+
+/* ============ PROJECTS ============ */
+.projects{padding:0 48px 120px;max-width:1600px;margin:0 auto;}
+.proj-head{
+  display:flex;align-items:baseline;justify-content:space-between;
+  border-top:1px solid var(--border);padding-top:28px;margin-bottom:40px;
+}
+.proj-head h2{font-size:48px;font-weight:400;line-height:1.0;letter-spacing:-1.2px;}
+.proj-head .actions{display:flex;gap:10px;align-items:center;}
+.grid{
+  display:grid;grid-template-columns:repeat(12,1fr);
+  grid-auto-rows:96px;gap:24px;
+}
+.card{position:relative;border-radius:8px;overflow:hidden;background:var(--deep);border:1px solid var(--border);display:flex;flex-direction:column;}
+/* explicit editorial composition — no auto-flow, no negative margins */
+.card.c1{grid-column:1/8;grid-row:1/6;}   /* feature, tall left */
+.card.c2{grid-column:8/13;grid-row:1/3;}  /* right top */
+.newcard{grid-column:8/13;grid-row:3/6;}  /* right middle: CTA tile */
+.card.c3{grid-column:1/5;grid-row:6/10;}  /* triptych band */
+.card.c4{grid-column:5/9;grid-row:6/10;}
+.card.c5{grid-column:9/13;grid-row:6/10;}
+.card.c6{grid-column:1/13;grid-row:10/13;} /* wide cinematic banner closer */
+.thumb{position:relative;flex:1;overflow:hidden;}
+.thumb .still{position:absolute;inset:0;}
+/* filmic stills: horizon composition + grain + vignette */
+.still::before{ /* grain */
+  content:"";position:absolute;inset:0;z-index:1;opacity:.5;
+  background:
+    repeating-linear-gradient(0deg,rgba(255,255,255,.028) 0 1px,transparent 1px 3px),
+    repeating-linear-gradient(90deg,rgba(255,255,255,.02) 0 1px,transparent 1px 4px);
+}
+.still::after{ /* vignette + letterbox floor */
+  content:"";position:absolute;inset:0;z-index:2;
+  background:
+    radial-gradient(120% 90% at 50% 40%,rgba(0,0,0,0) 55%,rgba(0,0,0,.55) 100%),
+    linear-gradient(180deg,rgba(0,0,0,.25) 0%,rgba(0,0,0,0) 18%);
+}
+/* fake cinematic stills — each with a horizon line & light source */
+.still-s1{background:
+  radial-gradient(55% 40% at 74% 22%,rgba(215,228,245,.85),rgba(0,0,0,0) 62%),
+  radial-gradient(90% 50% at 20% 30%,rgba(90,115,150,.5),rgba(0,0,0,0) 65%),
+  linear-gradient(180deg,#232e40 0%,#3d5170 36%,#141c29 37%,#070a11 78%,#020306 100%);}
+.still-s2{background:
+  radial-gradient(50% 35% at 32% 28%,rgba(235,205,220,.7),rgba(0,0,0,0) 60%),
+  radial-gradient(70% 45% at 75% 55%,rgba(120,70,110,.45),rgba(0,0,0,0) 65%),
+  linear-gradient(180deg,#1c1420 0%,#332038 42%,#120b16 43%,#050308 100%);}
+.still-s3{background:
+  radial-gradient(55% 35% at 62% 20%,rgba(190,235,215,.65),rgba(0,0,0,0) 60%),
+  radial-gradient(80% 45% at 25% 45%,rgba(60,110,90,.5),rgba(0,0,0,0) 65%),
+  linear-gradient(180deg,#0d1a14 0%,#1c352a 40%,#0a130e 41%,#030605 100%);}
+.still-s4{background:
+  radial-gradient(50% 32% at 76% 26%,rgba(240,220,160,.75),rgba(0,0,0,0) 60%),
+  radial-gradient(75% 40% at 30% 55%,rgba(120,100,45,.45),rgba(0,0,0,0) 65%),
+  linear-gradient(180deg,#17130a 0%,#2c2513 45%,#100d06 46%,#050403 100%);}
+.still-s5{background:
+  radial-gradient(50% 35% at 24% 24%,rgba(205,215,240,.7),rgba(0,0,0,0) 60%),
+  radial-gradient(80% 45% at 70% 50%,rgba(75,90,130,.5),rgba(0,0,0,0) 65%),
+  linear-gradient(180deg,#141824 0%,#28304a 38%,#10131e 39%,#04050a 100%);}
+.still-s6{background:
+  radial-gradient(55% 32% at 55% 30%,rgba(245,190,170,.7),rgba(0,0,0,0) 60%),
+  radial-gradient(80% 45% at 22% 55%,rgba(130,55,45,.5),rgba(0,0,0,0) 65%),
+  linear-gradient(180deg,#170d0b 0%,#331a15 44%,#140806 45%,#040202 100%);}
+.thumb::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0) 45%,rgba(3,3,3,.92) 100%);}
+.badge{
+  position:absolute;top:14px;left:14px;z-index:2;
+  font-size:11px;font-weight:450;letter-spacing:0.35px;text-transform:uppercase;
+  color:var(--muted);
+  background:rgba(0,0,0,.55);border:1px solid var(--border);
+  padding:4px 8px;border-radius:4px;backdrop-filter:blur(4px);
+}
+.card-info{
+  position:absolute;left:0;right:0;bottom:0;z-index:2;
+  padding:18px 20px;display:flex;align-items:flex-end;gap:16px;
+}
+.card-info .t{flex:1;min-width:0;}
+.card-info h3{font-size:20px;font-weight:400;line-height:1.1;letter-spacing:-0.3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.card-info p{font-size:13px;line-height:1.3;color:var(--slate);margin-top:6px;letter-spacing:-0.16px;
+  display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden;}
+.card-info .when{font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:0;white-space:nowrap;}
+.card-ops{display:flex;gap:2px;opacity:0;transform:translateY(4px);transition:all .18s;}
+.card:hover .card-ops{opacity:1;transform:none;}
+.card-ops button{
+  font-size:13px;font-weight:600;color:var(--slate);
+  padding:7px 12px;border-radius:4px;
+}
+.card-ops button:hover{color:var(--white);background:rgba(255,255,255,.06);}
+.card-ops button.danger:hover{color:#e5484d;}
+
+/* new project — dashed editorial tile (placement set in grid section) */
+.newcard{
+  border:1px dashed #34343a;border-radius:8px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;
+  color:var(--slate);transition:border-color .15s,color .15s;
+}
+.newcard:hover{border-color:var(--slate);color:var(--white);}
+.newcard .plus{
+  width:44px;height:44px;border:1px solid #34343a;border-radius:50%;
+  display:grid;place-items:center;font-size:22px;font-weight:300;line-height:1;
+}
+.newcard .t{font-size:14px;font-weight:600;color:var(--silver);}
+
+/* ============ FOOTER ============ */
+footer{
+  border-top:1px solid var(--border);
+  padding:56px 48px 64px;max-width:1600px;margin:0 auto;
+  display:flex;align-items:flex-start;justify-content:space-between;gap:40px;
+}
+footer .mission{font-size:24px;font-weight:400;line-height:1.2;letter-spacing:-0.5px;max-width:26em;color:#c9ccd1;}
+footer .cols{display:flex;gap:64px;}
+footer .col{display:flex;flex-direction:column;gap:12px;}
+footer .col a{font-size:13px;color:var(--slate);letter-spacing:-0.16px;}
+footer .col a:hover{color:var(--white);}
+footer .base{font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:0;}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wordmark"><span class="dot"></span>MAGIC MAKER</div>
+  <div class="nav-links">
+    <a class="on" href="#">首页</a>
+    <a href="#">素材库</a>
+    <a href="#">关于</a>
+  </div>
+  <div class="spacer"></div>
+  <button class="btn-ghost">导入项目 JSON</button>
+  <button class="btn-line">主题</button>
+  <button class="btn-solid">新建项目</button>
+</nav>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="hero-media"></div>
+  <div class="hero-inner">
+    <div class="hero-kicker">
+      <span class="rule"></span>
+      <span class="lbl-lg">Local-first video studio</span>
+    </div>
+    <h1>素材进，<br>电影出。<em>一切发生在你的机器上。</em></h1>
+    <p class="hero-sub">Magic Maker 是一个完全运行在本地的视频剪辑器——AI 生成、时间轴编排、画布合成与成片导出，不经过任何云端。</p>
+    <div class="hero-cta">
+      <button class="btn-solid">新建项目</button>
+      <button class="btn-ghost" style="border:1px solid var(--border);color:var(--white);">导入项目 JSON ↓</button>
+    </div>
+  </div>
+  <div class="hero-meta">
+    <span class="lbl">Build</span>
+    <span class="num">v0.9.0 — local</span>
+    <span class="lbl" style="margin-top:10px;">Render engine</span>
+    <span class="num">WebAV / Canvas</span>
+  </div>
+</header>
+
+<!-- INTRO -->
+<section class="intro" id="intro">
+  <div>
+    <span class="lbl-lg">Why Magic Maker</span>
+    <h2 style="margin-top:20px;">专业时间轴，<br>电影级暗色工作台。</h2>
+  </div>
+  <div class="stack">
+    <p>多轨时间轴支持视频、图片、音频与文字轨道；拖拽吸附、逐帧分割、快捷键直达。左侧 AI 面板直接生成文本、图片、音频与视频素材，生成即可拖入轨道。右侧属性面板随轨道类型切换——位置、缩放、音量、文字样式，全部实时可见。</p>
+    <div class="spec-row">
+      <div class="spec-cell">
+        <span class="lbl">Tracks</span>
+        <span class="v">4 <small>types</small></span>
+      </div>
+      <div class="spec-cell">
+        <span class="lbl">AI generators</span>
+        <span class="v">5 <small>tabs</small></span>
+      </div>
+      <div class="spec-cell">
+        <span class="lbl">Cloud calls</span>
+        <span class="v">0 <small>for editing</small></span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section class="projects" id="projects">
+  <div class="proj-head">
+    <div>
+      <span class="lbl-lg">Projects — 5 个项目</span>
+      <h2 style="margin-top:16px;">最近项目</h2>
+    </div>
+    <div class="actions">
+      <button class="btn-ghost">导入项目 JSON</button>
+      <button class="btn-solid">新建项目</button>
+    </div>
+  </div>
+
+  <div class="grid">
+    <article class="card c1">
+      <div class="thumb">
+        <span class="badge">Video · 4 tracks</span>
+        <div class="still still-s1"></div>
+        <div class="card-info">
+          <div class="t">
+            <h3>城市夜行记</h3>
+            <p>胶片质感的城市夜景短片，配 AI 生成的环境音与字幕轨道。</p>
+          </div>
+          <span class="when">2026-10-23 21:14</span>
+          <div class="card-ops">
+            <button>进入 →</button>
+            <button>重命名</button>
+            <button class="danger">删除</button>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <article class="card c2">
+      <div class="thumb">
+        <span class="badge">Draft</span>
+        <div class="still still-s2"></div>
+        <div class="card-info">
+          <div class="t"><h3>产品发布 Teaser</h3><p>15 秒竖版预告，文字动效为主。</p></div>
+          <span class="when">10-22</span>
+          <div class="card-ops">
+            <button>进入 →</button><button>重命名</button><button class="danger">删除</button>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <button class="newcard">
+      <span class="plus">+</span>
+      <span class="t">新建项目</span>
+      <span class="lbl">或导入 JSON</span>
+    </button>
+
+    <article class="card c3">
+      <div class="thumb">
+        <span class="badge">Audio lead</span>
+        <div class="still still-s3"></div>
+        <div class="card-info">
+          <div class="t"><h3>播客视觉包装</h3><p>以波形与字幕驱动的音频可视化短片。</p></div>
+          <span class="when">10-19</span>
+          <div class="card-ops">
+            <button>进入 →</button><button>重命名</button><button class="danger">删除</button>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <article class="card c4">
+      <div class="thumb">
+        <span class="badge">Archive</span>
+        <div class="still still-s4"></div>
+        <div class="card-info">
+          <div class="t"><h3>旅行混剪 2025</h3><p>照片轮播 + 转场，配乐已对齐节拍。</p></div>
+          <span class="when">09-30</span>
+          <div class="card-ops">
+            <button>进入 →</button><button>重命名</button><button class="danger">删除</button>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <article class="card c5">
+      <div class="thumb">
+        <span class="badge">Test</span>
+        <div class="still still-s5"></div>
+        <div class="card-info">
+          <div class="t"><h3>渲染性能基准</h3><p>10 轨道压力测试工程。</p></div>
+          <span class="when">09-12</span>
+          <div class="card-ops">
+            <button>进入 →</button><button>重命名</button><button class="danger">删除</button>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <article class="card c6">
+      <div class="thumb">
+        <span class="badge">Draft</span>
+        <div class="still still-s6"></div>
+        <div class="card-info">
+          <div class="t"><h3>胶片片头实验</h3><p>颗粒、划痕与手写字幕的片头尝试。</p></div>
+          <span class="when">08-27</span>
+          <div class="card-ops">
+            <button>进入 →</button><button>重命名</button><button class="danger">删除</button>
+          </div>
+        </div>
+      </div>
+    </article>
+  </div>
+</section>
+
+<footer>
+  <div>
+    <span class="lbl-lg">Magic Maker</span>
+    <p class="mission" style="margin-top:18px;">剪辑不该等待上传。我们相信创作工具的隐私与速度，应当同时属于创作者。</p>
+    <p class="base" style="margin-top:24px;">© 2026 MAGIC MAKER — LOCAL FIRST</p>
+  </div>
+  <div class="cols">
+    <div class="col">
+      <span class="lbl">项目</span>
+      <a href="#">最近项目</a>
+      <a href="#">导入 JSON</a>
+      <a href="#">新建项目</a>
+    </div>
+    <div class="col">
+      <span class="lbl">资源</span>
+      <a href="#">快捷键速查</a>
+      <a href="#">AI 模型设置</a>
+      <a href="#">版本日志</a>
+    </div>
+    <div class="col">
+      <span class="lbl">作者</span>
+      <a href="#">GitHub ↗</a>
+      <a href="#">个人主页 ↗</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+// ?full — fixed-height hero variant for full-page design-review screenshots
+if(location.search.includes('full')){
+  const s=document.createElement('style');
+  s.textContent='.hero{height:1080px!important;min-height:0!important}';
+  document.head.appendChild(s);
+}
+</script>
+</body>
+</html>

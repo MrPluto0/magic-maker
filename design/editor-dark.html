@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MAGIC MAKER — 编辑器设计稿</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --black:#000000; --deep:#030303; --surface:#1a1a1a; --raise:#141414;
+  --border:#27272a; --border2:#2e2e33;
+  --white:#ffffff; --slate:#767d88; --slate2:#7d848e; --muted:#a7a7a7; --silver:#c9ccd1;
+  --accent:#e5484d; /* playhead only — cinema red */
+  --mono:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,'Liberation Mono','Courier New',monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{height:100%;background:var(--black);overflow:hidden;}
+body{
+  font-family:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,'PingFang SC','Microsoft YaHei',sans-serif;
+  color:var(--white);-webkit-font-smoothing:antialiased;letter-spacing:-0.16px;
+  display:grid;grid-template-rows:52px 1fr 292px;height:100vh;
+}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit;}
+input,select,textarea{font-family:inherit;color:var(--white);}
+.lbl{font-size:11px;font-weight:450;letter-spacing:0.35px;text-transform:uppercase;color:var(--slate);}
+.mono{font-family:var(--mono);letter-spacing:0;}
+
+/* ================= TOP BAR ================= */
+.topbar{
+  display:flex;align-items:center;gap:24px;
+  padding:0 16px;border-bottom:1px solid var(--border);background:var(--deep);
+}
+.wordmark{display:flex;align-items:center;gap:10px;font-size:13px;font-weight:600;letter-spacing:0.4px;padding-right:20px;border-right:1px solid var(--border);height:52px;}
+.wordmark .dot{width:7px;height:7px;background:var(--white);}
+.topnav{display:flex;gap:18px;}
+.topnav a{font-size:13px;color:var(--slate);text-decoration:none;}
+.topnav a:hover{color:var(--white);}
+.proj-id{display:flex;align-items:baseline;gap:12px;margin-left:8px;}
+.proj-id .name{font-size:14px;font-weight:500;}
+.proj-id .saved{font-family:var(--mono);font-size:11px;color:var(--muted);}
+.topbar .spacer{flex:1;}
+.tb-btn{font-size:13px;font-weight:600;color:var(--slate);padding:8px 12px;border-radius:4px;display:flex;align-items:center;gap:8px;}
+.tb-btn:hover{color:var(--white);}
+.tb-line{font-size:13px;font-weight:600;color:var(--white);padding:7px 14px;border-radius:4px;border:1px solid var(--border2);}
+.tb-solid{font-size:13px;font-weight:600;color:#000;background:var(--white);padding:8px 16px;border-radius:4px;display:flex;align-items:center;gap:8px;}
+.theme-dot{width:14px;height:14px;border-radius:50%;border:1px solid var(--slate);position:relative;overflow:hidden;}
+.theme-dot::after{content:"";position:absolute;inset:0 50% 0 0;background:var(--slate);}
+
+/* ================= MAIN ROW ================= */
+.main{display:grid;grid-template-columns:296px 1fr 296px;min-height:0;}
+
+/* ---------- LEFT : AI resources ---------- */
+.left{border-right:1px solid var(--border);background:var(--deep);display:flex;flex-direction:column;min-height:0;}
+.tabs{display:flex;border-bottom:1px solid var(--border);}
+.tab{
+  flex:1;padding:13px 0 11px;text-align:center;
+  font-size:11px;font-weight:450;letter-spacing:0.35px;text-transform:uppercase;color:var(--slate);
+  border-bottom:1px solid transparent;margin-bottom:-1px;
+}
+.tab:hover{color:var(--silver);}
+.tab.on{color:var(--white);border-bottom-color:var(--white);}
+.res-list{flex:1;overflow:auto;padding:16px;display:flex;flex-direction:column;gap:14px;}
+.res-head{display:flex;align-items:baseline;justify-content:space-between;}
+.res-head .lbl{font-size:10px;}
+.gen{border:1px solid var(--border);border-radius:6px;overflow:hidden;background:var(--raise);}
+.gen .prev{position:relative;height:96px;cursor:grab;}
+.gen .prev::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0) 55%,rgba(3,3,3,.85));}
+.gen-1 .prev{background:radial-gradient(90% 80% at 70% 25%,rgba(120,150,190,.55),rgba(0,0,0,0) 60%),linear-gradient(160deg,#10131a,#05060a);}
+.gen-2 .prev{background:radial-gradient(80% 80% at 30% 30%,rgba(150,110,140,.45),rgba(0,0,0,0) 60%),linear-gradient(200deg,#151019,#060309);}
+.gen-3 .prev{background:radial-gradient(100% 70% at 60% 75%,rgba(90,140,120,.4),rgba(0,0,0,0) 60%),linear-gradient(140deg,#0a1310,#040705);}
+.gen-meta{position:absolute;left:10px;bottom:8px;z-index:2;display:flex;flex-direction:column;gap:2px;}
+.gen-meta b{font-size:12px;font-weight:500;letter-spacing:-0.1px;}
+.gen-meta span{font-family:var(--mono);font-size:10px;color:var(--muted);}
+.drag-hint{position:absolute;top:8px;right:8px;z-index:2;font-family:var(--mono);font-size:10px;color:var(--slate);opacity:0;transition:opacity .15s;}
+.gen:hover .drag-hint{opacity:1;}
+/* text-result item */
+.gen.txt{padding:12px 14px;}
+.gen.txt .kicker{font-family:var(--mono);font-size:10px;color:var(--slate);margin-bottom:8px;letter-spacing:0;}
+.gen.txt p{font-size:13px;line-height:1.4;color:var(--silver);letter-spacing:-0.1px;}
+.gen.txt .foot{display:flex;justify-content:space-between;margin-top:10px;align-items:center;}
+/* audio item */
+.gen.aud{display:flex;align-items:center;gap:12px;padding:12px;}
+.gen.aud .ic{width:34px;height:34px;border-radius:4px;border:1px solid var(--border2);display:grid;place-items:center;font-size:12px;color:var(--slate);}
+.gen.aud .t{flex:1;min-width:0;}
+.gen.aud b{font-size:12px;font-weight:500;display:block;}
+.gen.aud span{font-family:var(--mono);font-size:10px;color:var(--muted);}
+.wave{display:block;width:100%;height:26px;}
+.upzone{
+  margin:0 16px 16px;padding:18px 12px;
+  border:1px dashed var(--border2);border-radius:6px;
+  text-align:center;color:var(--slate);cursor:pointer;
+}
+.upzone:hover{border-color:var(--slate);color:var(--silver);}
+.upzone .big{font-size:13px;font-weight:600;color:var(--silver);margin-top:8px;}
+.upzone .sub{font-size:11px;margin-top:5px;letter-spacing:0;}
+
+/* ---------- CENTER : player ---------- */
+.center{display:flex;flex-direction:column;min-width:0;background:var(--black);}
+.stage{flex:1;display:grid;place-items:center;position:relative;min-height:0;padding:28px;}
+.canvas-wrap{position:relative;width:min(100%,calc((100vh - 372px)*1.7778));aspect-ratio:16/9;max-height:100%;}
+.canvas{
+  position:absolute;inset:0;border-radius:4px;overflow:hidden;
+  background:
+    radial-gradient(120% 90% at 75% 15%,rgba(110,135,175,.6) 0%,rgba(0,0,0,0) 55%),
+    radial-gradient(70% 60% at 15% 90%,rgba(190,140,90,.3) 0%,rgba(0,0,0,0) 60%),
+    linear-gradient(180deg,#0b0d12 0%,#151820 50%,#04050a 100%);
+}
+/* fake in-canvas composition */
+.canvas .title-in{
+  position:absolute;left:8%;bottom:18%;
+  font-size:clamp(18px,3.4vw,44px);font-weight:400;letter-spacing:-1.2px;line-height:1.0;color:#fff;
+  outline:1px solid rgba(255,255,255,.85);outline-offset:14px;
+}
+.canvas .title-in small{display:block;font-size:12px;letter-spacing:0.35px;text-transform:uppercase;color:var(--silver);margin-top:10px;font-weight:450;}
+.handle{position:absolute;width:7px;height:7px;background:#fff;border-radius:1px;}
+.h-tl{top:-18px;left:-18px;}.h-tr{top:-18px;right:-18px;}.h-bl{bottom:-18px;left:-18px;}.h-br{bottom:-18px;right:-18px;}
+.canvas .grade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.15),rgba(0,0,0,0) 30%,rgba(0,0,0,.35));pointer-events:none;}
+.stage-hud{
+  position:absolute;top:16px;left:20px;right:20px;display:flex;justify-content:space-between;pointer-events:none;
+}
+.hud-chip{
+  font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:0;
+  background:rgba(3,3,3,.7);border:1px solid var(--border);border-radius:4px;padding:4px 8px;
+}
+/* transport */
+.transport{
+  height:48px;border-top:1px solid var(--border);background:var(--deep);
+  display:flex;align-items:center;gap:4px;padding:0 14px;
+}
+.tbtn{width:32px;height:32px;border-radius:4px;display:grid;place-items:center;color:var(--slate);font-size:13px;}
+.tbtn:hover{color:var(--white);background:rgba(255,255,255,.06);}
+.tbtn.play{color:var(--white);}
+.timecode{font-family:var(--mono);font-size:12px;color:var(--white);letter-spacing:0;margin:0 10px;}
+.timecode .dur{color:var(--muted);}
+.transport .spacer{flex:1;}
+.vol{display:flex;align-items:center;gap:8px;margin-right:8px;}
+.vol .bar{width:72px;height:2px;background:var(--border2);border-radius:1px;position:relative;}
+.vol .bar i{position:absolute;left:0;top:0;bottom:0;width:64%;background:var(--silver);border-radius:1px;}
+.vol .bar b{position:absolute;left:64%;top:50%;transform:translate(-50%,-50%);width:9px;height:9px;border-radius:50%;background:#fff;}
+.sel-fit{
+  font-family:var(--mono);font-size:11px;color:var(--silver);letter-spacing:0;
+  border:1px solid var(--border2);border-radius:4px;padding:5px 10px;background:var(--raise);
+}
+
+/* ---------- RIGHT : properties ---------- */
+.right{border-left:1px solid var(--border);background:var(--deep);display:flex;flex-direction:column;min-height:0;overflow:auto;}
+.prop-head{padding:16px 18px 14px;border-bottom:1px solid var(--border);}
+.prop-head .lbl{font-size:10px;}
+.prop-head h3{font-size:16px;font-weight:500;letter-spacing:-0.2px;margin-top:8px;}
+.prop-head .type{display:inline-flex;margin-top:10px;font-size:10px;font-weight:450;letter-spacing:0.35px;text-transform:uppercase;color:var(--silver);border:1px solid var(--border2);border-radius:4px;padding:3px 8px;}
+.sec{padding:16px 18px;border-bottom:1px solid var(--border);display:flex;flex-direction:column;gap:12px;}
+.sec>.lbl{font-size:10px;}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.field{display:flex;flex-direction:column;gap:6px;min-width:0;}
+.field label{font-size:10px;font-weight:450;letter-spacing:0.35px;text-transform:uppercase;color:var(--slate);}
+.numbox{display:flex;align-items:center;border:1px solid var(--border2);border-radius:4px;background:var(--raise);height:30px;}
+.numbox:focus-within{border-color:var(--slate);}
+.numbox .pre{font-size:10px;color:var(--muted);padding:0 0 0 9px;font-family:var(--mono);}
+.numbox input{flex:1;min-width:0;background:none;border:none;outline:none;font-family:var(--mono);font-size:12px;padding:0 9px;letter-spacing:0;text-align:right;}
+.txtbox{border:1px solid var(--border2);border-radius:4px;background:var(--raise);padding:9px 11px;}
+.txtbox textarea{width:100%;background:none;border:none;outline:none;resize:none;font-size:13px;line-height:1.4;letter-spacing:-0.1px;color:var(--white);}
+.hslider{display:flex;align-items:center;gap:10px;}
+.hslider .bar{flex:1;height:2px;background:var(--border2);border-radius:1px;position:relative;}
+.hslider .bar i{position:absolute;left:0;top:0;bottom:0;background:var(--silver);border-radius:1px;}
+.hslider .bar b{position:absolute;top:50%;transform:translate(-50%,-50%);width:9px;height:9px;border-radius:50%;background:#fff;}
+.hslider .val{font-family:var(--mono);font-size:11px;color:var(--silver);width:52px;text-align:right;letter-spacing:0;white-space:nowrap;}
+.swatches{display:flex;gap:8px;}
+.sw{width:22px;height:22px;border-radius:4px;border:1px solid var(--border2);}
+.sw.on{outline:1px solid #fff;outline-offset:2px;}
+.alignrow{display:flex;gap:2px;border:1px solid var(--border2);border-radius:4px;overflow:hidden;width:max-content;}
+.alignrow button{padding:7px 12px;font-size:11px;color:var(--slate);font-weight:500;}
+.alignrow button.on{background:rgba(255,255,255,.08);color:var(--white);}
+.timing{display:flex;justify-content:space-between;font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:0;}
+.timing b{color:var(--silver);font-weight:500;}
+
+/* ================= TIMELINE ================= */
+.timeline{border-top:1px solid var(--border);background:var(--deep);display:flex;flex-direction:column;min-height:0;}
+.tl-tools{
+  height:44px;display:flex;align-items:center;gap:6px;padding:0 14px;
+  border-bottom:1px solid var(--border);
+}
+.tool{
+  display:flex;align-items:center;gap:7px;
+  font-size:12px;font-weight:600;color:var(--silver);
+  padding:6px 10px;border-radius:4px;border:1px solid transparent;
+}
+.tool:hover{background:rgba(255,255,255,.06);}
+.tool kbd{
+  font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:0;
+  border:1px solid var(--border2);border-radius:3px;padding:1px 5px;
+}
+.tl-sep{width:1px;height:18px;background:var(--border);margin:0 8px;}
+.snap{color:var(--white);}
+.snap .mag{font-size:13px;}
+.tl-tools .spacer{flex:1;}
+.zoomer{display:flex;align-items:center;gap:10px;}
+.zoomer .lbl{font-size:10px;}
+.zoomer .bar{width:110px;height:2px;background:var(--border2);border-radius:1px;position:relative;}
+.zoomer .bar i{position:absolute;left:0;top:0;bottom:0;width:45%;background:var(--silver);}
+.zoomer .bar b{position:absolute;left:45%;top:50%;transform:translate(-50%,-50%);width:9px;height:9px;border-radius:50%;background:#fff;}
+.zoomer .pct{font-family:var(--mono);font-size:11px;color:var(--silver);width:38px;letter-spacing:0;}
+.tl-body{flex:1;display:flex;min-height:0;}
+/* ruler + lanes */
+.lanes{flex:1;position:relative;overflow:hidden;}
+.ruler{
+  height:26px;border-bottom:1px solid var(--border);position:relative;
+  background:repeating-linear-gradient(90deg,var(--border) 0 1px,transparent 1px 60px);
+}
+.ruler .tick{
+  position:absolute;top:6px;font-family:var(--mono);font-size:9.5px;color:var(--muted);letter-spacing:0;
+  transform:translateX(4px);
+}
+.track{position:relative;height:52px;border-bottom:1px solid var(--border);}
+.track.txt-track{border-bottom:none;}
+.tl-grid{position:absolute;inset:0;pointer-events:none;
+  background:repeating-linear-gradient(90deg,rgba(39,39,42,.5) 0 1px,transparent 1px 60px);}
+/* track labels column */
+.tlabels{width:64px;border-right:1px solid var(--border);background:var(--deep);display:flex;flex-direction:column;flex:none;}
+.tlabels .ruler-spacer{height:26px;border-bottom:1px solid var(--border);display:grid;place-items:center;}
+.tlabels .tlabel{
+  height:52px;border-bottom:1px solid var(--border);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
+}
+.tlabels .tlabel:last-child{border-bottom:none;}
+.tlabel .nm{font-size:9.5px;font-weight:450;letter-spacing:0.35px;text-transform:uppercase;color:var(--slate);}
+.tlabel .ic{font-size:10px;color:var(--muted);opacity:.7;}
+/* clips */
+.clip{
+  position:absolute;top:6px;bottom:6px;border-radius:4px;overflow:hidden;
+  border:1px solid var(--border2);
+}
+.clip .cname{
+  position:absolute;left:8px;top:5px;z-index:3;
+  font-size:10px;font-weight:500;color:#fff;letter-spacing:-0.1px;
+  text-shadow:0 1px 2px rgba(0,0,0,.8);white-space:nowrap;
+}
+.clip .cdur{
+  position:absolute;right:8px;top:5px;z-index:3;
+  font-family:var(--mono);font-size:9px;color:var(--silver);letter-spacing:0;text-shadow:0 1px 2px rgba(0,0,0,.8);
+}
+/* video clip : thumbnail strip */
+.strip{position:absolute;inset:0;display:flex;}
+.strip i{flex:1;background:
+  radial-gradient(80% 70% at 60% 30%,rgba(115,140,180,.5),rgba(0,0,0,0) 60%),
+  linear-gradient(180deg,#10141c,#05070c);}
+.strip i:nth-child(2n){filter:brightness(.82) hue-rotate(8deg);}
+.strip i:nth-child(3n){filter:brightness(1.12) hue-rotate(-6deg);}
+.clip.video2 .strip i{background:
+  radial-gradient(70% 70% at 35% 40%,rgba(150,110,140,.45),rgba(0,0,0,0) 60%),
+  linear-gradient(200deg,#141019,#070409);}
+.clip.video3 .strip i{background:
+  radial-gradient(90% 60% at 60% 70%,rgba(90,140,120,.4),rgba(0,0,0,0) 60%),
+  linear-gradient(150deg,#0a1310,#040705);}
+/* image clip */
+.clip.image .fill{position:absolute;inset:0;background:
+  radial-gradient(90% 90% at 40% 30%,rgba(180,160,100,.4),rgba(0,0,0,0) 60%),
+  linear-gradient(180deg,#131208,#060503);}
+/* audio clip */
+.clip.audio{background:#101318;}
+.clip.audio .fill{position:absolute;inset:14px 0 4px;display:flex;align-items:center;}
+.clip.audio .wave{height:30px;}
+/* text clip */
+.clip.text{background:#1a1a1a;}
+.clip.text .fill{position:absolute;inset:0;display:flex;align-items:center;padding:0 10px;}
+.clip.text .fill span{font-size:10px;color:var(--silver);letter-spacing:0.35px;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+/* selected clip */
+.clip.sel{border-color:#fff;box-shadow:0 0 0 1px #fff;}
+.clip.sel .cname{color:#fff;}
+/* playhead */
+.playhead{position:absolute;top:0;bottom:0;width:1px;background:var(--accent);z-index:10;pointer-events:none;}
+.playhead::before{
+  content:"";position:absolute;top:0;left:50%;transform:translateX(-50%);
+  width:11px;height:14px;background:var(--accent);
+  clip-path:polygon(0 0,100% 0,100% 55%,50% 100%,0 55%);
+}
+.playhead .ptc{display:none;} /* timecode lives in the transport bar; ruler stays clean */
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<header class="topbar">
+  <div class="wordmark"><span class="dot"></span>MAGIC MAKER</div>
+  <nav class="topnav">
+    <a href="#">首页</a>
+    <a href="#" style="color:var(--white)">编辑器</a>
+  </nav>
+  <div class="proj-id">
+    <span class="name">城市夜行记</span>
+    <span class="saved">上次保存 21:14</span>
+  </div>
+  <div class="spacer"></div>
+  <button class="tb-btn"><span class="mono" style="font-size:12px">✦</span>AI 设置</button>
+  <button class="tb-btn" title="切换主题"><span class="theme-dot"></span></button>
+  <button class="tb-line">保存</button>
+  <button class="tb-solid">导出 <span style="font-size:9px">▼</span></button>
+</header>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- LEFT : AI RESOURCES -->
+  <aside class="left">
+    <div class="tabs">
+      <button class="tab on">文本</button>
+      <button class="tab">图片</button>
+      <button class="tab">音频</button>
+      <button class="tab">录音</button>
+      <button class="tab">视频</button>
+    </div>
+
+    <div class="res-list">
+      <div class="res-head">
+        <span class="lbl">AI 生成 · 文本</span>
+        <span class="lbl mono" style="letter-spacing:0">3 results</span>
+      </div>
+
+      <div class="gen txt">
+        <div class="kicker">PROMPT — 片头旁白，克制、都市感</div>
+        <p>夜色降临，城市换上另一张脸。霓虹是它的呼吸，车流是它的脉搏。</p>
+        <div class="foot">
+          <span class="lbl mono" style="letter-spacing:0">00:07 / 32 字</span>
+          <span class="drag-hint" style="position:static;opacity:1">⠿ 拖入轨道</span>
+        </div>
+      </div>
+
+      <div class="gen txt">
+        <div class="kicker">PROMPT — 字幕 · 第二章</div>
+        <p>穿过天桥的人，都在赶一场没有名字的约会。</p>
+        <div class="foot">
+          <span class="lbl mono" style="letter-spacing:0">00:04 / 18 字</span>
+          <span class="drag-hint" style="position:static;opacity:1">⠿ 拖入轨道</span>
+        </div>
+      </div>
+
+      <div class="gen txt">
+        <div class="kicker">PROMPT — 结尾定版</div>
+        <p>CITY NIGHTS — 一座城的私语。</p>
+        <div class="foot">
+          <span class="lbl mono" style="letter-spacing:0">00:03 / 12 字</span>
+          <span class="drag-hint" style="position:static;opacity:1">⠿ 拖入轨道</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="upzone">
+      <div style="font-size:18px;font-weight:300;line-height:1">↑</div>
+      <div class="big">上传本地素材</div>
+      <div class="sub">拖拽或点击 · mp4 / png / mp3 / wav</div>
+    </div>
+  </aside>
+
+  <!-- CENTER : PLAYER -->
+  <section class="center">
+    <div class="stage">
+      <div class="stage-hud">
+        <span class="hud-chip">1920 × 1080 · 适应窗口</span>
+        <span class="hud-chip">编辑器 · 仅本机渲染</span>
+      </div>
+      <div class="canvas-wrap">
+        <div class="canvas">
+          <div class="grade"></div>
+          <div class="title-in">
+            CITY NIGHTS
+            <small>Chapter 02 — 天桥</small>
+            <span class="handle h-tl"></span><span class="handle h-tr"></span>
+            <span class="handle h-bl"></span><span class="handle h-br"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="transport">
+      <button class="tbtn" title="到开头">⏮</button>
+      <button class="tbtn" title="上一帧">◂◂</button>
+      <button class="tbtn play" title="播放">▶</button>
+      <button class="tbtn" title="下一帧">▸▸</button>
+      <button class="tbtn" title="到结尾">⏭</button>
+      <span class="timecode">00:00:09:12 <span class="dur">/ 00:00:31:08</span></span>
+      <div class="spacer"></div>
+      <div class="vol">
+        <span class="lbl">VOL</span>
+        <div class="bar"><i></i><b></b></div>
+      </div>
+      <select class="sel-fit">
+        <option>适应窗口</option>
+        <option>50%</option>
+        <option>100%</option>
+      </select>
+      <button class="tbtn" title="全屏">⛶</button>
+    </div>
+  </section>
+
+  <!-- RIGHT : PROPERTIES -->
+  <aside class="right">
+    <div class="prop-head">
+      <span class="lbl">属性 · 选中项</span>
+      <h3>定版字幕</h3>
+      <span class="type">Text track</span>
+    </div>
+
+    <div class="sec">
+      <span class="lbl">变换</span>
+      <div class="frow">
+        <div class="field"><label>X 位置</label>
+          <div class="numbox"><span class="pre">px</span><input value="184"></div>
+        </div>
+        <div class="field"><label>Y 位置</label>
+          <div class="numbox"><span class="pre">px</span><input value="742"></div>
+        </div>
+        <div class="field"><label>缩放</label>
+          <div class="numbox"><span class="pre">%</span><input value="100"></div>
+        </div>
+        <div class="field"><label>不透明度</label>
+          <div class="numbox"><span class="pre">%</span><input value="100"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sec">
+      <span class="lbl">文本样式</span>
+      <div class="field">
+        <label>内容</label>
+        <div class="txtbox"><textarea rows="2">CITY NIGHTS — 一座城的私语。</textarea></div>
+      </div>
+      <div class="frow">
+        <div class="field"><label>字号</label>
+          <div class="numbox"><span class="pre">px</span><input value="96"></div>
+        </div>
+        <div class="field"><label>字重</label>
+          <div class="numbox"><span class="pre">W</span><input value="400"></div>
+        </div>
+      </div>
+      <div class="field">
+        <label>颜色</label>
+        <div class="swatches">
+          <span class="sw on" style="background:#ffffff"></span>
+          <span class="sw" style="background:#c9ccd1"></span>
+          <span class="sw" style="background:#767d88"></span>
+          <span class="sw" style="background:#e5484d"></span>
+          <span class="sw" style="background:#d4a259"></span>
+          <span class="sw" style="background:#000000"></span>
+        </div>
+      </div>
+      <div class="field">
+        <label>对齐</label>
+        <div class="alignrow">
+          <button class="on">⇤</button><button>≡</button><button>⇥</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="sec">
+      <span class="lbl">音频</span>
+      <div class="hslider">
+        <div class="bar"><i style="width:70%"></i><b style="left:70%"></b></div>
+        <span class="val">-3.0 dB</span>
+      </div>
+      <div class="field">
+        <label>淡入 / 淡出</label>
+        <div class="frow">
+          <div class="numbox"><span class="pre">in</span><input value="0.5s"></div>
+          <div class="numbox"><span class="pre">out</span><input value="1.0s"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sec" style="border-bottom:none">
+      <span class="lbl">时序</span>
+      <div class="timing">
+        <span>入点 <b>00:02:00</b></span>
+        <span>出点 <b>00:08:12</b></span>
+        <span>时长 <b>6.5s</b></span>
+      </div>
+    </div>
+  </aside>
+</div>
+
+<!-- TIMELINE -->
+<footer class="timeline">
+  <div class="tl-tools">
+    <button class="tool">分割 <kbd>S</kbd></button>
+    <button class="tool">复制 <kbd>V</kbd></button>
+    <button class="tool">左对齐 <kbd>L</kbd></button>
+    <button class="tool">删除 <kbd>⌫</kbd></button>
+    <span class="tl-sep"></span>
+    <button class="tool snap"><span class="mag">🧲</span>吸附</button>
+    <button class="tool">撤销 <kbd>⌘Z</kbd></button>
+    <div class="spacer"></div>
+    <div class="zoomer">
+      <span class="lbl">时间轴缩放</span>
+      <div class="bar"><i></i><b></b></div>
+      <span class="pct">45%</span>
+    </div>
+  </div>
+
+  <div class="tl-body">
+    <div class="tlabels">
+      <div class="ruler-spacer"><span class="lbl mono" style="font-size:9px;letter-spacing:0">32s</span></div>
+      <div class="tlabel"><span class="ic">▶</span><span class="nm">视频</span></div>
+      <div class="tlabel"><span class="ic">▣</span><span class="nm">图片</span></div>
+      <div class="tlabel"><span class="ic">〜</span><span class="nm">音频</span></div>
+      <div class="tlabel"><span class="ic">T</span><span class="nm">文本</span></div>
+    </div>
+
+    <div class="lanes">
+      <div class="tl-grid"></div>
+      <div class="ruler">
+        <span class="tick" style="left:0">00:00</span>
+        <span class="tick" style="left:calc(100%/32*5)">00:05</span>
+        <span class="tick" style="left:calc(100%/32*10)">00:10</span>
+        <span class="tick" style="left:calc(100%/32*15)">00:15</span>
+        <span class="tick" style="left:calc(100%/32*20)">00:20</span>
+        <span class="tick" style="left:calc(100%/32*25)">00:25</span>
+        <span class="tick" style="left:calc(100%/32*30)">00:30</span>
+      </div>
+
+      <!-- VIDEO -->
+      <div class="track">
+        <div class="clip video1" style="left:0;width:37.5%">
+          <div class="strip"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+          <span class="cname">night_a_01.mp4</span><span class="cdur">12.0s</span>
+        </div>
+        <div class="clip video2" style="left:37.5%;width:31.25%">
+          <div class="strip"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+          <span class="cname">bridge_b_02.mp4</span><span class="cdur">10.0s</span>
+        </div>
+        <div class="clip video3" style="left:81.25%;width:18.75%">
+          <div class="strip"><i></i><i></i><i></i><i></i></div>
+          <span class="cname">rain_c_03.mp4</span><span class="cdur">6.0s</span>
+        </div>
+      </div>
+
+      <!-- IMAGE -->
+      <div class="track">
+        <div class="clip image" style="left:12.5%;width:18.75%">
+          <div class="fill"></div>
+          <span class="cname">poster_frame.png</span><span class="cdur">6.0s</span>
+        </div>
+      </div>
+
+      <!-- AUDIO -->
+      <div class="track">
+        <div class="clip audio" style="left:0;width:56.25%">
+          <div class="fill">
+            <svg class="wave" data-seed="1" viewBox="0 0 600 30" preserveAspectRatio="none"></svg>
+          </div>
+          <span class="cname">ambient_city.mp3</span><span class="cdur">18.0s</span>
+        </div>
+        <div class="clip audio" style="left:62.5%;width:37.5%">
+          <div class="fill">
+            <svg class="wave" data-seed="7" viewBox="0 0 600 30" preserveAspectRatio="none"></svg>
+          </div>
+          <span class="cname">rain_loop.wav</span><span class="cdur">12.0s</span>
+        </div>
+      </div>
+
+      <!-- TEXT -->
+      <div class="track txt-track">
+        <div class="clip text" style="left:6.25%;width:18.75%">
+          <div class="fill"><span>片头旁白 — 夜色降临</span></div>
+          <span class="cname" style="color:var(--silver)">T</span><span class="cdur">6.0s</span>
+        </div>
+        <div class="clip text sel" style="left:43.75%;width:20.3%">
+          <div class="fill"><span>CITY NIGHTS — 一座城的私语</span></div>
+          <span class="cname" style="color:var(--silver)">T · 选中</span><span class="cdur">6.5s</span>
+        </div>
+      </div>
+
+      <!-- PLAYHEAD @ ~9.5s of 32s -->
+      <div class="playhead" style="left:calc(26px + (100% - 26px) * 0.2969)">
+        <span class="ptc">00:09:12</span>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+// decorative waveforms for the mockup (deterministic per seed)
+document.querySelectorAll('svg.wave').forEach(svg=>{
+  const seed=+svg.dataset.seed||1, W=600,H=30,mid=H/2;
+  let s=seed;const rnd=()=>{s=(s*9301+49297)%233280;return s/233280;};
+  let d=`M0 ${mid}`;const bw=4,gap=2;
+  for(let x=0;x<W;x+=bw+gap){
+    const h=Math.max(1.5,rnd()*mid*1.9);
+    d+=` L${x} ${mid-h} L${x+bw} ${mid-h} L${x+bw} ${mid}`;
+  }
+  d+=` L${W} ${mid} Z`;
+  const p=document.createElementNS('http://www.w3.org/2000/svg','path');
+  p.setAttribute('d',d);p.setAttribute('fill','#7d848e');
+  svg.appendChild(p);
+});
+</script>
+</body>
+</html>
