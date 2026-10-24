@@ -1,6 +1,7 @@
 import { cloneDeep, debounce } from "lodash-es";
 import type { PiniaPluginContext, StateTree } from "pinia";
 import { createStack } from "@/utils/stack";
+import { isSilent, notifyUserEdit } from "./undoGate";
 
 type Store = PiniaPluginContext["store"];
 type Options = PiniaPluginContext["options"];
@@ -28,6 +29,8 @@ declare module "pinia" {
 		_undo: () => void;
 		_redo: () => void;
 		_resetStack: () => void;
+		/** 立即入栈当前快照（跳过防抖）。命令组收尾/组撤销后推「组级快照」用。 */
+		_snap: () => void;
 	}
 
 	export interface DefineStoreOptionsBase<S extends StateTree, Store> {
@@ -102,6 +105,10 @@ export default function PiniaUndo({
 			await applySnapshot(store, snap, serializer);
 		} finally {
 			suppressDepth = 0;
+			// 快照层动作（Cmd+Z/Redo）也属于「用户编辑」：命令 inverse 引用的
+			// 片段 id 在重建后可能已不存在，需使未决命令组失效（PHASE2_DESIGN §3.3 规则 1）。
+			// restore 自身不 push（suppress 期间订阅已跳过），只广播失效信号。
+			notifyUserEdit();
 		}
 	};
 
@@ -113,10 +120,24 @@ export default function PiniaUndo({
 		stack = createStack(snapshotState(options, store, serializer));
 	};
 
+	// 组级快照：命令组收尾 / 组撤销完成后由 agent store 显式调用，
+	// 把当前状态固化为最新快照（绕过防抖与 silent 标志）。
+	store._snap = () => {
+		stack.push(snapshotState(options, store, serializer));
+	};
+
 	store.$subscribe(
 		() => {
 			if (suppressDepth > 0) return;
+			// 命令 do/undo 期间 silent：跳过入栈并取消在途防抖快照，
+			// 避免命令层与快照层两层语义分裂（PHASE2_DESIGN §3.3 规则 3）
+			if (isSilent()) {
+				pushStack.cancel();
+				return;
+			}
 			pushStack();
+			// 手动编辑：广播给命令层使未决命令组失效
+			notifyUserEdit();
 		},
 		{
 			flush: "sync",

@@ -1,5 +1,5 @@
 import { UnitFrame2μs } from "@/data/track";
-import type { Track } from "@/types/track";
+import type { BaseTrack, Track } from "@/types/track";
 
 /**
  * 分割裁剪的纯函数：计算片段在原始 clip 本地坐标系（微秒）里的分割边界。
@@ -18,6 +18,30 @@ export function splitClipBoundaries(
 	return {
 		startUs: offsetL * UnitFrame2μs,
 		endUs: (frameCount - offsetR - offsetL) * UnitFrame2μs,
+	};
+}
+
+/**
+ * 分割纯函数：计算片段在 frame 处切开后两半的裁剪字段（W5 自 splitTrack 推广）。
+ *
+ * 不变量（与 splitClipBoundaries 同一语义）：offsetL + (end - start) + offsetR = frameCount。
+ * - 左半段：end 收到 frame，右缘裁剪量增加 (end - frame)
+ * - 右半段：start 从 frame 起步，左缘裁剪量增加 (frame - start)
+ *
+ * 原 splitTrack 的公式（offsetR = frameCount + start - frame）在 offsetL=0 时与
+ * 本函数等价；offsetL≠0 时原式会破坏不变量，这里以不变量版本为准。
+ * 只读入参、返回纯数据，不携带 id（id 由调用方 splitAt 复用/新生成）。
+ */
+export function computeSplitAt(
+	clip: Pick<BaseTrack, "start" | "end" | "offsetL" | "offsetR">,
+	frame: number,
+): {
+	left: { end: number; offsetR: number };
+	right: { start: number; offsetL: number };
+} {
+	return {
+		left: { end: frame, offsetR: clip.offsetR + (clip.end - frame) },
+		right: { start: frame, offsetL: clip.offsetL + (frame - clip.start) },
 	};
 }
 

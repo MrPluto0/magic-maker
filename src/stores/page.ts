@@ -13,8 +13,13 @@ export const usePageState = defineStore(
 		// 轨道缩放比例（原裸 localStorage.trackS 收敛到此）
 		const trackScale = ref(60);
 
+		// 编辑器左栏 tab：对话面板 | 素材（W5 对话面板落左栏）
+		const editorLeftTab = ref<"chat" | "asset">("chat");
+
 		// AI设置表单：apiKey 仅存内存（会话级），不写入任何持久化存储
 		const aiSettings = ref({
+			// agent 对话（BYOK）：OpenAI 兼容协议 baseURL；空 = 站内 /api 代理
+			baseUrl: "",
 			apiKey: "",
 			textModel: "doubao-seed-1-6-flash-250715",
 			imageModel: "doubao-seedream-3-0-t2i-250415",
@@ -39,6 +44,7 @@ export const usePageState = defineStore(
 			trackHeight,
 			resourceWidth,
 			trackScale,
+			editorLeftTab,
 			aiSettings,
 		};
 	},
@@ -52,6 +58,7 @@ export const usePageState = defineStore(
 				"trackHeight",
 				"resourceWidth",
 				"trackScale",
+				"editorLeftTab",
 			],
 		},
 	},

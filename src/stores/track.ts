@@ -7,7 +7,7 @@ import { TextTrack } from "@/class/TextTrack";
 import { VideoTrack } from "@/class/VideoTrack";
 import type { Resource } from "@/types/resource";
 import type { Track, TrackLineData, TrackLineItem } from "@/types/track";
-import { checkTrackOverlap } from "@/utils/track";
+import { checkTrackOverlap, computeSplitAt } from "@/utils/track";
 import { plainifyTrackList, rebuildTrackList } from "@/utils/trackData";
 import { usePageState } from "./page";
 import { usePlayerState } from "./player";
@@ -237,31 +237,41 @@ export const useTrackState = defineStore(
 			selectedItem.start -= offsetFrame;
 		}
 
+		/**
+		 * 分割原语（W5 自 splitTrack 推广）：在任意片段的任意帧处切一刀。
+		 * 供选中态分割（splitTrack）与命令层/工具层（SplitAtCmd）共用。
+		 * frame 必须严格落在片段 (start, end) 开区间内。
+		 * @returns 两段 id；片段不存在或 frame 越界返回 null
+		 */
+		async function splitAt(line: number, index: number, frame: number) {
+			const target = trackList.value[line]?.list[index];
+			if (!target) {
+				return null;
+			}
+			if (frame <= target.start || frame >= target.end) {
+				return null;
+			}
+			const { left, right } = computeSplitAt(target, frame);
+			// 左半段原地改裁剪字段；右半段经 copyTrack 复制（解码走 clipMap 缓存）
+			const originEnd = target.end;
+			const originOffsetR = target.offsetR;
+			Object.assign(target, left);
+			const copy = await copyTrack(target);
+			Object.assign(copy, right);
+			copy.end = originEnd;
+			copy.offsetR = originOffsetR;
+			trackList.value[line].list.splice(index + 1, 0, copy);
+			return { leftId: target.id, rightId: copy.id };
+		}
+
 		async function splitTrack() {
 			if (!selectTrack.value) {
-				return;
+				return null;
 			}
 			// 判断分割时间是否在视频内
 			const { line, index } = selectTrackItem;
 			const splitFrame = playStore.playStartFrame;
-			const target = selectTrack.value;
-
-			if (splitFrame > target.start && splitFrame < target.end) {
-				const originEnd = target.end;
-				const originOffsetR = target.offsetR;
-				target.end = splitFrame;
-				target.offsetR = target.frameCount + target.start - splitFrame;
-
-				// 根据cutFrame对视频进行分割
-				const copy = await copyTrack(target);
-				if (copy) {
-					copy.start = splitFrame;
-					copy.offsetL = splitFrame - target.start + target.offsetL;
-					copy.end = originEnd;
-					copy.offsetR = originOffsetR;
-					trackList.value[line].list.splice(index + 1, 0, copy);
-				}
-			}
+			return splitAt(line, index, splitFrame);
 		}
 
 		/**
@@ -299,6 +309,7 @@ export const useTrackState = defineStore(
 			removeTrack,
 			leftLink,
 			splitTrack,
+			splitAt,
 			selectTrackById,
 			loadTrackData,
 		};
