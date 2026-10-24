@@ -1,30 +1,36 @@
 <template>
   <el-dialog
     :model-value="show"
-    width="500"
+    width="480"
     align-center
     :before-close="handleClose"
+    class="mm-dialog"
   >
-    <div class="text-center text-xl mb-8">更新项目</div>
-    <div class="flex justify-center">
-      <el-form
-        :model="form"
-        size="default"
-        label-width="auto"
-        style="width: 400px"
-      >
-        <el-form-item label="项目名称">
-          <el-input v-model="form.name" />
-        </el-form-item>
-        <el-form-item label="项目描述">
-          <el-input type="textarea" :rows="5" v-model="form.description" />
-        </el-form-item>
-        <div class="flex justify-center mt-8 mb-8">
-          <el-button class="px-6" @click="handleCreate"> 确认 </el-button>
-          <el-button class="px-6" @click="handleClose"> 取消 </el-button>
-        </div>
-      </el-form>
-    </div>
+    <template #header>
+      <div class="label-micro">Edit project</div>
+      <div class="mt-2 text-xl font-medium">更新项目</div>
+    </template>
+
+    <el-form :model="form" label-position="top">
+      <el-form-item label="项目名称">
+        <el-input v-model="form.name" maxlength="50" @keyup.enter="handleCreate" />
+      </el-form-item>
+      <el-form-item label="项目描述">
+        <el-input
+          type="textarea"
+          :rows="4"
+          v-model="form.description"
+          maxlength="200"
+        />
+      </el-form-item>
+    </el-form>
+
+    <template #footer>
+      <div class="flex justify-end gap-2">
+        <el-button @click="handleClose">取消</el-button>
+        <el-button type="primary" @click="handleCreate">保存修改</el-button>
+      </div>
+    </template>
   </el-dialog>
 </template>
 

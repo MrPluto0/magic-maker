@@ -1,52 +1,69 @@
 <template>
-  <div class="w-full h-full flex flex-col overflow-hidden">
-    <div class="flex-0">最近使用项</div>
-    <div class="mt-4 flex-1 w-full flex flex-col text-sm overflow-hidden">
-      <div class="pb-2 border-b border-zinc-700 flex gap-4">
-        <div class="w-28">项目名称</div>
-        <div class="w-60">项目描述</div>
-        <div class="w-40">更新时间</div>
-        <div class="w-40">创建时间</div>
-        <div class="w-20">操作</div>
-      </div>
-      <div class="flex-1 overflow-auto">
-        <div
-          class="my-2 flex cursor-pointer gap-4"
-          :class="{ 'text-primary': pro.id == projectStore.project?.id }"
-          v-for="(pro, i) in projectList"
-          :key="i"
-          @click="checkProject(pro)"
-        >
-          <div class="w-28 overflow-ellipsis overflow-hidden whitespace-nowrap">
+  <div class="w-full h-full flex flex-col overflow-hidden rounded-lg border border-[#e9ecf2] dark:border-[#27272a] bg-[#f7f8fa] dark:bg-night-lighter p-5">
+    <!-- 表头：大写微标签 -->
+    <div
+      v-if="projectList.length"
+      class="grid grid-cols-[minmax(140px,1.2fr)_2fr_170px_170px_100px] gap-4 pb-3 border-b border-[#e9ecf2] dark:border-[#27272a]"
+    >
+      <div v-for="h in headers" :key="h" class="label-micro">{{ h }}</div>
+    </div>
+
+    <!-- 空状态 -->
+    <div
+      v-if="!projectList.length"
+      class="flex-1 flex flex-col items-center justify-center gap-3 text-[#767d88]"
+    >
+      <i class="i-mdi-movie-open-outline text-3xl opacity-60"></i>
+      <div class="text-sm">暂无项目</div>
+      <div class="text-xs text-[#a7a7a7]">点击「新建项目」，从第一帧开始你的作品</div>
+    </div>
+
+    <!-- 项目行 -->
+    <div v-else class="flex-1 overflow-auto -mx-2 px-2">
+      <div
+        v-for="pro in projectList"
+        :key="pro.id"
+        class="grid grid-cols-[minmax(140px,1.2fr)_2fr_170px_170px_100px] gap-4 items-center px-2 py-3.5 -mx-2 rounded-md cursor-pointer transition-colors border-b border-transparent"
+        :class="
+          pro.id === projectStore.project?.id
+            ? 'bg-[#e9ecf2] dark:bg-[#1a1a1a]'
+            : 'hover:bg-[#eef0f4] dark:hover:bg-[#161618]'
+        "
+        @click="checkProject(pro)"
+      >
+        <div class="flex items-center gap-2.5 min-w-0">
+          <i class="i-mdi-film-strip text-base shrink-0" :class="pro.id === projectStore.project?.id ? 'text-[#171717] dark:text-white' : 'text-[#767d88]'"></i>
+          <span
+            class="truncate text-sm font-medium"
+            :class="pro.id === projectStore.project?.id ? 'text-[#171717] dark:text-white' : 'text-[#3f3f3f] dark:text-[#c9ccd1]'"
+          >
             {{ pro.name }}
-          </div>
-          <div class="w-60 overflow-ellipsis overflow-hidden whitespace-nowrap">
-            {{ pro.description }}
-          </div>
-          <div class="w-40">{{ new Date(pro.updatedAt).toLocaleString() }}</div>
-          <div class="w-40">{{ new Date(pro.createdAt).toLocaleString() }}</div>
-          <div class="w-20 flex gap-4 items-center">
-            <i
-              class="i-mdi-file-document"
-              style="color: #faa65e; font-size: 18px; cursor: pointer"
-              @click.stop="projectStore.exportProject(pro)"
-            ></i>
-            <i
-              class="i-mdi-pencil"
-              style="color: #1473e6; font-size: 18px; cursor: pointer"
-              @click.stop="editProject(pro)"
-            ></i>
-            <i
-              class="i-mdi-delete"
-              style="color: #f56c6c; font-size: 18px; cursor: pointer"
-              @click.stop="delProject(pro.id)"
-            ></i>
-          </div>
+          </span>
+        </div>
+        <div class="truncate text-[13px] text-[#767d88]">{{ pro.description || "—" }}</div>
+        <div class="text-[13px] text-[#a7a7a7]">{{ formatTime(pro.updatedAt) }}</div>
+        <div class="text-[13px] text-[#a7a7a7]">{{ formatTime(pro.createdAt) }}</div>
+        <div class="flex items-center gap-1 justify-end">
+          <i
+            class="i-mdi-tray-arrow-up row-icon"
+            title="导出项目"
+            @click.stop="projectStore.exportProject(pro)"
+          ></i>
+          <i
+            class="i-mdi-pencil-outline row-icon"
+            title="编辑信息"
+            @click.stop="editProject(pro)"
+          ></i>
+          <i
+            class="i-mdi-delete-outline row-icon"
+            title="删除项目"
+            @click.stop="delProject(pro.id)"
+          ></i>
         </div>
       </div>
-
-      <UpdateProject v-model:show="showUpdate" :project="project" />
     </div>
+
+    <UpdateProject v-model:show="showUpdate" :project="project" />
   </div>
 </template>
 
@@ -62,7 +79,18 @@ const projectStore = useProjectState();
 const project = ref<IProject>();
 const showUpdate = ref(false);
 
+const headers = ["项目名称", "项目描述", "更新时间", "创建时间", "操作"];
+
 const projectList = computed(() => projectStore.projectList);
+
+const formatTime = (t: string | number) =>
+	new Date(t).toLocaleString(undefined, {
+		year: "numeric",
+		month: "2-digit",
+		day: "2-digit",
+		hour: "2-digit",
+		minute: "2-digit",
+	});
 
 const checkProject = (targetProject) => {
 	if (targetProject) {
@@ -87,4 +115,23 @@ const delProject = (id: string) => {
 };
 </script>
 
-<style scoped lang="less"></style>
+<style scoped lang="less">
+.row-icon {
+  font-size: 16px;
+  color: #767d88;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: color 0.15s, background-color 0.15s;
+
+  &:hover {
+    color: #171717;
+    background-color: #e9ecf2;
+  }
+
+  html.dark &:hover {
+    color: #ffffff;
+    background-color: #27272a;
+  }
+}
+</style>

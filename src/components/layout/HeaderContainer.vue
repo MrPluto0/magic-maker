@@ -1,6 +1,6 @@
 <template>
   <header
-    class="px-5 w-full h-12 flex flex-nowrap flex-row items-center justify-between border-b border-[#27272a] bg-night"
+    class="px-5 w-full h-12 shrink-0 flex flex-nowrap flex-row items-center justify-between border-b border-[#e9ecf2] bg-[#fefefe] dark:border-[#27272a] dark:bg-night"
   >
     <div class="flex items-center gap-8">
       <div
@@ -9,7 +9,7 @@
       >
         <img class="h-6 w-6 rounded" src="@/assets/logo.png" alt="" />
         <span
-          class="text-white text-base font-semibold"
+          class="text-[#171717] dark:text-white text-base font-semibold"
           style="letter-spacing: -0.3px"
           >Magic Maker</span
         >
@@ -22,8 +22,8 @@
           class="menu text-[11px] uppercase tracking-[0.35px] ml-1 px-2 py-1 rounded flex items-center cursor-pointer transition-colors"
           :class="
             route.path.includes(item.to)
-              ? 'text-white'
-              : 'text-[#767d88] hover:text-white'
+              ? 'text-[#171717] dark:text-white'
+              : 'text-[#767d88] hover:text-[#171717] dark:hover:text-white'
           "
           @click="router.push(item.to)"
         >
@@ -34,13 +34,15 @@
 
     <div class="flex flex-1 items-center justify-end gap-4 min-w-0">
       <template v-if="projectStore.project?.id && route.path !== '/home'">
-        <div class="text-xs text-[#a7a7a7] truncate">
+        <div class="text-xs text-[#767d88] dark:text-[#a7a7a7] truncate">
           {{ projectStore.project?.name }} · 上次保存
           {{ projectStore.lastSaveTime }}
         </div>
 
         <el-dropdown class="outline-none">
-          <div class="flex items-center text-xs text-[#767d88] hover:text-white cursor-pointer">
+          <div
+            class="flex items-center text-xs text-[#767d88] hover:text-[#171717] dark:hover:text-white cursor-pointer"
+          >
             更多操作
           </div>
           <template #dropdown>
@@ -65,22 +67,19 @@
       </template>
 
       <el-switch
-        class="switch"
         v-model="pageStore.isDark"
+        class="theme-switch"
         size="default"
-        :active-icon="h('i', { class: 'i-mdi-weather-night' })"
-        :inactive-icon="h('i', { class: 'i-mdi-weather-sunny' })"
-        inline-prompt
       />
 
       <div class="flex items-center gap-4 text-[18px] text-[#767d88]">
         <i
-          class="i-mdi-github cursor-pointer hover:text-white transition-colors"
+          class="i-mdi-github cursor-pointer hover:text-[#171717] dark:hover:text-white transition-colors"
           @click="openGithub"
         ></i>
 
         <i
-          class="i-mdi-account cursor-pointer hover:text-white transition-colors"
+          class="i-mdi-account cursor-pointer hover:text-[#171717] dark:hover:text-white transition-colors"
           title="本地用户 / AI 设置"
           @click="showUserInfo = true"
         ></i>
@@ -92,7 +91,7 @@
 </template>
 
 <script setup lang="ts">
-import { h, ref } from "vue";
+import { ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { usePageState } from "@/stores/page";
 import { useProjectState } from "@/stores/project";
@@ -126,7 +125,9 @@ const openGithub = () => {
   user-select: none;
 }
 
-.switch {
-  --el-switch-on-color: #ffffff;
+/* 主题开关：低调双色药丸，开=暗色（纯黑点白芯），关=浅色 */
+.theme-switch {
+  --el-switch-on-color: #27272a;
+  --el-switch-off-color: #d5d9df;
 }
 </style>

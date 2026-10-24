@@ -7,11 +7,13 @@
     <!-- 对话列表区 -->
     <template v-if="!dialog">
       <div
-        class="flex-1 w-full flex flex-col justify-center items-center text-gray-400 select-none"
+        class="flex-1 w-full flex flex-col justify-center items-center gap-4 text-[#767d88] select-none"
       >
-        <el-button type="primary" @click="handleCreateDialog"
-          >创建第一个对话吧~</el-button
-        >
+        <i class="i-mdi-message-plus-outline text-3xl opacity-60"></i>
+        <el-button @click="handleCreateDialog">
+          <i class="i-mdi-plus mr-1"></i>
+          创建第一个对话
+        </el-button>
       </div>
     </template>
 

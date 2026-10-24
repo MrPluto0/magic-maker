@@ -92,13 +92,26 @@ html.dark .el-select-dropdown {
   border-radius: 8px;
 }
 
+/* 对话框：微标签标题 + 左对齐头部，footer 紧凑 */
+.el-dialog__header {
+  margin-right: 0;
+  padding-bottom: 4px;
+}
+
+.el-dialog__footer {
+  padding-top: 6px;
+}
+
 /* 按钮：克制、单色、小圆角 */
 .el-button {
   font-weight: 600;
   border-radius: 4px;
 }
 
-html.dark .el-button--primary {
+/* 主按钮：白底黑字。html.dark 全局暗色 与 .theme-dark 局部强制暗色 都要生效，
+   否则浅色主题 + 恒暗 hero 里会出现白底白字的隐形按钮 */
+html.dark .el-button--primary,
+.theme-dark .el-button--primary {
   --el-button-bg-color: #ffffff;
   --el-button-border-color: #ffffff;
   --el-button-hover-bg-color: #d0d4d4;
@@ -106,6 +119,9 @@ html.dark .el-button--primary {
   --el-button-hover-text-color: #030303;
   --el-button-active-bg-color: #a7a7a7;
   --el-button-active-text-color: #030303;
+  --el-button-disabled-bg-color: #3f3f3f;
+  --el-button-disabled-border-color: #3f3f3f;
+  --el-button-disabled-text-color: #a7a7a7;
   color: #030303;
 }
 

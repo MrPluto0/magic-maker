@@ -20,11 +20,17 @@ export const usePageState = defineStore(
 			imageModel: "doubao-seedream-3-0-t2i-250415",
 		});
 
-		watch(isDark, () => {
-			document.documentElement.classList[isDark.value ? "add" : "remove"](
-				"dark",
-			);
-		});
+		// immediate：持久化恢复的 isDark 必须同步到 <html>（index.html 硬编码 class="dark"，
+		// 浅色用户刷新页面时若不立即执行，会一直停在暗色直到手动切换）
+		watch(
+			isDark,
+			() => {
+				document.documentElement.classList[isDark.value ? "add" : "remove"](
+					"dark",
+				);
+			},
+			{ immediate: true },
+		);
 
 		return {
 			pageTitle,
