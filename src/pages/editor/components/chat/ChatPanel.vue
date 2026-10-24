@@ -138,6 +138,26 @@
 		</div>
 
 		<!-- 输入区 -->
+		<!-- 斜杠命令面板 -->
+		<div
+			v-if="slashMatches.length > 0 && draft.startsWith('/')"
+			class="flex-none border border-[#2e2e33] rounded-md bg-[#0d0d0d] overflow-hidden"
+		>
+			<div
+				v-for="c in slashMatches"
+				:key="c.cmd"
+				class="flex items-center gap-2.5 px-3 py-2 cursor-pointer hover:bg-[#1a1a1a]"
+				@click="draft = c.template"
+			>
+				<span class="font-mono text-[11px] text-white">{{ c.cmd }}</span>
+				<span class="text-[11px] text-[#767d88]">{{ c.label }}</span>
+				<span class="ml-auto font-mono text-[9px] text-[#767d88] truncate max-w-[150px]">{{ c.hint }}</span>
+			</div>
+			<div class="border-t border-[#1c1c1f] px-3 py-1.5 font-mono text-[9px] text-[#767d88]">
+				点击补全参数模板 · 改好参数后回车执行
+			</div>
+		</div>
+
 		<div class="flex-none border-t border-[#e9ecf2] dark:border-[#27272a] px-3.5 pt-3 pb-3.5 flex flex-col gap-2.5">
 			<div
 				class="border border-[#2e2e33] rounded-md bg-[#141414] px-3 py-2.5 flex flex-col gap-2 focus-within:border-[#767d88]"
@@ -154,7 +174,7 @@
 						{{ byokLabel }}
 					</span>
 					<span class="font-mono text-[9.5px] text-[#767d88] ml-auto whitespace-nowrap">
-						⏎ 发送 / Shift+⏎ 换行
+						⏎ 发送 / Shift+⏎ 换行 / / 命令
 					</span>
 					<button
 						class="text-[12px] font-semibold text-black bg-white rounded px-3.5 py-1.5 whitespace-nowrap hover:opacity-90"
@@ -163,6 +183,14 @@
 						发送 ↑
 					</button>
 				</div>
+			</div>
+
+			<!-- 斜杠命令错误提示 -->
+			<div
+				v-if="slashError"
+				class="flex-none text-[11px] leading-relaxed text-[#e5484d] px-3.5"
+			>
+				{{ slashError }}
 			</div>
 
 			<!-- 手动工具触发（无需 LLM） -->
@@ -236,6 +264,85 @@ const flowEl = ref<HTMLElement>();
 
 const toolOptions = computed(() => agentStore.toolNames);
 
+/* --------------------------- 斜杠命令（免 LLM） --------------------------- */
+
+interface SlashCommand {
+	cmd: string;
+	label: string;
+	hint: string;
+	template: string;
+	tool?: string;
+	undo?: boolean;
+}
+
+const SLASH_COMMANDS: SlashCommand[] = [
+	{
+		cmd: "/delete",
+		label: "删除区间",
+		hint: '{"startSec":10,"endSec":18,"ripple":true}',
+		template: '/delete {"startSec":10,"endSec":18,"ripple":true}',
+		tool: "delete_range",
+	},
+	{
+		cmd: "/split",
+		label: "分割片段",
+		hint: '{"trackId":"…","sec":12.5}',
+		template: '/split {"trackId":"片段id","sec":12.5}',
+		tool: "split_at",
+	},
+	{
+		cmd: "/text",
+		label: "加字幕",
+		hint: '{"text":"标题","startSec":0,"endSec":5}',
+		template: '/text {"text":"标题","startSec":0,"endSec":5}',
+		tool: "add_text",
+	},
+	{
+		cmd: "/export",
+		label: "导出成片",
+		hint: '{"filename":"output"}',
+		template: '/export {"filename":"output"}',
+		tool: "export_video",
+	},
+	{
+		cmd: "/undo",
+		label: "撤销上一回合",
+		hint: "无需参数",
+		template: "/undo",
+		undo: true,
+	},
+];
+
+const slashMatches = computed(() => {
+	const q = draft.value.toLowerCase();
+	if (!q.startsWith("/")) return [];
+	const word = q.split(/\s/)[0];
+	return SLASH_COMMANDS.filter((c) => c.cmd.startsWith(word));
+});
+
+/** 解析并执行斜杠命令；返回错误文案（null = 已受理） */
+async function runSlash(text: string): Promise<string | null> {
+	const m = text.match(/^(\/\w+)\s*(\{[\s\S]*\})?$/);
+	if (!m) return "命令格式：/命令 {JSON 参数}（点击面板项可获得模板）";
+	const c = SLASH_COMMANDS.find((x) => x.cmd === m[1]);
+	if (!c)
+		return `未知命令 ${m[1]}，可用：${SLASH_COMMANDS.map((x) => x.cmd).join(" ")}`;
+	if (c.undo) {
+		await agentStore.undoCurrentGroup();
+		return null;
+	}
+	let params: Record<string, unknown> = {};
+	if (m[2]) {
+		try {
+			params = JSON.parse(m[2]);
+		} catch {
+			return "参数不是合法 JSON——点击面板项用模板改。";
+		}
+	}
+	await agentStore.manualRunTool(c.tool!, params);
+	return null;
+}
+
 const byokLabel = computed(() =>
 	pageStore.aiSettings.apiKey
 		? `BYOK · ${pageStore.aiSettings.textModel}`
@@ -259,9 +366,22 @@ watch(
 	},
 );
 
-function onSend() {
+const slashError = ref("");
+
+async function onSend() {
 	const text = draft.value.trim();
 	if (!text) return;
+	if (text.startsWith("/")) {
+		const err = await runSlash(text);
+		if (err) {
+			slashError.value = err;
+			return;
+		}
+		slashError.value = "";
+		draft.value = "";
+		return;
+	}
+	slashError.value = "";
 	draft.value = "";
 	agentStore.send(text);
 }
