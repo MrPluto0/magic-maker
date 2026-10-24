@@ -1,4 +1,5 @@
 import type { ToolParams } from "./agentTools";
+import { truncateForContext } from "./contextBudget";
 import { ToolError } from "./toolError";
 
 /**
@@ -159,7 +160,7 @@ export async function driveAgentTurn(
 				messages.push({
 					role: "tool",
 					tool_call_id: call.id,
-					content: JSON.stringify(outcome.result),
+					content: truncateForContext(JSON.stringify(outcome.result)),
 				});
 				continue;
 			}

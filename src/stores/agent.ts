@@ -18,6 +18,7 @@ import type { ToolParams } from "@/class/agentTools";
 import { buildLLMTools, toolRegistry } from "@/class/agentTools";
 import type { CommandEffect, EditCommand } from "@/class/commands";
 import { DeleteRangeCmd } from "@/class/commands";
+import { truncateForContext } from "@/class/contextBudget";
 import {
 	beginSilentBatch,
 	endSilentBatch,
@@ -498,7 +499,7 @@ export const useAgentState = defineStore("agent", () => {
 			conversation.push({
 				role: "tool",
 				tool_call_id: pending.call.id,
-				content: JSON.stringify(resultPayload),
+				content: truncateForContext(JSON.stringify(resultPayload)),
 			});
 			if (runningTurn.value) {
 				runningTurn.value.pendingConfirm = undefined;
