@@ -9,6 +9,8 @@ export interface AffectedRange {
 	/** 帧区间 */
 	frameStart?: number;
 	frameEnd?: number;
+	/** 确认卡逐条预览（名称 + 命中区间） */
+	removedItems?: Array<{ name: string; start: number; end: number }>;
 	/** 人话摘要，如「视频主轨 · 3 个片段 · 00:12.3–00:18.0」 */
 	summary: string;
 }

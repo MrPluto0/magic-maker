@@ -79,7 +79,8 @@ export const useAgentState = defineStore("agent", () => {
 			...entry,
 		} as ChatEntry;
 		entries.value.push(full);
-		return full;
+		// 返回 reactive 代理：后续 status/resultSummary 原地更新必须触发渲染
+		return entries.value[entries.value.length - 1];
 	}
 
 	function findEntry(id: string) {
@@ -221,6 +222,11 @@ export const useAgentState = defineStore("agent", () => {
 			}).preview();
 			return {
 				clipIds: preview.items.map((item) => item.clipId),
+				removedItems: preview.items.map((item) => ({
+					name: item.name,
+					start: item.start,
+					end: item.end,
+				})),
 				frameStart: start,
 				frameEnd: end,
 				summary: `删除 ${preview.items.length} 个片段 · ${preview.segmentCount} 条字幕段 · 缩短 ${(preview.timeSavedFrame / ctx.fps).toFixed(1)}s`,
@@ -647,6 +653,7 @@ export const useAgentState = defineStore("agent", () => {
 		entries,
 		groups,
 		runningTurn,
+		toolNames: [...toolRegistry.keys()] as string[],
 		send,
 		manualRunTool,
 		retryTool,
