@@ -23,7 +23,6 @@
     "*.{ts,tsx,vue,js,jsx,json,less,css}": "biome check --no-errors-on-unmatched"
   },
   "dependencies": {
-    "@chinese-fonts/dymh": "^3.0.0",
     "@ckpack/vue-color": "^1.4.1",
     "@vueuse/core": "^11.2.0",
     "@webav/av-cliper": "^1.2.8",

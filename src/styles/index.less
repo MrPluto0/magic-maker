@@ -1,25 +1,44 @@
-@import url("@chinese-fonts/dymh/dist/DouyinSansBold/result.css"); // 字体：抖音美好体
 @import url(./element.less); // 组件库 Element Plus 样式
-@import url(./excalidraw.less); // 白板 Excalidraw 样式
 @import url(./transition.less); // 过渡动画样式
 @import url(./scroll.less); // 滚动条样式
 
+/* RunwayML 风格：单一无衬线字体，几何、干净；中文回落苹方/微软雅黑 */
 html {
-  font-family: "Douyin Sans";
-  user-select: none
+  font-family:
+    "Inter", system-ui, -apple-system, "Segoe UI", "PingFang SC",
+    "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  font-feature-settings: "tnum" on;
+  user-select: none;
 }
 
 #app {
-  @apply w-screen h-screen tracking-wide overflow-hidden;
-  @apply bg-gray-100 text-gray-800 dark:text-gray-100 dark:bg-night;
+  @apply w-screen h-screen overflow-hidden;
+  @apply text-gray-800 bg-[#fefefe] dark:text-[#c9ccd1] dark:bg-night;
+  letter-spacing: -0.16px;
 }
 
+/* 内容容器：暗色 #111113，冷灰描边，无阴影 */
 .container-box {
   border-radius: 8px;
-  @apply dark:bg-night-lighter bg-white p-4;
+  @apply bg-white p-4 dark:bg-night-lighter;
+  @apply dark:border dark:border-[#27272a];
+}
+
+/* Runway 式微标签：全大写 + 宽字距 + 冷灰 */
+.label-micro {
+  font-size: 11px;
+  font-weight: 450;
+  text-transform: uppercase;
+  letter-spacing: 0.35px;
+  color: #767d88;
 }
 
 ::selection {
-  color: #fff;
-  background: #6990f2;
+  color: #030303;
+  background: #ffffff;
+}
+
+html:not(.dark) ::selection {
+  color: #ffffff;
+  background: #171717;
 }

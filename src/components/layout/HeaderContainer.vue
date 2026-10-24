@@ -1,22 +1,30 @@
 <template>
   <header
-    class="pt-2 px-4 w-full flex flex-nowrap flex-row items-center justify-between"
+    class="px-5 w-full h-12 flex flex-nowrap flex-row items-center justify-between border-b border-[#27272a] bg-night"
   >
-    <div class="flex w-2/5 items-center">
+    <div class="flex items-center gap-8">
       <div
         class="cursor-pointer flex items-center gap-2"
         @click="router.push('/')"
       >
-        <img class="h-10 rounded-[20px]" src="@/assets/logo.png" alt="" />
-        <span class="font-bold text-lg">Magic Maker</span>
+        <img class="h-6 w-6 rounded" src="@/assets/logo.png" alt="" />
+        <span
+          class="text-white text-base font-semibold"
+          style="letter-spacing: -0.3px"
+          >Magic Maker</span
+        >
       </div>
 
-      <div class="w-fit flex h-8">
+      <div class="w-fit flex items-center h-8">
         <div
           v-for="(item, i) in menu"
           :key="i"
-          class="menu text-sm ml-4 router flex items-center border-b-2 border-transparent cursor-pointer"
-          :class="{ active: route.path.includes(item.to) }"
+          class="menu text-[11px] uppercase tracking-[0.35px] ml-1 px-2 py-1 rounded flex items-center cursor-pointer transition-colors"
+          :class="
+            route.path.includes(item.to)
+              ? 'text-white'
+              : 'text-[#767d88] hover:text-white'
+          "
           @click="router.push(item.to)"
         >
           <span>{{ item.name }}</span>
@@ -24,62 +32,58 @@
       </div>
     </div>
 
-    <div class="flex w-1/5 items-center justify-center">
-      {{ projectStore.project?.name }}
-    </div>
-    <div class="flex w-2/5 flex-row-reverse">
-      <div class="flex items-center gap-4">
-        <template v-if="projectStore.project?.id && route.path !== '/home'">
-          <div class="text-xs">上次保存：{{ projectStore.lastSaveTime }}</div>
-
-          <el-dropdown class="outline-none">
-            <div class="flex items-center text-xs">更多操作</div>
-            <template #dropdown>
-              <el-dropdown-menu>
-                <el-dropdown-item
-                  v-if="route.path === '/editor'"
-                  @click="projectStore.saveProject"
-                >
-                  <i class="i-mdi-upload"></i>
-                  保存剪辑
-                </el-dropdown-item>
-                <el-dropdown-item
-                  v-if="route.path === '/whiteboard'"
-                  @click="projectStore.saveProject"
-                  icon="i-mdi-upload"
-                >
-                  保存画板
-                </el-dropdown-item>
-                <el-dropdown-item
-                  v-if="route.path === '/editor'"
-                  @click="projectStore.exportVideo"
-                >
-                  <i class="i-mdi-download"></i>
-                  导出视频
-                </el-dropdown-item>
-              </el-dropdown-menu>
-            </template>
-          </el-dropdown>
-        </template>
-
-        <el-switch
-          class="switch"
-          v-model="pageStore.isDark"
-          size="default"
-          :active-icon="h('i', { class: 'i-mdi-weather-night' })"
-          :inactive-icon="h('i', { class: 'i-mdi-weather-sunny' })"
-          inline-prompt
-        />
-
-        <div class="flex items-center gap-4 text-[20px]">
-          <i class="i-mdi-github cursor-pointer" @click="openGithub"></i>
-
-          <i
-            class="i-mdi-account cursor-pointer"
-            title="本地用户 / AI 设置"
-            @click="showUserInfo = true"
-          ></i>
+    <div class="flex flex-1 items-center justify-end gap-4 min-w-0">
+      <template v-if="projectStore.project?.id && route.path !== '/home'">
+        <div class="text-xs text-[#a7a7a7] truncate">
+          {{ projectStore.project?.name }} · 上次保存
+          {{ projectStore.lastSaveTime }}
         </div>
+
+        <el-dropdown class="outline-none">
+          <div class="flex items-center text-xs text-[#767d88] hover:text-white cursor-pointer">
+            更多操作
+          </div>
+          <template #dropdown>
+            <el-dropdown-menu>
+              <el-dropdown-item
+                v-if="route.path === '/editor'"
+                @click="projectStore.saveProject"
+              >
+                <i class="i-mdi-upload"></i>
+                保存剪辑
+              </el-dropdown-item>
+              <el-dropdown-item
+                v-if="route.path === '/editor'"
+                @click="projectStore.exportVideo"
+              >
+                <i class="i-mdi-download"></i>
+                导出视频
+              </el-dropdown-item>
+            </el-dropdown-menu>
+          </template>
+        </el-dropdown>
+      </template>
+
+      <el-switch
+        class="switch"
+        v-model="pageStore.isDark"
+        size="default"
+        :active-icon="h('i', { class: 'i-mdi-weather-night' })"
+        :inactive-icon="h('i', { class: 'i-mdi-weather-sunny' })"
+        inline-prompt
+      />
+
+      <div class="flex items-center gap-4 text-[18px] text-[#767d88]">
+        <i
+          class="i-mdi-github cursor-pointer hover:text-white transition-colors"
+          @click="openGithub"
+        ></i>
+
+        <i
+          class="i-mdi-account cursor-pointer hover:text-white transition-colors"
+          title="本地用户 / AI 设置"
+          @click="showUserInfo = true"
+        ></i>
       </div>
     </div>
 
@@ -118,11 +122,11 @@ const openGithub = () => {
 </script>
 
 <style lang="less" scoped>
-.active {
-  @apply dark:border-white border-black;
+.menu {
+  user-select: none;
 }
 
 .switch {
-  --el-switch-on-color: #805dff;
+  --el-switch-on-color: #ffffff;
 }
 </style>

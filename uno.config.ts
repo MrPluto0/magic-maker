@@ -14,14 +14,16 @@ export default defineConfig({
   transformers: [transformerDirectives()],
   theme: {
     colors: {
+      // RunwayML 风格设计令牌：电影级暗黑、冷灰中性
+      // Surface: #030303(底) / #1a1a1a(卡片) · Border: #27272a · 文本: #fff/#767d88/#a7a7a7
       night: {
-        DEFAULT: "#141414",
-        light: "#303030",
-        lighter: "#262626",
+        DEFAULT: "#030303",
+        light: "#1a1a1a",
+        lighter: "#111113",
       },
       primary: {
-        DEFAULT: "#7457ff",
-        light: "#d1c7ff",
+        DEFAULT: "#ffffff",
+        light: "#c9ccd1",
       },
     },
   },
