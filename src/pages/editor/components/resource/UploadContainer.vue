@@ -1,13 +1,34 @@
 <template>
   <div class="w-full h-full min-h-0 flex flex-col">
-    <!-- 本地素材分类 tab -->
-    <MenuList v-model:active-index="activeIndex" :menu="EditorMaterialMenu" />
-
-    <div class="res-head flex items-baseline justify-between px-4 pt-3 pb-1 shrink-0">
-      <span class="label-micro !text-[10px]">本地素材 · {{ activeItem.title }}</span>
+    <!-- 分节标签 + 素材计数 -->
+    <div class="res-head flex items-baseline justify-between px-4 pt-3 pb-1.5 shrink-0">
+      <span class="label-micro !text-[10px]">本地素材 · LOCAL</span>
       <span class="label-micro !text-[10px] mono" style="letter-spacing: 0">
         {{ list.length }} items
       </span>
+    </div>
+
+    <!-- 类型筛选：小型分段胶囊（与上方 AI 生成的下划线 tab 区分） -->
+    <div class="px-4 pb-2 shrink-0">
+      <div
+        class="seg flex w-full gap-0.5 p-[3px] rounded-[4px] border border-[#e9ecf2] dark:border-[#27272a] bg-[#f5f6f8] dark:bg-[#111113]"
+      >
+        <button
+          v-for="(item, index) of menu"
+          :key="item.key"
+          type="button"
+          class="flex-1 flex items-center justify-center gap-1.5 py-[6px] px-1 text-[11px] font-[450] rounded-[3px] border border-transparent min-w-0 whitespace-nowrap transition-colors duration-150"
+          :class="
+            index === activeIndex
+              ? 'bg-white dark:bg-[#26262b] text-[#171717] dark:text-white border-[#d5d9df] dark:border-[#3a3a40]'
+              : 'text-[#767d88] hover:text-[#c9ccd1]'
+          "
+          @click="activeIndex = index"
+        >
+          <i :class="item.icon" class="text-[13px] shrink-0"></i>
+          <span class="overflow-hidden text-ellipsis">{{ item.title }}</span>
+        </button>
+      </div>
     </div>
 
     <div class="flex-1 min-h-0 w-full overflow-auto px-4">
@@ -38,7 +59,6 @@
 
 <script lang="ts" setup>
 import type { UploadUserFile } from "element-plus";
-import MenuList from "@/components/MenuList.vue";
 import { EditorMaterialMenu } from "@/data/menu";
 import { useResourceState } from "@/stores/resource";
 import ResourceList from "./ResourceList.vue";
@@ -48,13 +68,13 @@ const fileList = ref<UploadUserFile[]>([]);
 const loading = ref(false);
 const activeIndex = ref(0);
 
+const menu = EditorMaterialMenu.filter((item) => item.fileType);
+
 const list = computed(
 	() => resourceStore.getResourcesByType(activeItem.value.key) || [],
 );
 
-const activeItem = computed(
-	() => EditorMaterialMenu.filter((item) => item.fileType)[activeIndex.value],
-);
+const activeItem = computed(() => menu[activeIndex.value]);
 
 const uploadFile = async () => {
 	if (fileList.value.length === 0) {
