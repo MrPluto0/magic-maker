@@ -580,31 +580,20 @@ export const useAgentState = defineStore("agent", () => {
 
 	async function buildSystemMessage(): Promise<AgentMessage> {
 		const { baseFps } = await import("@/data/track");
+		// 上下文治理：工具细节（JSON schema）由请求的 tools 参数承载，不再在
+		// system 里重复 dump；system 只留一行 intent 级清单。项目快照同样
+		// 不进 system——会话首轮以独立 user 消息注入一次，之后靠工具返回值
+		// 增量感知（system 每回合重建，快照放里面等于每回合全量付费）。
 		const toolsSummary = [...toolRegistry.values()]
-			.map(
-				(t) =>
-					`- ${t.name}（${t.danger}）：${t.intent} 参数：${JSON.stringify(t.schema)}`,
-			)
+			.map((t) => `- ${t.name}（${t.danger}）：${t.intent}`)
 			.join("\n");
-		let project = "（空项目）";
-		try {
-			const query = toolRegistry.get("query_timeline");
-			if (query) {
-				project = JSON.stringify(await query.execute({}));
-			}
-		} catch {
-			project = "（项目状态读取失败）";
-		}
 		return {
 			role: "system",
 			content: [
 				"你是 Magic Maker 的视频剪辑 agent。Magic Maker 是浏览器本地口播视频剪辑器，你通过调用工具操作用户的时间轴。素材与时间轴数据全部在用户浏览器本地，你只能通过工具返回值了解项目。",
 				"",
-				"# 工具（只能调用下列工具，不得假设清单之外的能力）",
+				"# 工具（只能调用下列工具，不得假设清单之外的能力；参数 schema 见请求的 tools 定义）",
 				toolsSummary,
-				"",
-				`# 当前项目状态（回合开始时快照，fps=${baseFps}）`,
-				project,
 				"",
 				"# 工作规则",
 				"1. 先看再动：首次操作前必须 query_timeline；涉及字幕先 query_segments。禁止凭记忆操作——每次编辑后 id 与时间会变。",
@@ -617,7 +606,26 @@ export const useAgentState = defineStore("agent", () => {
 				"",
 				"# 语气",
 				"简洁、工程化、不寒暄。所有时间引用使用 mm:ss.s 格式。",
+				"",
+				`（fps=${baseFps}）`,
 			].join("\n"),
+		};
+	}
+
+	/** 会话首轮注入一次的项目状态快照（独立 user 消息，不随 system 重建） */
+	async function buildContextMessage(): Promise<AgentMessage> {
+		let project = "（空项目）";
+		try {
+			const query = toolRegistry.get("query_timeline");
+			if (query) {
+				project = JSON.stringify(await query.execute({}));
+			}
+		} catch {
+			project = "（项目状态读取失败）";
+		}
+		return {
+			role: "user",
+			content: `[项目状态快照 · 会话开始时]\n${project}\n（之后的时间轴变化以工具返回值为准；需要最新全量状态时调用 query_timeline）`,
 		};
 	}
 
@@ -701,6 +709,7 @@ export const useAgentState = defineStore("agent", () => {
 		const system = await buildSystemMessage();
 		if (conversation.length === 0) {
 			conversation.push(system);
+			conversation.push(await buildContextMessage());
 		} else {
 			conversation[0] = system;
 		}
