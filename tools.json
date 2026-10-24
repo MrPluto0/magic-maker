@@ -1,0 +1,220 @@
+{
+  "version": 1,
+  "generatedAt": "2026-10-24T09:48:51.598Z",
+  "tools": [
+    {
+      "name": "query_timeline",
+      "intent": "读取当前时间轴的完整结构：轨道行、每行片段清单、项目总时长、fps、字幕段",
+      "danger": "query",
+      "schema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "query_segments",
+      "intent": "只读当前字幕段落（含已落轨与仅存在于字幕 store 的段），供改写文字前的寻址",
+      "danger": "query",
+      "schema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "split_at",
+      "intent": "在指定片段的指定帧处切一刀，一段变两段",
+      "danger": "write",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "trackId": {
+            "type": "string",
+            "description": "要分割的片段 id"
+          },
+          "frame": {
+            "type": "integer",
+            "description": "分割点（帧），与 sec 二选一"
+          },
+          "sec": {
+            "type": "number",
+            "description": "分割点（秒），与 frame 二选一"
+          }
+        },
+        "required": [
+          "trackId"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "delete_range",
+      "intent": "删除时间区间内所有（或指定轨道的）片段，右侧波纹左移收拢，同步删除/截断字幕段",
+      "danger": "destructive",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "startFrame": {
+            "type": "integer",
+            "description": "区间起点（帧）"
+          },
+          "endFrame": {
+            "type": "integer",
+            "description": "区间终点（帧）"
+          },
+          "startSec": {
+            "type": "number",
+            "description": "区间起点（秒）"
+          },
+          "endSec": {
+            "type": "number",
+            "description": "区间终点（秒）"
+          },
+          "scope": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "限定作用的片段 id 列表；缺省 = 全部命中片段"
+          },
+          "ripple": {
+            "type": "boolean",
+            "default": true,
+            "description": "true=波纹收拢；false=留空隙"
+          }
+        },
+        "required": [
+          "ripple"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "move_segment",
+      "intent": "把片段平移到新起点（保持时长），可选换到同类型轨道行",
+      "danger": "write",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "trackId": {
+            "type": "string",
+            "description": "要移动的片段 id"
+          },
+          "startFrame": {
+            "type": "integer",
+            "description": "新起点（帧）"
+          },
+          "startSec": {
+            "type": "number",
+            "description": "新起点（秒）"
+          },
+          "targetTrackId": {
+            "type": "string",
+            "description": "目标行参照片段 id；缺省=原轨，仅接受同 type 轨道行"
+          }
+        },
+        "required": [
+          "trackId"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "add_text",
+      "intent": "新增一段文字（片头标题/花字），落在文字轨上",
+      "danger": "write",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string",
+            "maxLength": 60,
+            "description": "文字内容"
+          },
+          "startFrame": {
+            "type": "integer",
+            "description": "起点（帧）"
+          },
+          "endFrame": {
+            "type": "integer",
+            "description": "终点（帧）"
+          },
+          "startSec": {
+            "type": "number",
+            "description": "起点（秒）"
+          },
+          "endSec": {
+            "type": "number",
+            "description": "终点（秒）"
+          }
+        },
+        "required": [
+          "text"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "set_segment_text",
+      "intent": "修改某条字幕的文字（Descript 式改字），不改时长",
+      "danger": "write",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "segmentId": {
+            "type": "string",
+            "description": "字幕段 id"
+          },
+          "text": {
+            "type": "string",
+            "maxLength": 200,
+            "description": "新文字"
+          }
+        },
+        "required": [
+          "segmentId",
+          "text"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "export_video",
+      "intent": "按参数导出 mp4",
+      "danger": "write",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "resolution": {
+            "type": "string",
+            "enum": [
+              "source",
+              "720p",
+              "1080p"
+            ],
+            "default": "source"
+          },
+          "fps": {
+            "type": "integer",
+            "enum": [
+              24,
+              30,
+              60
+            ],
+            "default": 30
+          },
+          "watermark": {
+            "type": "boolean",
+            "default": true
+          },
+          "filename": {
+            "type": "string",
+            "maxLength": 80
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  ]
+}
