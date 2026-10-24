@@ -18,7 +18,7 @@ import type { ToolParams } from "@/class/agentTools";
 import { buildLLMTools, toolRegistry } from "@/class/agentTools";
 import type { CommandEffect, EditCommand } from "@/class/commands";
 import { DeleteRangeCmd } from "@/class/commands";
-import { truncateForContext } from "@/class/contextBudget";
+import { compactConversation, truncateForContext } from "@/class/contextBudget";
 import {
 	beginSilentBatch,
 	endSilentBatch,
@@ -714,6 +714,8 @@ export const useAgentState = defineStore("agent", () => {
 		} else {
 			conversation[0] = system;
 		}
+		// 上下文治理：发送前把超预算的历史压缩成摘要（system/快照/最近回合保留）
+		conversation = compactConversation(conversation);
 		conversation.push({ role: "user", content: trimmed });
 		await continueTurn();
 	}
