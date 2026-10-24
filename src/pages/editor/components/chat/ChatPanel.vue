@@ -10,6 +10,13 @@
 			</span>
 			<button
 				class="ml-auto text-[11px] text-[#767d88] rounded px-1.5 py-1 hover:text-white hover:bg-white/6 shrink-0"
+				:class="pageStore.chatArtifactDrawerOpen ? 'text-white bg-white/6' : ''"
+				@click="pageStore.chatArtifactDrawerOpen = !pageStore.chatArtifactDrawerOpen"
+			>
+				产物
+			</button>
+			<button
+				class="text-[11px] text-[#767d88] rounded px-1.5 py-1 hover:text-white hover:bg-white/6 shrink-0"
 				@click="onNewSession"
 			>
 				新会话

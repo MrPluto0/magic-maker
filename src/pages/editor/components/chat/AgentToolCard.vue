@@ -34,11 +34,19 @@
 				<template v-if="entry.resultSummary">{{ entry.resultSummary }}</template>
 				<template v-else-if="entry.affected">{{ entry.affected.summary }}</template>
 			</span>
+			<span class="ml-auto"></span>
 			<span
-				v-if="entry.status === 'done' && danger !== 'query'"
-				class="ml-auto font-mono text-[9.5px] text-[#767d88] border border-[#2e2e33] rounded-sm px-1.5 py-px"
+				v-if="entry.status === 'done'"
+				class="font-mono text-[9.5px] text-[#767d88] border border-[#2e2e33] rounded-sm px-1.5 py-px"
 			>
-				可撤销
+				{{ danger !== "query" ? "可撤销" : "只读" }}
+			</span>
+			<span
+				class="cursor-pointer font-mono text-[9.5px] text-[#767d88] border border-[#2e2e33] rounded-sm px-1.5 py-px hover:text-white hover:border-[#767d88]"
+				title="在产物抽屉中查看项目资源"
+				@click="pageStore.chatArtifactDrawerOpen = true"
+			>
+				产物
 			</span>
 		</div>
 
@@ -65,11 +73,13 @@
 import { computed } from "vue";
 import { toolRegistry } from "@/class/agentTools";
 import { useAgentState } from "@/stores/agent";
+import { usePageState } from "@/stores/page";
 import type { ChatEntry } from "@/types/agent";
 
 const props = defineProps<{ entry: Extract<ChatEntry, { kind: "tool" }> }>();
 
 const agentStore = useAgentState();
+const pageStore = usePageState();
 
 const danger = computed(
 	() => toolRegistry.get(props.entry.tool)?.danger ?? "write",
