@@ -35,7 +35,7 @@
 
           <div class="h-px shrink-0 bg-[#e9ecf2] dark:bg-[#27272a]"></div>
 
-          <div class="shrink-0 h-[268px] flex flex-col min-h-0">
+          <div class="flex-1 basis-0 min-h-0 flex flex-col">
             <UploadContainer />
           </div>
         </template>
@@ -99,18 +99,34 @@ const pageStore = usePageState();
 const projectStore = useProjectState();
 const timer = ref();
 
+// 时间轴高度自适应钳制：trackHeight 若吃满视口（小窗口/历史持久化值偏大），
+// 会把左栏对话面板与中部画布挤成一条缝——保证主区（顶栏下方 → 时间轴上方）
+// 至少占可用高度的大头，时间轴最多占约 42%，且不低于回归脚本依赖的 200px。
+function clampTrackHeight() {
+	const avail = window.innerHeight - 52 - 12; // 顶栏 + 分割线
+	const cap = Math.max(200, Math.floor(avail * 0.42));
+	pageStore.trackHeight = Math.min(Math.max(pageStore.trackHeight, 200), cap);
+}
+
 const leftTabs = [
 	{ key: "chat" as const, label: "对话" },
 	{ key: "asset" as const, label: "素材" },
 ];
 
+function onResize() {
+	clampTrackHeight();
+}
+
 onMounted(() => {
 	initEditorHotKey();
 	timer.value = setInterval(projectStore.saveProject, 60 * 1000);
+	clampTrackHeight();
+	window.addEventListener("resize", onResize);
 });
 
 onUnmounted(() => {
 	clearHotKey();
 	clearInterval(timer.value);
+	window.removeEventListener("resize", onResize);
 });
 </script>
