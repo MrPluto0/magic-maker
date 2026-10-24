@@ -1,7 +1,7 @@
 # 回归验证清单
 
-> 执行环境：无头 Chrome（Playwright 驱动，`channel="chrome"`），dev server `pnpm dev --port 5175`。
-> 最近执行：2026-10-23（阶段一 W3 收口）。脚本：`/tmp/mmtest/reg_stage1.py`（无头驱动，通过 pinia store 驱动剪辑动作 + 快捷键路径，导出经 stub `showSaveFilePicker` 捕获字节）。
+> 执行环境：无头 Chrome（Playwright 驱动，`channel="chrome"`），dev server `pnpm dev --port 5175 --strictPort`。
+> 最近执行：2026-10-23（阶段一 W3 收口）。脚本：`scripts/reg_stage1.py`（无头驱动，通过 pinia store 驱动剪辑动作 + 快捷键路径，导出经 stub `showSaveFilePicker` 捕获字节；fixture 由 ffmpeg 自动生成）。
 > 历史基线：2026-10-13（P0-9，14 项 12 ✅）；2026-10-23 W1（19 项全过，D1 阻断 bug 修复）。
 
 ## 用例（17 项全过；#9/#10 随 Excalidraw 白板裁剪退役）
