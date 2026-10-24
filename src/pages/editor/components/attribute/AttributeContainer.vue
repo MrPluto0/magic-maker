@@ -1,19 +1,35 @@
 <template>
   <div
-    class="select-none relative container-box"
+    class="select-none relative flex flex-col min-h-0 border-l border-[#e9ecf2] dark:border-[#27272a] bg-[#fefefe] dark:bg-night overflow-hidden"
     :style="{
       width: `${pageStore.attrWidth}px`,
     }"
   >
+    <!-- 面板头（设计稿 .prop-head） -->
     <div
-      v-if="!track"
-      class="w-full h-full flex flex-col justify-center items-center"
+      class="prop-head shrink-0 px-[18px] pt-4 pb-3.5 border-b border-[#e9ecf2] dark:border-[#27272a]"
     >
-      <el-empty description="点击轨道进行编辑" />
+      <span class="label-micro !text-[10px]">属性 · 选中项</span>
+      <template v-if="track">
+        <h3
+          class="mt-2 truncate text-[16px] font-medium text-[#171717] dark:text-white"
+          style="letter-spacing: -0.2px"
+        >
+          {{ track.name || "未命名" }}
+        </h3>
+        <span
+          class="inline-flex mt-2.5 text-[10px] font-[450] uppercase text-[#c9ccd1] border border-[#2e2e33] dark:border-[#2e2e33] border-[#c9ccd1] rounded px-2 py-0.5"
+        >
+          {{ track.type }} track
+        </span>
+      </template>
     </div>
 
-    <div v-else class="overflow-auto">
-      <div class="mb-4 border-b-primary border-b-2">基本信息</div>
+    <div v-if="!track" class="flex-1 flex flex-col justify-center items-center">
+      <el-empty description="点击轨道素材进行编辑" />
+    </div>
+
+    <div v-else class="flex-1 min-h-0 overflow-auto">
       <VideoAttr v-if="track.type === 'video'" />
       <ImageAttr v-else-if="track.type === 'image'" />
       <AudioAttr v-else-if="track.type === 'audio'" />

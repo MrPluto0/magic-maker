@@ -1,8 +1,6 @@
 <template>
   <div class="w-full h-full flex flex-col overflow-hidden">
     <ElConfigProvider :z-index="3000">
-      <HeaderContainer />
-
       <router-view v-slot="{ Component }">
         <keep-alive>
           <component :is="Component" />
@@ -14,7 +12,6 @@
 
 <script setup lang="ts">
 import { Combinator } from "@webav/av-cliper";
-import HeaderContainer from "./components/layout/HeaderContainer.vue";
 import { useProjectState } from "./stores/project";
 
 const project = useProjectState();

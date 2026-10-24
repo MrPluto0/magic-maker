@@ -1,27 +1,18 @@
 <template>
-  <ul class="flex items-center justify-between w-full">
+  <ul class="mm-tabs flex w-full border-b border-[#e9ecf2] dark:border-[#27272a] shrink-0">
     <li
       v-for="(item, index) of menu"
       :key="item.key"
-      class="flex items-center p-2 gap-1 cursor-pointer rounded-[8px] hover:dark:bg-night-light hover:bg-gray-200"
+      class="flex-1 text-center cursor-pointer py-[13px] pb-[11px] text-[11px] font-[450] uppercase"
+      style="letter-spacing: 0.35px"
+      :class="
+        index === activeIndex
+          ? 'text-[#171717] dark:text-white border-b border-b-white dark:border-b-white -mb-px'
+          : 'text-[#767d88] border-b border-b-transparent -mb-px hover:text-[#c9ccd1] dark:hover:text-[#c9ccd1]'
+      "
       @click="handleChange(index)"
     >
-      <i
-        :style="{
-          fontSize: '16px',
-        }"
-        :class="`${item.icon} ${index === activeIndex ? 'text-primary' : ''}`"
-      />
-      <span
-        class="text-xs font-bold"
-        :class="
-          index === activeIndex
-            ? 'text-primary'
-            : 'dark:text-gray-300 text-gray-500'
-        "
-      >
-        {{ item.title }}</span
-      >
+      {{ item.title }}
     </li>
   </ul>
 </template>

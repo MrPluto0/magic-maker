@@ -1,7 +1,14 @@
 <template>
+  <!-- 素材 clip：4px 圆角、1px 描边、选中白描边（设计稿 .clip/.clip.sel） -->
   <div
-    class="text-left text-sm top-0 absolute trackItem"
-    :class="[TrackHeightMap[trackType], isDragState ? 'z-50 isDrag' : 'z-10']"
+    class="text-left text-sm top-0 absolute trackItem clip rounded overflow-hidden border"
+    :class="[
+      TrackHeightMap[trackType],
+      isDragState ? 'z-50 isDrag' : 'z-10',
+      isActive
+        ? 'border-white shadow-[0_0_0_1px_#fff]'
+        : 'border-[#e9ecf2] dark:border-[#2e2e33]',
+    ]"
     :style="[itemClass]"
     :data-type="trackType"
     :data-line="lineIndex"
@@ -27,7 +34,7 @@ import { getGridPixel } from "@/utils/canvasUtil";
 import AudioItem from "../template/AudioItem.vue";
 import ImageItem from "../template/ImageItem.vue";
 import TextItem from "../template/TextItem.vue";
-import VideoItem from "../template/VideoItem.vue";
+import VideoItem from "./../template/VideoItem.vue";
 import TrackHandler from "./TrackHandler.vue";
 
 const componentMap = new Map<string, any>([

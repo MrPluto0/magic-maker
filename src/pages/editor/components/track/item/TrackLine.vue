@@ -1,12 +1,13 @@
 <template>
+  <!-- 轨道行：1px 冷描边分隔 + 选中高亮（设计稿 .track） -->
   <div
-    class="mb-1 mt-1 relative ml-2 trackLine"
+    class="mb-1 mt-1 relative ml-2 rounded trackLine"
     :class="[
       TrackHeightMap[lineType],
       isActive
-        ? 'dark:bg-gray-700 bg-gray-400 bg-opacity-20'
-        : 'bg-gray-200 bg-opacity-10',
-      isMain ? 'bg-blue-500 bg-opacity-20' : '',
+        ? 'bg-[#3f3f46]/20 dark:bg-white/6'
+        : 'bg-black/5 dark:bg-white/3',
+      isMain ? 'bg-[#3f3f46]/20 dark:bg-white/8' : '',
     ]"
     :data-index="lineIndex"
     :data-type="lineType"

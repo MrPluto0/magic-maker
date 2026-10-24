@@ -1,10 +1,16 @@
 <template>
-  <div class="h-full flex flex-col dark:bg-night bg-gray-100">
+  <div class="flex-1 min-h-0 flex flex-col bg-black overflow-hidden relative container-box !rounded-none !border-0 !border-b !border-[#e9ecf2] dark:!border-[#27272a] !bg-black !p-0">
+    <!-- 舞台 HUD（分辨率 / 本机渲染标识） -->
+    <div class="stage-hud absolute top-4 left-5 right-5 z-20 flex justify-between pointer-events-none">
+      <span class="hud-chip mono">{{ playerWidth }} × {{ playerHeight }} · 适应窗口</span>
+      <span class="hud-chip mono">编辑器 · 仅本机渲染</span>
+    </div>
+
     <div class="flex-1 relative overflow-hidden">
       <canvas
         v-show="trackStore.frameCount > 0"
         ref="playerCanvas"
-        class="absolute left-0 right-0 top-0 bottom-0 m-auto bg-gray-900"
+        class="absolute left-0 right-0 top-0 bottom-0 m-auto rounded"
         id="player"
         :style="{
           zoom: scale,
@@ -15,12 +21,10 @@
 
       <div
         v-if="trackStore.frameCount === 0"
-        class="absolute left-0 right-0 top-0 bottom-0 z-20 flex justify-center items-center"
+        class="absolute left-0 right-0 top-0 bottom-0 z-20 flex flex-col justify-center items-center gap-4 text-[#767d88]"
       >
-        <i
-          class="i-mdi-video"
-          :style="{ fontSize: '144px', opacity: 0.5, color: '#FDE68A' }"
-        ></i>
+        <i class="i-mdi-movie-open-outline" :style="{ fontSize: '72px', opacity: 0.5 }"></i>
+        <span class="label-micro">导入素材到时间轴开始创作</span>
       </div>
 
       <PlayerMoveable
@@ -71,3 +75,15 @@ onMounted(() => {
 	});
 });
 </script>
+
+<style lang="less" scoped>
+/* HUD 角标：mono 微字 + 半透明底 + 1px 描边（设计稿 .hud-chip） */
+.hud-chip {
+  font-size: 10px;
+  color: #a7a7a7;
+  background: rgba(3, 3, 3, 0.7);
+  border: 1px solid #27272a;
+  border-radius: 4px;
+  padding: 4px 8px;
+}
+</style>

@@ -12,6 +12,7 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     ContactIcon: typeof import('./src/components/icons/ContactIcon.vue')['default']
+    EditorTopbar: typeof import('./src/components/layout/EditorTopbar.vue')['default']
     ElButton: typeof import('element-plus/es')['ElButton']
     ElColorPicker: typeof import('element-plus/es')['ElColorPicker']
     ElConfigProvider: typeof import('element-plus/es')['ElConfigProvider']
@@ -37,6 +38,7 @@ declare module 'vue' {
     ElTooltip: typeof import('element-plus/es')['ElTooltip']
     ElUpload: typeof import('element-plus/es')['ElUpload']
     HeaderContainer: typeof import('./src/components/layout/HeaderContainer.vue')['default']
+    HomeNav: typeof import('./src/components/layout/HomeNav.vue')['default']
     Loading: typeof import('./src/components/Loading.vue')['default']
     MenuList: typeof import('./src/components/MenuList.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']

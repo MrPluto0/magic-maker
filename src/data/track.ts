@@ -14,8 +14,8 @@ export const TrackHeightMap = {
 
 export const WaveOptions = {
 	height: 28,
-	waveColor: "#007bff",
-	progressColor: "#dd5e98",
+	waveColor: "#7d848e",
+	progressColor: "#a7a7a7",
 	cursorColor: "#ddd5e9",
 	barAlign: "bottom",
 	interact: false,

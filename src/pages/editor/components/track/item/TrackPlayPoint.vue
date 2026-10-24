@@ -1,13 +1,12 @@
 <template>
+  <!-- 播放头：电影红竖线 + 顶部箭头标（设计稿 .playhead，#e5484d） -->
   <div
-    class="z-30 w-px absolute -top-5 bottom-0 bg-gray-700 dark:bg-gray-100 transition-transform duration-75"
+    class="z-30 w-px absolute -top-5 bottom-0 bg-[#e5484d] transition-transform duration-75"
     id="trackPlayPoint"
     :style="trackStyle"
     @mousedown="onMouseDown"
   >
-    <span
-      class="playPoint block border-1 border-gray-600 bg-gray-600 h-3 w-2.5 dark:border-gray-100 dark:bg-gray-100 sticky top-0 right-0 left-0 cursor-move"
-    />
+    <span class="playPoint block sticky top-0 right-0 left-0 cursor-move" />
   </div>
 </template>
 
@@ -83,17 +82,9 @@ document.addEventListener("mouseup", onMouseUp);
 <style scoped>
 .playPoint {
   transform: translateX(-50%);
-}
-.playPoint::after {
-  content: "";
-  display: block;
-  width: 10px;
-  height: 10px;
-  border: 5px solid;
-  position: absolute;
-  top: 100%;
-  border-right-color: transparent;
-  border-left-color: transparent;
-  border-bottom-color: transparent;
+  width: 11px;
+  height: 14px;
+  background: #e5484d;
+  clip-path: polygon(0 0, 100% 0, 100% 55%, 50% 100%, 0 55%);
 }
 </style>

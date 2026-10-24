@@ -1,14 +1,15 @@
 <template>
-  <div class="flex flex-col rounded overflow-hidden h-full">
+  <div class="flex flex-col rounded overflow-hidden h-full bg-[#10141c] dark:bg-[#10141c]">
     <div
-      class="flex items-center text-xs pl-2 overflow-hidden h-5 leading-5 bg-[#4b4f54] text-white"
+      class="clip-name flex items-center text-[10px] font-medium pl-2 overflow-hidden h-5 leading-5 text-white"
+      style="text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8)"
     >
-      <i class="i-mdi-video mr-2 text-lg shrink-0"></i>
+      <i class="i-mdi-video mr-1.5 text-xs shrink-0"></i>
       <span class="mr-4 shrink-0">{{ `${trackItem.name}` }}</span>
     </div>
     <div
       ref="container"
-      class="bg-gray-400 bg-opacity-70 flex-1 relative whitespace-nowrap overflow-hidden"
+      class="bg-black/20 flex-1 relative whitespace-nowrap overflow-hidden"
       :style="{
         left: `-${getGridPixel(trackStore.trackScale, trackItem.offsetL)}px`,
       }"
@@ -24,7 +25,7 @@
     </div>
     <div
       v-if="resource.meta?.prompt"
-      class="pl-2 overflow-hidden h-4 flex items-center bg-gray-700 relative text-xs overflow-ellipsis whitespace-nowrap text-white"
+      class="pl-2 overflow-hidden h-4 flex items-center bg-black/40 relative text-[10px] overflow-ellipsis whitespace-nowrap text-[#c9ccd1]"
     >
       <span>{{ resource.meta.prompt }}</span>
     </div>

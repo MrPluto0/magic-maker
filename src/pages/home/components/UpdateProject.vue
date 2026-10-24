@@ -1,24 +1,32 @@
 <template>
   <el-dialog
     :model-value="show"
-    width="480"
+    width="520"
     align-center
     :before-close="handleClose"
     class="mm-dialog"
   >
     <template #header>
-      <div class="label-micro">Edit project</div>
-      <div class="mt-2 text-xl font-medium">更新项目</div>
+      <div class="dlg-head-inner">
+        <span class="label-micro block mb-3">项目</span>
+        <div class="text-[#171717] dark:text-white font-normal" style="font-size: 24px; line-height: 1; letter-spacing: -0.5px">
+          重命名项目
+        </div>
+      </div>
     </template>
 
     <el-form :model="form" label-position="top">
       <el-form-item label="项目名称">
         <el-input v-model="form.name" maxlength="50" @keyup.enter="handleCreate" />
       </el-form-item>
-      <el-form-item label="项目描述">
+      <el-form-item>
+        <template #label>
+          项目描述
+          <span class="mono text-[10px] text-[#a7a7a7] ml-1">— 可选</span>
+        </template>
         <el-input
           type="textarea"
-          :rows="4"
+          :rows="3"
           v-model="form.description"
           maxlength="200"
         />
@@ -26,9 +34,11 @@
     </el-form>
 
     <template #footer>
-      <div class="flex justify-end gap-2">
+      <div class="flex items-center gap-2.5">
+        <span class="mono text-[10px] text-[#a7a7a7]">ESC 关闭</span>
+        <div class="flex-1"></div>
         <el-button @click="handleClose">取消</el-button>
-        <el-button type="primary" @click="handleCreate">保存修改</el-button>
+        <el-button type="primary" @click="handleCreate">保存修改 ⏎</el-button>
       </div>
     </template>
   </el-dialog>
@@ -36,8 +46,6 @@
 
 <script lang="ts" setup>
 import { useProjectState } from "@/stores/project";
-
-// Removed API imports for frontend-only mode
 
 const props = defineProps<{
 	show: boolean;
@@ -81,4 +89,4 @@ watch(
 );
 </script>
 
-<style scoped lang="less"></style>
+<style lang="less" scoped></style>

@@ -1,13 +1,11 @@
 <template>
   <div
     v-if="['image', 'video'].includes(type)"
-    class="relative w-24"
+    class="gen relative w-full mb-3.5 rounded-md overflow-hidden border border-[#e9ecf2] dark:border-[#27272a] bg-[#f7f8fa] dark:bg-[#141414]"
     draggable="true"
     @dragstart="dragStart"
   >
-    <div
-      class="h-24 cursor-pointer center hover:border-2 hover:border-primary box-border overflow-hidden"
-    >
+    <div class="prev relative h-24 cursor-grab overflow-hidden">
       <el-image
         class="w-full h-full"
         fit="cover"
@@ -20,63 +18,75 @@
       <el-dialog v-if="showVideo" title="原始视频" center v-model="showVideo">
         <video controls :src="'url' in resource ? resource.url : ''"></video>
       </el-dialog>
+
+      <!-- 拖入提示 + 时长角标（设计稿 .drag-hint/.gen-meta） -->
+      <span class="drag-hint mono absolute top-2 right-2 text-[10px] text-[#767d88] opacity-0 transition-opacity">
+        ⠿ 拖入轨道
+      </span>
+      <span
+        v-show="'duration' in resource && resource.duration"
+        class="mono absolute bottom-2 right-2 text-[10px] text-white"
+        style="text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8)"
+      >
+        {{ "duration" in resource && resource.duration ? resource.duration.toFixed(1) : 0 }}s
+      </span>
     </div>
 
-    <span
-      v-show="'duration' in resource && resource.duration"
-      class="h-5 absolute bottom-1 right-2 text-xs text-gray-400"
-    >
-      {{
-        "duration" in resource && resource.duration
-          ? resource.duration.toFixed(1)
-          : 0
-      }}
-      s
-    </span>
-
-    <div
-      class="absolute top-2 right-1 flex justify-center items-center bg-red-500 rounded-full w-5 h-5 opacity-0 hover:opacity-100 transition-opacity duration-150"
-      @click="resourceStore.removeResource(resource.id)"
-    >
-      <div class="i-mdi-minus text-white cursor-pointer"></div>
-    </div>
-
-    <div
-      class="absolute bottom-2 right-1 flex justify-center items-center bg-blue-500 rounded-full w-5 h-5 opacity-0 hover:opacity-100 transition-opacity duration-150"
-      @click="addTrack"
-    >
-      <div class="i-mdi-plus text-white cursor-pointer"></div>
+    <div class="gen-meta-bar flex items-center justify-between px-2.5 py-1.5">
+      <span class="text-xs truncate text-[#3f3f3f] dark:text-[#c9ccd1]">{{
+        resource.name
+      }}</span>
+      <span class="flex items-center gap-1 shrink-0">
+        <button class="op-btn" title="加入轨道" @click="addTrack">
+          <i class="i-mdi-plus text-[13px]"></i>
+        </button>
+        <button class="op-btn danger" title="删除素材" @click="resourceStore.removeResource(resource.id)">
+          <i class="i-mdi-minus text-[13px]"></i>
+        </button>
+      </span>
     </div>
   </div>
 
   <div
     v-else-if="type === 'audio'"
-    class="relative w-full h-10 flex items-center py-1 px-2 gap-2 overflow-hidden"
+    class="gen-aud relative w-full mb-3.5 flex flex-wrap items-center gap-3 p-3 pb-9 rounded-md border border-[#e9ecf2] dark:border-[#27272a] bg-[#f7f8fa] dark:bg-[#141414]"
     draggable="true"
     @dragstart="dragStart"
   >
-    <div class="flex-1 overflow-hidden flex gap-4 items-center">
-      <audio
-        class="h-10"
-        controls
-        preload="metadata"
-        :src="'url' in resource ? resource.url : ''"
-      ></audio>
+    <div
+      class="ic w-[34px] h-[34px] shrink-0 rounded border border-[#c9ccd1] dark:border-[#2e2e33] grid place-items-center text-[#767d88]"
+    >
+      <i class="i-mdi-volume-high text-sm"></i>
+    </div>
+    <div class="flex-1 min-w-0">
+      <div class="truncate text-xs font-medium text-[#171717] dark:text-white">
+        {{ resource.name }}
+      </div>
+      <div class="mono text-[10px] text-[#a7a7a7]">
+        {{
+          "duration" in resource && resource.duration
+            ? `${resource.duration.toFixed(1)}s`
+            : "audio"
+        }}
+      </div>
     </div>
 
-    <div
-      class="flex justify-center items-center bg-red-500 rounded-full w-5 h-5"
-      @click="resourceStore.removeResource(resource.id)"
-    >
-      <div class="i-mdi-minus text-white cursor-pointer"></div>
+    <div class="flex items-center gap-1 shrink-0">
+      <button class="op-btn" title="加入轨道" @click="addTrack">
+        <i class="i-mdi-plus text-[13px]"></i>
+      </button>
+      <button class="op-btn danger" title="删除素材" @click="resourceStore.removeResource(resource.id)">
+        <i class="i-mdi-minus text-[13px]"></i>
+      </button>
     </div>
 
-    <div
-      class="right-1 flex justify-center items-center bg-blue-500 rounded-full w-5 h-5"
-      @click="addTrack"
-    >
-      <div class="i-mdi-plus text-white cursor-pointer"></div>
-    </div>
+    <!-- 本地试听（保留原有 audio 预览能力） -->
+    <audio
+      class="aud-preview absolute left-3 right-3 bottom-1 w-[calc(100%-24px)] h-7"
+      controls
+      preload="metadata"
+      :src="'url' in resource ? resource.url : ''"
+    ></audio>
   </div>
 </template>
 
@@ -115,3 +125,38 @@ async function addTrack(event: MouseEvent) {
 	trackStore.addTrack(track);
 }
 </script>
+
+<style lang="less" scoped>
+.gen:hover {
+  .drag-hint {
+    opacity: 1 !important;
+  }
+}
+
+/* 行内操作按钮：冷灰描边小方钮 */
+.op-btn {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 4px;
+  border: 1px solid transparent;
+  color: #767d88;
+  cursor: pointer;
+  transition: color 0.15s, background-color 0.15s;
+
+  &:hover {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.06);
+
+    html:not(.dark) & {
+      color: #171717;
+      background: #e9ecf2;
+    }
+  }
+
+  &.danger:hover {
+    color: #e5484d;
+  }
+}
+</style>

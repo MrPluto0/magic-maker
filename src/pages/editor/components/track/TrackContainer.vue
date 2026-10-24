@@ -1,6 +1,6 @@
 <template>
   <div
-    class="container-box overflow-hidden relative !p-0 flex flex-col"
+    class="overflow-hidden relative flex flex-col shrink-0 border-t border-[#e9ecf2] dark:border-[#27272a] bg-[#fefefe] dark:bg-night"
     :style="{
       height: `${page.trackHeight}px`,
     }"

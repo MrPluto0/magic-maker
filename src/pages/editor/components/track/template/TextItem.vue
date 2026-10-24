@@ -1,14 +1,12 @@
 <template>
-  <div class="flex flex-col rounded overflow-hidden h-full">
-    <div
-      class="flex items-center text-xs pl-2 overflow-hidden h-6 leading-6 bg-red-900 bg-opacity-70 text-gray-300"
+  <!-- 文本 clip：#1a1a1a 面、大写微字（设计稿 .clip.text） -->
+  <div class="flex items-center rounded overflow-hidden h-full bg-[#1a1a1a] pl-2">
+    <span
+      class="text-[10px] text-[#c9ccd1] uppercase whitespace-nowrap overflow-hidden text-ellipsis"
+      style="letter-spacing: 0.35px"
     >
-      <i
-        class="i-mdi-format-text"
-        style="font-size: 18px; margin-right: 8px; flex-shrink: 0"
-      ></i>
-      <span class="mr-4 shrink-0">{{ props.trackItem.text }}</span>
-    </div>
+      {{ props.trackItem.text }}
+    </span>
   </div>
 </template>
 

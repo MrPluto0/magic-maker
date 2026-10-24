@@ -58,7 +58,7 @@ const timeLine = ref();
 let canvasContext = {} as CanvasRenderingContext2D;
 const { isDark } = toRefs(usePageState());
 const canvasConfigs = computed(() => ({
-	bgColor: isDark.value ? "#374151" : "#E5E7EB", // 背景颜色
+	bgColor: isDark.value ? "#0a0a0b" : "#E5E7EB", // 背景颜色
 	ratio: window.devicePixelRatio || 1, // 设备像素比
 	textSize: 12, // 字号
 	textScale: 0.83, // 支持更小号字： 10 / 12
@@ -67,11 +67,11 @@ const canvasConfigs = computed(() => ({
 	textBaseline: "middle" as "middle", // 文字对齐基线 (ts 中定义的textBaseLine是一个联合类型)
 	// eslint-disable-next-line
 	textAlign: "center" as "center", // 文字对齐方式
-	longColor: isDark.value ? "#E5E7EB" : "#374151", // 长线段颜色
-	shortColor: isDark.value ? "#9CA3AF" : "#6B7280", // 短线段颜色
-	textColor: isDark.value ? "#E5E7EB" : "#374151", // 文字颜色
-	subTextColor: isDark.value ? "#9CA3AF" : "#6B7280", // 小文字颜色
-	focusColor: isDark.value ? "#6D28D9" : "#C4B5FD", // 选中元素区间
+	longColor: isDark.value ? "#3f3f46" : "#374151", // 长线段颜色
+	shortColor: isDark.value ? "#27272a" : "#6B7280", // 短线段颜色
+	textColor: isDark.value ? "#a7a7a7" : "#374151", // 文字颜色
+	subTextColor: isDark.value ? "#767d88" : "#6B7280", // 小文字颜色
+	focusColor: isDark.value ? "#e5484d" : "#C4B5FD", // 选中元素区间
 }));
 const canvasAttr = reactive({
 	width: 0,

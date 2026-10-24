@@ -13,15 +13,14 @@ html {
 
 #app {
   @apply w-screen h-screen overflow-hidden;
-  @apply text-gray-800 bg-[#fefefe] dark:text-[#c9ccd1] dark:bg-night;
+  @apply text-gray-800 bg-[#fefefe] dark:text-[#c9ccd1] dark:bg-black;
   letter-spacing: -0.16px;
 }
 
-/* 内容容器：浅色冷灰描边 / 暗色 #111113 面，无阴影 */
+/* 内容容器：编辑器分区面板——方角、1px 冷描边、无阴影（深度靠明暗） */
 .container-box {
-  border-radius: 8px;
   @apply bg-white p-4 border border-[#e9ecf2];
-  @apply dark:bg-night-lighter dark:border-[#27272a];
+  @apply dark:bg-night dark:border-[#27272a];
 }
 
 /* Runway 式微标签：全大写 + 宽字距 + 冷灰 */
@@ -33,6 +32,13 @@ html {
   color: #767d88;
 }
 
+/* 等宽数字/时间码 */
+.mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace;
+  letter-spacing: 0;
+}
+
 ::selection {
   color: #030303;
   background: #ffffff;
@@ -41,4 +47,19 @@ html {
 html:not(.dark) ::selection {
   color: #ffffff;
   background: #171717;
+}
+
+/* Moveable 变换手柄：白色小方块 + 白色描边线（设计稿 .handle，替换默认蓝色） */
+.moveable-control {
+  width: 7px !important;
+  height: 7px !important;
+  background: #fff !important;
+  border: none !important;
+  border-radius: 1px !important;
+  margin-top: -3.5px !important;
+  margin-left: -3.5px !important;
+}
+
+.moveable-line {
+  background: rgba(255, 255, 255, 0.85) !important;
 }

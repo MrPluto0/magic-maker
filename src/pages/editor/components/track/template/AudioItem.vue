@@ -1,22 +1,23 @@
 <template>
-  <div class="flex flex-col rounded overflow-hidden h-full">
+  <div class="flex flex-col rounded overflow-hidden h-full bg-[#101318]">
     <div
-      class="flex items-center text-xs pl-2 overflow-hidden h-5 leading-5 bg-[#395c96] text-gray-100"
+      class="clip-name flex items-center text-[10px] font-medium pl-2 overflow-hidden h-5 leading-5 text-white"
+      style="text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8)"
     >
       <i
         class="i-mdi-volume-high"
-        style="font-size: 18px; margin-right: 8px; flex-shrink: 0"
+        style="font-size: 12px; margin-right: 6px; flex-shrink: 0"
       ></i>
       <span class="mr-4 shrink-0">{{ trackItem.name }}</span>
     </div>
 
-    <div class="overflow-hidden bg-blue-900 bg-opacity-60 flex-1 relative">
+    <div class="overflow-hidden bg-black/20 flex-1 relative">
       <div :style="waveStyle" class="absolute" ref="waveRef" />
     </div>
 
     <div
       v-if="resource?.meta?.prompt"
-      class="pl-2 overflow-hidden h-4 bg-gray-600 relative text-xs text-white"
+      class="pl-2 overflow-hidden h-4 bg-black/40 relative text-[10px] text-[#c9ccd1]"
     >
       <span>{{ resource.meta.prompt }}</span>
     </div>

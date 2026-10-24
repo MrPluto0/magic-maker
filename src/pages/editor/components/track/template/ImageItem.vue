@@ -1,19 +1,19 @@
 <template>
-  <div class="flex flex-col rounded overflow-hidden h-full">
+  <!-- 图片 clip：缩略铺底 + 名称条（设计稿 .clip.image） -->
+  <div class="flex flex-col rounded overflow-hidden h-full bg-[#131208] relative">
+    <img
+      v-if="resource?.url"
+      :src="resource?.url"
+      class="absolute inset-0 w-full h-full object-cover opacity-60"
+      alt=""
+      draggable="false"
+    />
     <div
-      class="flex items-center text-xs pl-2 overflow-hidden h-full leading-6 bg-yellow-700 bg-opacity-70 text-white"
+      class="clip-name relative flex items-center text-[10px] font-medium pl-2 overflow-hidden h-5 leading-5 text-white bg-black/45"
+      style="text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8)"
     >
-      <img
-        :src="resource?.url"
-        class="h-full inline-block mr-2 shrink-0"
-        alt=""
-        draggable="false"
-      />
-      <div class="mr-4 shrink-0 flex flex-col gap-1">
-        <div class="text-xs h-4">
-          {{ trackItem.name }}
-        </div>
-      </div>
+      <i class="i-mdi-image mr-1.5 text-xs shrink-0"></i>
+      <span class="mr-4 shrink-0">{{ trackItem.name }}</span>
     </div>
     <Loading v-show="trackItem.loading" class="pl-12 bg-opacity-70" />
   </div>

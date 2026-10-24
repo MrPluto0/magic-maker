@@ -88,18 +88,31 @@ html.dark .el-select-dropdown {
   border: 1px solid #27272a;
 }
 
+/* 对话框：设计稿规格——520 宽、#0a0a0b 面、28px 内距、微标签头部 */
 .el-dialog {
   border-radius: 8px;
 }
 
-/* 对话框：微标签标题 + 左对齐头部，footer 紧凑 */
+html.dark .el-dialog {
+  background: #0a0a0b;
+}
+
+.dlg-head-inner {
+  padding-right: 24px;
+}
+
 .el-dialog__header {
   margin-right: 0;
+  padding: 24px 24px 0;
   padding-bottom: 4px;
 }
 
+.el-dialog__body {
+  padding: 20px 24px 4px;
+}
+
 .el-dialog__footer {
-  padding-top: 6px;
+  padding: 16px 24px 20px;
 }
 
 /* 按钮：克制、单色、小圆角 */

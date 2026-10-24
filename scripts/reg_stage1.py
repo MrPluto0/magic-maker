@@ -206,8 +206,10 @@ def run():
         wait_stores(page, ["hasProject"])
 
         step(1, "首页可达（免登录）",
-             page.evaluate("() => !!document.querySelector('.label-micro')"
-                           " && document.body.innerText.includes('Magic Maker')"))
+             page.evaluate("() => !!document.querySelector('.mm-wordmark')"
+                           " && !!document.querySelector('.mm-grid')"
+                           " && document.body.innerText.includes('MAGIC MAKER')"
+                           " && document.body.innerText.includes('最近项目')"))
 
         page.evaluate(f"() => {{ {pin}._s.get('project').createProject({{ name: '阶段一回归项目' }}); }}")
         time.sleep(1)
