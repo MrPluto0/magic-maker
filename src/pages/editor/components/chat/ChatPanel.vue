@@ -6,29 +6,29 @@
 		>
 			<span class="w-1.5 h-1.5 rounded-full bg-white shrink-0" />
 			<button
-				class="font-mono text-[10px] text-[#767d88] truncate hover:text-white"
+				class="font-mono text-[10px] text-gray-500 dark:text-[#767d88] truncate hover:text-gray-900 dark:hover:text-white"
 				title="会话历史"
 				@click="historyOpen = !historyOpen"
 			>
 				会话 {{ agentStore.currentSessionId.slice(0, 4) }} · {{ pageStore.pageTitle }}
 			</button>
 			<button
-				class="ml-auto text-[11px] text-[#767d88] rounded px-1.5 py-1 hover:text-white hover:bg-white/6 shrink-0"
-				:class="historyOpen ? 'text-white bg-white/6' : ''"
+				class="ml-auto text-[11px] text-gray-500 dark:text-[#767d88] rounded px-1.5 py-1 hover:text-gray-900 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/6 shrink-0"
+				:class="historyOpen ? 'text-gray-900 bg-black/5 dark:text-white dark:bg-white/6' : ''"
 				title="会话历史"
 				@click="historyOpen = !historyOpen"
 			>
 				历史
 			</button>
 			<button
-				class="text-[11px] text-[#767d88] rounded px-1.5 py-1 hover:text-white hover:bg-white/6 shrink-0"
+				class="text-[11px] text-gray-500 dark:text-[#767d88] rounded px-1.5 py-1 hover:text-gray-900 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/6 shrink-0"
 				title="查看素材与 AI 生成"
 				@click="pageStore.editorLeftTab = 'asset'"
 			>
 				素材
 			</button>
 			<button
-				class="text-[11px] text-[#767d88] rounded px-1.5 py-1 hover:text-white hover:bg-white/6 shrink-0"
+				class="text-[11px] text-gray-500 dark:text-[#767d88] rounded px-1.5 py-1 hover:text-gray-900 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/6 shrink-0"
 				@click="onNewSession"
 			>
 				新会话
@@ -38,29 +38,29 @@
 		<!-- 会话历史下拉（ChatGPT 式列表：标题 + 时间，可切可删） -->
 			<div
 				v-if="historyOpen"
-				class="absolute left-2 right-2 top-[52px] z-30 border border-[#2e2e33] rounded-md bg-[#0d0d0d] overflow-hidden"
+				class="absolute left-2 right-2 top-[52px] z-30 border border-gray-200 dark:border-[#2e2e33] rounded-md bg-white dark:bg-[#0d0d0d] overflow-hidden"
 			>
 				<div
 					v-if="sortedSessions.length === 0"
-					class="px-3.5 py-3 text-[12px] leading-relaxed text-[#767d88]"
+					class="px-3.5 py-3 text-[12px] leading-relaxed text-gray-500 dark:text-[#767d88]"
 				>
 					还没有历史会话。
 				</div>
 				<div
 					v-for="sItem in sortedSessions"
 					:key="sItem.id"
-					class="group flex items-center gap-2 px-3.5 py-2.5 cursor-pointer border-b border-[#1c1c1f] last:border-b-0 hover:bg-[#1a1a1a]"
-					:class="sItem.id === agentStore.currentSessionId ? 'bg-[#1a1a1a]' : ''"
+					class="group flex items-center gap-2 px-3.5 py-2.5 cursor-pointer border-b border-[#1c1c1f] last:border-b-0 hover:bg-[#e9ecf2] dark:bg-[#1a1a1a]"
+					:class="sItem.id === agentStore.currentSessionId ? 'bg-[#e9ecf2] dark:bg-[#1a1a1a]' : ''"
 					@click="onPickSession(sItem.id)"
 				>
 					<span class="min-w-0 flex flex-col gap-0.5">
-						<span class="text-[12.5px] truncate" :class="sItem.id === agentStore.currentSessionId ? 'text-white' : 'text-[#c9ccd1]'">
+						<span class="text-[12.5px] truncate" :class="sItem.id === agentStore.currentSessionId ? 'text-gray-900 dark:text-white font-medium' : 'text-gray-700 dark:text-[#c9ccd1]'">
 							{{ sItem.title }}
 						</span>
-						<span class="font-mono text-[9.5px] text-[#767d88]">{{ formatTs(sItem.updatedAt) }}</span>
+						<span class="font-mono text-[9.5px] text-gray-500 dark:text-[#767d88]">{{ formatTs(sItem.updatedAt) }}</span>
 					</span>
 					<button
-						class="ml-auto shrink-0 text-[11px] text-[#767d88] opacity-0 group-hover:opacity-100 hover:text-[#e5484d] px-1"
+						class="ml-auto shrink-0 text-[11px] text-gray-500 dark:text-[#767d88] opacity-0 group-hover:opacity-100 hover:text-[#e5484d] px-1"
 						title="删除会话"
 						@click.stop="agentStore.deleteSession(sItem.id)"
 					>
@@ -78,7 +78,7 @@
 				<!-- user -->
 				<div
 					v-if="entry.kind === 'user'"
-					class="self-end max-w-[86%] bg-[#1a1a1a] border border-[#2e2e33] rounded-md px-3 py-2.5 text-[13px] leading-normal text-white"
+					class="self-end max-w-[86%] bg-[#e9ecf2] dark:bg-[#1a1a1a] border border-gray-200 dark:border-[#2e2e33] rounded-md px-3 py-2.5 text-[13px] leading-normal text-gray-900 dark:text-white"
 				>
 					<div class="label-micro mb-1.5">你</div>
 					{{ entry.text }}
@@ -88,7 +88,7 @@
 				<div
 					v-else-if="entry.kind === 'assistant' || entry.kind === 'system'"
 					class="max-w-[92%] text-[13px] leading-relaxed"
-					:class="entry.kind === 'system' ? 'text-[#767d88]' : 'text-[#c9ccd1]'"
+					:class="entry.kind === 'system' ? 'text-gray-500 dark:text-[#767d88]' : 'text-gray-700 dark:text-[#c9ccd1]'"
 				>
 					{{ entry.text }}
 				</div>
@@ -110,7 +110,7 @@
 			<!-- 无 key 提示 -->
 			<div
 				v-if="!pageStore.aiSettings.apiKey && agentStore.entries.length === 0"
-				class="text-[12px] leading-relaxed text-[#767d88] border border-dashed border-[#2e2e33] rounded-md p-3"
+				class="text-[12px] leading-relaxed text-gray-500 dark:text-[#767d88] border border-dashed border-gray-200 dark:border-[#2e2e33] rounded-md p-3"
 			>
 				对话需要 BYOK：到顶栏「AI 设置」填写 API Key 与模型 ID（OpenAI 兼容协议）。
 				填之前也可以在下方手动触发工具试试。
@@ -120,9 +120,9 @@
 		<!-- 一键全撤浮条 -->
 		<div
 			v-if="undoBar"
-			class="flex-none mx-3.5 mb-2.5 border border-[#2e2e33] rounded-md bg-[#141414] px-3 py-2 flex items-center gap-2.5"
+			class="flex-none mx-3.5 mb-2.5 border border-gray-200 dark:border-[#2e2e33] rounded-md bg-white dark:bg-[#141414] px-3 py-2 flex items-center gap-2.5"
 		>
-			<span class="font-mono text-[11px] text-[#c9ccd1]">
+			<span class="font-mono text-[11px] text-gray-700 dark:text-[#c9ccd1]">
 				本回合 {{ undoBar.stepCount }} 步
 			</span>
 			<span class="label-micro" :class="{ 'text-[#e5484d]': undoBar.invalid }">
@@ -130,7 +130,7 @@
 			</span>
 			<button
 				v-if="!undoBar.invalid"
-				class="ml-auto flex items-center gap-1.5 text-[12px] font-semibold text-white border border-[#2e2e33] rounded px-3 py-1.5 hover:border-[#767d88]"
+				class="ml-auto flex items-center gap-1.5 text-[12px] font-semibold text-gray-900 dark:text-white border border-gray-200 dark:border-[#2e2e33] rounded px-3 py-1.5 hover:border-gray-400 dark:hover:border-[#767d88]"
 				@click="agentStore.undoCurrentGroup()"
 			>
 				<span class="font-mono text-[11px]">↩</span>一键全撤
@@ -141,39 +141,39 @@
 		<!-- 斜杠命令面板 -->
 		<div
 			v-if="slashMatches.length > 0 && draft.startsWith('/')"
-			class="flex-none border border-[#2e2e33] rounded-md bg-[#0d0d0d] overflow-hidden"
+			class="flex-none border border-gray-200 dark:border-[#2e2e33] rounded-md bg-white dark:bg-[#0d0d0d] overflow-hidden"
 		>
 			<div
 				v-for="c in slashMatches"
 				:key="c.cmd"
-				class="flex items-center gap-2.5 px-3 py-2 cursor-pointer hover:bg-[#1a1a1a]"
+				class="flex items-center gap-2.5 px-3 py-2 cursor-pointer hover:bg-[#e9ecf2] dark:bg-[#1a1a1a]"
 				@click="draft = c.template"
 			>
-				<span class="font-mono text-[11px] text-white">{{ c.cmd }}</span>
-				<span class="text-[11px] text-[#767d88]">{{ c.label }}</span>
-				<span class="ml-auto font-mono text-[9px] text-[#767d88] truncate max-w-[150px]">{{ c.hint }}</span>
+				<span class="font-mono text-[11px] text-gray-900 dark:text-white">{{ c.cmd }}</span>
+				<span class="text-[11px] text-gray-500 dark:text-[#767d88]">{{ c.label }}</span>
+				<span class="ml-auto font-mono text-[9px] text-gray-500 dark:text-[#767d88] truncate max-w-[150px]">{{ c.hint }}</span>
 			</div>
-			<div class="border-t border-[#1c1c1f] px-3 py-1.5 font-mono text-[9px] text-[#767d88]">
+			<div class="border-t border-[#1c1c1f] px-3 py-1.5 font-mono text-[9px] text-gray-500 dark:text-[#767d88]">
 				点击补全参数模板 · 改好参数后回车执行
 			</div>
 		</div>
 
 		<div class="flex-none border-t border-[#e9ecf2] dark:border-[#27272a] px-3.5 pt-3 pb-3.5 flex flex-col gap-2.5">
 			<div
-				class="border border-[#2e2e33] rounded-md bg-[#141414] px-3 py-2.5 flex flex-col gap-2 focus-within:border-[#767d88]"
+				class="border border-gray-200 dark:border-[#2e2e33] rounded-md bg-white dark:bg-[#141414] px-3 py-2.5 flex flex-col gap-2 focus-within:border-gray-400 dark:focus-within:border-[#767d88]"
 			>
 				<textarea
 					v-model="draft"
 					rows="2"
-					class="w-full bg-transparent border-none outline-none resize-none text-[13px] leading-normal text-white placeholder:text-[#767d88]"
+					class="w-full bg-transparent border-none outline-none resize-none text-[13px] leading-normal text-gray-900 dark:text-white placeholder:text-gray-500 dark:text-[#767d88]"
 					placeholder="描述你要的剪辑，例如：把后半段的停顿收紧一点…"
 					@keydown.enter.exact.prevent="onSend"
 				/>
 				<div class="flex items-center gap-2">
-					<span class="font-mono text-[9.5px] text-[#767d88] whitespace-nowrap">
+					<span class="font-mono text-[9.5px] text-gray-500 dark:text-[#767d88] whitespace-nowrap">
 						{{ byokLabel }}
 					</span>
-					<span class="font-mono text-[9.5px] text-[#767d88] ml-auto whitespace-nowrap">
+					<span class="font-mono text-[9.5px] text-gray-500 dark:text-[#767d88] ml-auto whitespace-nowrap">
 						⏎ 发送 / Shift+⏎ 换行 / / 命令
 					</span>
 					<button
@@ -196,7 +196,7 @@
 			<!-- 手动工具触发（无需 LLM） -->
 			<div class="flex items-center gap-2">
 				<button
-					class="font-mono text-[10px] text-[#767d88] border border-[#2e2e33] rounded px-2 py-1 hover:text-[#c9ccd1] whitespace-nowrap"
+					class="font-mono text-[10px] text-gray-500 dark:text-[#767d88] border border-gray-200 dark:border-[#2e2e33] rounded px-2 py-1 hover:text-gray-700 dark:text-[#c9ccd1] whitespace-nowrap"
 					@click="manualOpen = !manualOpen"
 				>
 					{{ manualOpen ? "▾ 手动工具" : "▸ 手动工具" }}
@@ -204,17 +204,17 @@
 				<template v-if="manualOpen">
 					<select
 						v-model="manualTool"
-						class="bg-[#141414] border border-[#2e2e33] rounded px-1.5 py-1 font-mono text-[10px] text-[#c9ccd1] outline-none max-w-[130px]"
+						class="bg-white dark:bg-[#141414] border border-gray-200 dark:border-[#2e2e33] rounded px-1.5 py-1 font-mono text-[10px] text-gray-700 dark:text-[#c9ccd1] outline-none max-w-[130px]"
 					>
 						<option v-for="t in toolOptions" :key="t" :value="t">{{ t }}</option>
 					</select>
 					<input
 						v-model="manualParams"
-						class="flex-1 min-w-0 bg-[#141414] border border-[#2e2e33] rounded px-2 py-1 font-mono text-[10px] text-[#c9ccd1] outline-none focus:border-[#767d88]"
+						class="flex-1 min-w-0 bg-white dark:bg-[#141414] border border-gray-200 dark:border-[#2e2e33] rounded px-2 py-1 font-mono text-[10px] text-gray-700 dark:text-[#c9ccd1] outline-none focus:border-gray-400 dark:focus:border-[#767d88]"
 						placeholder='{"startSec":12.3,"endSec":18,"ripple":true}'
 					/>
 					<button
-						class="text-[11px] font-semibold text-white border border-[#2e2e33] rounded px-2.5 py-1 hover:border-[#767d88] whitespace-nowrap"
+						class="text-[11px] font-semibold text-gray-900 dark:text-white border border-gray-200 dark:border-[#2e2e33] rounded px-2.5 py-1 hover:border-gray-400 dark:hover:border-[#767d88] whitespace-nowrap"
 						@click="onManualRun"
 					>
 						运行

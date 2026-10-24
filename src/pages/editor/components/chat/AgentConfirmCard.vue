@@ -3,13 +3,13 @@
 		class="flex flex-col rounded-md border overflow-hidden"
 		:class="
 			entry.resolution === 'rejected'
-				? 'border-[#2e2e33] bg-[#1a1a1a]'
-				: 'border-white bg-[#1a1a1a]'
+				? 'border-gray-200 dark:border-[#2e2e33] bg-[#e9ecf2] dark:bg-[#1a1a1a]'
+				: 'border-white bg-[#e9ecf2] dark:bg-[#1a1a1a]'
 		"
 	>
 		<div class="flex items-center gap-2 px-3 py-2.5 border-b border-[#27272a]">
-			<span class="text-[12px] font-semibold text-white">确认删除</span>
-			<span class="ml-auto font-mono text-[10px] text-[#767d88]">{{ entry.tool }}</span>
+			<span class="text-[12px] font-semibold text-gray-900 dark:text-white">确认删除</span>
+			<span class="ml-auto font-mono text-[10px] text-gray-500 dark:text-[#767d88]">{{ entry.tool }}</span>
 		</div>
 
 		<!-- 删除预览：逐条列出 -->
@@ -17,24 +17,24 @@
 			<div
 				v-for="(item, i) in items"
 				:key="i"
-				class="flex items-baseline gap-2 text-[12px] text-[#c9ccd1]"
+				class="flex items-baseline gap-2 text-[12px] text-gray-700 dark:text-[#c9ccd1]"
 			>
-				<span class="font-mono text-[10px] text-[#767d88] shrink-0">
+				<span class="font-mono text-[10px] text-gray-500 dark:text-[#767d88] shrink-0">
 					{{ fmt(item.start) }}–{{ fmt(item.end) }}
 				</span>
 				<span
 					class="flex-1 min-w-0 truncate"
-					:class="{ 'line-through text-[#767d88]': approved }"
+					:class="{ 'line-through text-gray-500 dark:text-[#767d88]': approved }"
 				>
 					{{ item.name }}
 				</span>
 			</div>
-			<span v-if="items.length === 0" class="text-[12px] text-[#767d88]">
+			<span v-if="items.length === 0" class="text-[12px] text-gray-500 dark:text-[#767d88]">
 				{{ entry.affected.summary }}
 			</span>
 		</div>
 
-		<div class="px-3 pb-2.5 font-mono text-[10px] text-[#767d88]">
+		<div class="px-3 pb-2.5 font-mono text-[10px] text-gray-500 dark:text-[#767d88]">
 			{{ entry.affected.summary }}
 		</div>
 
@@ -48,13 +48,13 @@
 					执行
 				</button>
 				<button
-					class="text-[12px] font-semibold rounded px-3.5 py-1.5 border border-[#2e2e33] text-[#c9ccd1] hover:text-white hover:border-[#767d88]"
+					class="text-[12px] font-semibold rounded px-3.5 py-1.5 border border-gray-200 dark:border-[#2e2e33] text-gray-700 dark:text-[#c9ccd1] hover:text-gray-900 dark:hover:text-white hover:border-gray-400 dark:hover:border-[#767d88]"
 					@click="adjust"
 				>
 					调整
 				</button>
 				<button
-					class="text-[12px] font-semibold rounded px-3.5 py-1.5 border border-[#2e2e33] text-[#c9ccd1] hover:text-white hover:border-[#767d88]"
+					class="text-[12px] font-semibold rounded px-3.5 py-1.5 border border-gray-200 dark:border-[#2e2e33] text-gray-700 dark:text-[#c9ccd1] hover:text-gray-900 dark:hover:text-white hover:border-gray-400 dark:hover:border-[#767d88]"
 					@click="agentStore.resolveConfirm(entry.id, false)"
 				>
 					取消
@@ -63,7 +63,7 @@
 			<template v-else>
 				<span
 					class="ml-auto font-mono text-[9.5px] flex items-center gap-1.5"
-					:class="approved ? 'text-[#c9ccd1]' : 'text-[#767d88]'"
+					:class="approved ? 'text-gray-700 dark:text-[#c9ccd1]' : 'text-gray-500 dark:text-[#767d88]'"
 				>
 					{{ approved ? "✓ 已执行" : "✕ 已取消" }}
 				</span>

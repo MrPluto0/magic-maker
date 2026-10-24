@@ -1,19 +1,19 @@
 <template>
 	<div
-		class="flex min-h-0 flex-col flex-1 border border-[#2e2e33] dark:bg-[#141414] rounded-md overflow-hidden"
+		class="flex flex-col border border-gray-200 dark:border-[#2e2e33] dark:bg-white dark:bg-[#141414] rounded-md overflow-hidden shrink-0"
 	>
 		<!-- 标题行：工具名 + danger 标签 + 状态 -->
 		<div class="flex items-center gap-2 px-3 py-2">
-			<span class="font-mono text-[11px] text-white">{{ entry.tool }}</span>
+			<span class="font-mono text-[11px] text-gray-900 dark:text-white">{{ entry.tool }}</span>
 			<span
 				class="text-[9px] tracking-[0.35px] uppercase rounded-sm px-1.5 py-px border"
 				:class="dangerClass"
 			>
 				{{ dangerLabel }}
 			</span>
-			<span class="ml-auto font-mono text-[9.5px] text-[#767d88] flex items-center gap-1.5">
+			<span class="ml-auto font-mono text-[9.5px] text-gray-500 dark:text-[#767d88] flex items-center gap-1.5">
 				<template v-if="entry.status === 'running'">
-					<span class="inline-block w-2 h-2 rounded-full border border-[#2e2e33] border-t-white animate-spin" />
+					<span class="inline-block w-2 h-2 rounded-full border border-gray-200 dark:border-[#2e2e33] border-t-white animate-spin" />
 					执行中
 				</template>
 				<template v-else>{{ statusLabel }}</template>
@@ -21,7 +21,7 @@
 		</div>
 
 		<!-- 参数摘要（mono 小字） -->
-		<div class="px-3 pb-2 font-mono text-[10.5px] leading-relaxed text-[#767d88] whitespace-pre-wrap break-all">
+		<div class="px-3 pb-2 font-mono text-[10.5px] leading-relaxed text-gray-500 dark:text-[#767d88] whitespace-pre-wrap break-all">
 			{{ paramsText }}
 		</div>
 
@@ -30,23 +30,23 @@
 			v-if="entry.affected || entry.resultSummary"
 			class="border-t border-[#27272a] px-3 py-1.5 flex items-center gap-2"
 		>
-			<span class="text-[11px] text-[#767d88]">
+			<span class="text-[11px] text-gray-500 dark:text-[#767d88]">
 				<template v-if="entry.resultSummary">{{ entry.resultSummary }}</template>
 				<template v-else-if="entry.affected">{{ entry.affected.summary }}</template>
 			</span>
 			<span class="ml-auto"></span>
 			<span
 				v-if="entry.status === 'done'"
-				class="font-mono text-[9.5px] text-[#767d88] border border-[#2e2e33] rounded-sm px-1.5 py-px"
+				class="font-mono text-[9.5px] text-gray-500 dark:text-[#767d88] border border-gray-200 dark:border-[#2e2e33] rounded-sm px-1.5 py-px"
 			>
 				{{ danger !== "query" ? "可撤销" : "只读" }}
 			</span>
 			<span
-				class="cursor-pointer font-mono text-[9.5px] text-[#767d88] border border-[#2e2e33] rounded-sm px-1.5 py-px hover:text-white hover:border-[#767d88]"
+				class="cursor-pointer font-mono text-[9.5px] text-gray-500 dark:text-[#767d88] border border-gray-200 dark:border-[#2e2e33] rounded-sm px-1.5 py-px hover:text-gray-900 dark:hover:text-white hover:border-gray-400 dark:hover:border-[#767d88]"
 				title="查看素材"
 				@click="pageStore.editorLeftTab = 'asset'"
 			>
-				产物
+				素材
 			</span>
 		</div>
 
@@ -60,7 +60,7 @@
 				{{ entry.error.code }}
 			</span>
 			<button
-				class="ml-auto shrink-0 text-[11px] font-semibold text-white border border-[#2e2e33] rounded px-2.5 py-1 hover:border-[#767d88]"
+				class="ml-auto shrink-0 text-[11px] font-semibold text-gray-900 dark:text-white border border-gray-200 dark:border-[#2e2e33] rounded px-2.5 py-1 hover:border-gray-400 dark:hover:border-[#767d88]"
 				@click="agentStore.retryTool(entry.id)"
 			>
 				重试
@@ -94,7 +94,7 @@ const dangerLabel = computed(
 const dangerClass = computed(() =>
 	danger.value === "destructive"
 		? "text-[#e5484d] border-[#e5484d66]"
-		: "text-[#767d88] border-[#2e2e33]",
+		: "text-gray-500 dark:text-[#767d88] border-gray-200 dark:border-[#2e2e33]",
 );
 
 const statusLabel = computed(

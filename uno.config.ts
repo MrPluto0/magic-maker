@@ -7,7 +7,7 @@ import {
 
 export default defineConfig({
   presets: [
-    presetWind4(), // 样式预设方案
+    presetWind4({ dark: "class" }), // 样式预设方案；dark: 走 html.dark 类切换（默认是 prefers-color-scheme 媒体查询，与站内主题开关脱节）
     presetIcons({}),
     // ...other presets
   ],
