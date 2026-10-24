@@ -80,7 +80,35 @@
       <el-tab-pane label="AI 设置" name="second">
         <div class="mt-2">
           <el-form label-width="100px" class="ai-settings-form">
-            <el-form-item label="API Key：">
+          <el-form-item label="供应商：">
+          	<el-select
+          		v-model="providerKey"
+          		class="w-full"
+          		placeholder="选择模型供应商预设"
+          		@change="applyPreset"
+          	>
+          		<el-option
+          			v-for="p in PROVIDER_PRESETS"
+          			:key="p.key"
+          			:label="p.label"
+          			:value="p.key"
+          		/>
+          	</el-select>
+          </el-form-item>
+
+          <el-form-item label="API 地址：">
+          	<el-input
+          		v-model="pageStore.aiSettings.baseUrl"
+          		placeholder="OpenAI 兼容协议 baseURL，留空 = 站内 /api 代理"
+          		clearable
+          	>
+          		<template #prefix>
+          			<i class="i-mdi-link-variant text-gray-400" />
+          		</template>
+          	</el-input>
+          </el-form-item>
+
+          <el-form-item label="API Key：">
               <el-input
                 v-model="pageStore.aiSettings.apiKey"
                 type="password"
@@ -119,6 +147,19 @@
             </el-form-item>
           </el-form>
 
+          <div class="flex items-center gap-3 mt-1">
+            <el-button size="small" :loading="testing" @click="testConnection">
+              测试连接
+            </el-button>
+            <span
+              v-if="testResult"
+              class="text-xs"
+              :class="testResult.ok ? 'text-green-600 dark:text-green-400' : 'text-red-500'"
+            >
+              {{ testResult.text }}
+            </span>
+          </div>
+
           <!-- 设置说明 -->
           <div class="mt-6 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
             <h4 class="text-sm font-medium text-gray-900 dark:text-white mb-2">
@@ -126,12 +167,12 @@
               设置说明
             </h4>
             <ul class="text-xs text-gray-600 dark:text-gray-300 space-y-1">
-              <li>• 目前均使用的是字节的火山大模型，注册可领取免费额度</li>
+              <li>• 预设覆盖火山方舟 / DeepSeek / 通义千问 / Kimi / 智谱 / OpenRouter / Ollama 本地；任意 OpenAI 兼容服务选「自定义」手填</li>
               <li>
                 • 出于安全考虑，API
                 Key 仅保存在当前会话内存中，不会写入本地磁盘，刷新页面后需重新填写
               </li>
-              <li>• 请输入准确的模型ID，请自行在火山引擎上查看</li>
+              <li>• 请输入准确的模型ID，可在各供应商控制台查看</li>
               <li>
                 • 文本模型用于对话生成、文本扩写等功能；图片模型用于 AI
                 绘图功能；其他模型尚未支持。
@@ -159,6 +200,116 @@ const pageStore = usePageState();
 
 const form = ref<IUser>({} as IUser);
 const fileInputRef = ref<HTMLInputElement | null>(null);
+
+/* --------------------- 模型供应商预设（OpenAI 兼容协议） --------------------- */
+
+interface ProviderPreset {
+	key: string;
+	label: string;
+	baseUrl: string;
+	textModel: string;
+	imageModel?: string;
+}
+
+const PROVIDER_PRESETS: ProviderPreset[] = [
+	{
+		key: "ark",
+		label: "火山方舟（豆包）",
+		baseUrl: "https://ark.cn-beijing.volces.com/api/v3",
+		textModel: "doubao-seed-1-6-flash-250715",
+		imageModel: "doubao-seedream-3-0-t2i-250415",
+	},
+	{
+		key: "deepseek",
+		label: "DeepSeek",
+		baseUrl: "https://api.deepseek.com/v1",
+		textModel: "deepseek-chat",
+	},
+	{
+		key: "qwen",
+		label: "通义千问（DashScope）",
+		baseUrl: "https://dashscope.aliyuncs.com/compatible-mode/v1",
+		textModel: "qwen-plus",
+	},
+	{
+		key: "moonshot",
+		label: "Moonshot Kimi",
+		baseUrl: "https://api.moonshot.cn/v1",
+		textModel: "moonshot-v1-8k",
+	},
+	{
+		key: "zhipu",
+		label: "智谱 GLM",
+		baseUrl: "https://open.bigmodel.cn/api/paas/v4",
+		textModel: "glm-4-flash",
+	},
+	{
+		key: "openrouter",
+		label: "OpenRouter",
+		baseUrl: "https://openrouter.ai/api/v1",
+		textModel: "openai/gpt-4o-mini",
+	},
+	{
+		key: "ollama",
+		label: "Ollama 本地",
+		baseUrl: "http://localhost:11434/v1",
+		textModel: "qwen2.5:7b",
+	},
+	{
+		key: "custom",
+		label: "自定义",
+		baseUrl: "",
+		textModel: "",
+	},
+];
+
+const providerKey = ref("ark");
+
+function applyPreset(key: string) {
+	const p = PROVIDER_PRESETS.find((x) => x.key === key);
+	if (!p) return;
+	pageStore.aiSettings.baseUrl = p.baseUrl;
+	if (p.textModel) pageStore.aiSettings.textModel = p.textModel;
+	if (p.imageModel) pageStore.aiSettings.imageModel = p.imageModel;
+}
+
+/* ------------------------------ 测试连接 ------------------------------ */
+
+const testing = ref(false);
+const testResult = ref<{ ok: boolean; text: string } | null>(null);
+
+async function testConnection() {
+	const s = pageStore.aiSettings;
+	if (!s.apiKey && s.baseUrl && !s.baseUrl.includes("localhost")) {
+		testResult.value = { ok: false, text: "请先填写 API Key" };
+		return;
+	}
+	testing.value = true;
+	testResult.value = null;
+	const started = Date.now();
+	try {
+		const { default: OpenAI } = await import("openai");
+		const client = new OpenAI({
+			dangerouslyAllowBrowser: true,
+			apiKey: s.apiKey || "no-key",
+			baseURL: s.baseUrl || location.origin + "/api",
+		});
+		await client.chat.completions.create({
+			model: s.textModel,
+			messages: [{ role: "user", content: "ping" }],
+			max_tokens: 1,
+		});
+		testResult.value = {
+			ok: true,
+			text: `连接成功（${Date.now() - started}ms）`,
+		};
+	} catch (error) {
+		const msg = error instanceof Error ? error.message : JSON.stringify(error);
+		testResult.value = { ok: false, text: `连接失败：${msg.slice(0, 120)}` };
+	} finally {
+		testing.value = false;
+	}
+}
 
 const handleSave = () => {
 	// 本地模式：用户信息仅保存在当前会话内存中
