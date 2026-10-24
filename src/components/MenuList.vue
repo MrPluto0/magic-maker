@@ -3,8 +3,8 @@
     <li
       v-for="(item, index) of menu"
       :key="item.key"
-      class="flex-1 text-center cursor-pointer py-[13px] pb-[11px] text-[11px] font-[450] uppercase"
-      style="letter-spacing: 0.35px"
+      class="flex-1 text-center cursor-pointer py-[13px] pb-[11px] text-[11px] font-[450] min-w-0 whitespace-nowrap overflow-hidden text-ellipsis"
+      style="letter-spacing: 0"
       :class="
         index === activeIndex
           ? 'text-[#171717] dark:text-white border-b border-b-white dark:border-b-white -mb-px'

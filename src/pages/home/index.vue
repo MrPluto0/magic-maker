@@ -94,7 +94,7 @@
 
     <!-- PROJECTS -->
     <section class="projects-sec theme-dark">
-      <div class="max-w-[1600px] mx-auto px-12 pb-[120px]">
+      <div class="max-w-[1600px] mx-auto px-12 pb-20">
         <div
           class="proj-head flex items-baseline justify-between border-t border-[#27272a] pt-7 mb-10"
         >
@@ -103,8 +103,8 @@
               Projects — {{ projectStore.projectList.length }} 个项目
             </span>
             <h2
-              class="mt-4 text-white font-normal"
-              style="font-size: 48px; line-height: 1; letter-spacing: -1.2px"
+              class="mt-3 text-white font-normal"
+              style="font-size: 28px; line-height: 1; letter-spacing: -0.8px"
             >
               最近项目
             </h2>
