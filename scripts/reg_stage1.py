@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""magic-maker 无头回归（TEST_CHECKLIST 18 项）。
+"""magic-maker 无头回归（TEST_CHECKLIST 19 项）。
 
 用法：先在仓库起 `pnpm dev --port 5175 --strictPort`，然后 `python3 reg_stage1.py`。
 依赖：python3 + playwright（channel=chrome）+ ffmpeg（fixture 缺失时自动生成）。
@@ -428,6 +428,40 @@ def run():
             return vl.list.length; }}
         """)
         step(5, "剪辑：快进→分割(S)", after_s == 2, f"video 段数={after_s}")
+
+        # 19 W5：store 驱动 delete_range → agent 一键全撤恢复
+        # （走工具注册表执行管道：DeleteRangeCmd 波纹删除 + undoCurrentGroup 精确逆操作；
+        #   语义验收 = 撤销后片段覆盖区间与删除前一致——刀口保留是设计行为，
+        #   故放在 #5 分割之后跑，避免残留刀口影响 #5 的「单段 → 2 段」断言）
+        dr = page.evaluate(f"""
+          async () => {{
+            const pinia = {pin};
+            const {{ toolRegistry }} = await import('/src/class/agentTools.ts');
+            const ts = pinia._s.get('track');
+            const vl = ts.trackList.find(l => l.type === 'video');
+            const merge = (list) => {{
+              const ranges = list.map(t => [t.start, t.end]).sort((a, b) => a[0] - b[0]);
+              const out = [];
+              for (const [s, e] of ranges) {{
+                if (out.length && s <= out[out.length - 1][1]) {{
+                  out[out.length - 1][1] = Math.max(out[out.length - 1][1], e);
+                }} else out.push([s, e]);
+              }}
+              return out;
+            }};
+            const before = merge(vl.list);
+            await toolRegistry.get('delete_range').execute({{ startFrame: 5, endFrame: 15, ripple: true }});
+            const after = merge(vl.list);
+            const ag = pinia._s.get('agent');
+            const undone = await ag.undoCurrentGroup();
+            const restored = merge(vl.list);
+            return {{ before, after, undone, restored }};
+          }}
+        """)
+        step(19, "store 驱动 delete_range → undo 恢复",
+             dr["after"] != dr["before"] and dr["undone"]
+             and dr["restored"] == dr["before"],
+             json.dumps(dr, ensure_ascii=False))
 
         ls_bytes = page.evaluate(
             "() => Object.keys(localStorage).reduce((a, k) => a + localStorage[k].length, 0)")
