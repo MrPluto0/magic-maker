@@ -43,8 +43,8 @@
 			</span>
 			<span
 				class="cursor-pointer font-mono text-[9.5px] text-[#767d88] border border-[#2e2e33] rounded-sm px-1.5 py-px hover:text-white hover:border-[#767d88]"
-				title="在产物抽屉中查看项目资源"
-				@click="pageStore.chatArtifactDrawerOpen = true"
+				title="查看素材"
+				@click="pageStore.editorLeftTab = 'asset'"
 			>
 				产物
 			</span>

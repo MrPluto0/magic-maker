@@ -41,9 +41,6 @@
         </template>
       </aside>
 
-      <!-- 产物抽屉：从左栏内侧滑出，收集项目资源（Teleport 到 body，贴左栏右缘） -->
-      <ArtifactDrawer />
-
       <SplitLine
         v-model:new-width="pageStore.resourceWidth"
         direction="vertical"
@@ -92,7 +89,6 @@ import { clearHotKey, initEditorHotKey } from "@/plugins/installHotKey";
 import { usePageState } from "@/stores/page";
 import { useProjectState } from "@/stores/project";
 import AttributeContainer from "./components/attribute/AttributeContainer.vue";
-import ArtifactDrawer from "./components/chat/ArtifactDrawer.vue";
 import ChatPanel from "./components/chat/ChatPanel.vue";
 import GenerateContainer from "./components/generate/GenerateContainer.vue";
 import CanvasPlayer from "./components/player/CanvasPlayer.vue";

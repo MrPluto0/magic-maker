@@ -16,9 +16,6 @@ export const usePageState = defineStore(
 		// 编辑器左栏 tab：对话面板 | 素材（W5 对话面板落左栏）
 		const editorLeftTab = ref<"chat" | "asset">("chat");
 
-		// 产物抽屉开合（会话级，不持久化）
-		const chatArtifactDrawerOpen = ref(false);
-
 		// AI设置表单：apiKey 仅存内存（会话级），不写入任何持久化存储
 		const aiSettings = ref({
 			// agent 对话（BYOK）：OpenAI 兼容协议 baseURL；空 = 站内 /api 代理
@@ -48,7 +45,6 @@ export const usePageState = defineStore(
 			resourceWidth,
 			trackScale,
 			editorLeftTab,
-			chatArtifactDrawerOpen,
 			aiSettings,
 		};
 	},

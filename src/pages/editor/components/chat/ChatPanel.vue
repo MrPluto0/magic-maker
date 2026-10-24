@@ -10,10 +10,10 @@
 			</span>
 			<button
 				class="ml-auto text-[11px] text-[#767d88] rounded px-1.5 py-1 hover:text-white hover:bg-white/6 shrink-0"
-				:class="pageStore.chatArtifactDrawerOpen ? 'text-white bg-white/6' : ''"
-				@click="pageStore.chatArtifactDrawerOpen = !pageStore.chatArtifactDrawerOpen"
+				title="查看素材与 AI 生成"
+				@click="pageStore.editorLeftTab = 'asset'"
 			>
-				产物
+				素材
 			</button>
 			<button
 				class="text-[11px] text-[#767d88] rounded px-1.5 py-1 hover:text-white hover:bg-white/6 shrink-0"
