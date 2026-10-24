@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MAGIC MAKER — Agent 对话面板设计稿</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --black:#000000; --deep:#030303; --surface:#1a1a1a; --raise:#141414;
+  --border:#27272a; --border2:#2e2e33;
+  --white:#ffffff; --slate:#767d88; --slate2:#7d848e; --muted:#a7a7a7; --silver:#c9ccd1;
+  --accent:#e5484d; /* playhead + 破坏性警示 only — cinema red */
+  --mono:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,'Liberation Mono','Courier New',monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{height:100%;background:var(--black);overflow:hidden;}
+body{
+  font-family:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,'PingFang SC','Microsoft YaHei',sans-serif;
+  color:var(--white);-webkit-font-smoothing:antialiased;letter-spacing:-0.16px;
+  display:grid;grid-template-rows:52px 1fr 292px;height:100vh;
+}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit;}
+textarea{font-family:inherit;color:var(--white);}
+.lbl{font-size:11px;font-weight:450;letter-spacing:0.35px;text-transform:uppercase;color:var(--slate);}
+.mono{font-family:var(--mono);letter-spacing:0;}
+
+/* ================= TOP BAR（与 editor-dark 一致） ================= */
+.topbar{display:flex;align-items:center;gap:24px;padding:0 16px;border-bottom:1px solid var(--border);background:var(--deep);}
+.wordmark{display:flex;align-items:center;gap:10px;font-size:13px;font-weight:600;letter-spacing:0.4px;padding-right:20px;border-right:1px solid var(--border);height:52px;}
+.wordmark .dot{width:7px;height:7px;background:var(--white);}
+.topnav{display:flex;gap:18px;}
+.topnav a{font-size:13px;color:var(--slate);text-decoration:none;}
+.topnav a:hover,.topnav a.on{color:var(--white);}
+.proj-id{display:flex;align-items:baseline;gap:12px;margin-left:8px;}
+.proj-id .name{font-size:14px;font-weight:500;}
+.proj-id .saved{font-family:var(--mono);font-size:11px;color:var(--muted);}
+.topbar .spacer{flex:1;}
+.tb-btn{font-size:13px;font-weight:600;color:var(--slate);padding:8px 12px;border-radius:4px;}
+.tb-btn:hover{color:var(--white);}
+.tb-line{font-size:13px;font-weight:600;color:var(--white);padding:7px 14px;border-radius:4px;border:1px solid var(--border2);}
+.tb-solid{font-size:13px;font-weight:600;color:#000;background:var(--white);padding:8px 16px;border-radius:4px;}
+
+/* ================= MAIN ROW ================= */
+.main{display:grid;grid-template-columns:1fr 360px;min-height:0;}
+
+/* ---------- CENTER : player（弱化占位，突出右侧面板） ---------- */
+.center{display:flex;flex-direction:column;min-width:0;background:var(--black);}
+.stage{flex:1;display:grid;place-items:center;position:relative;min-height:0;padding:28px;}
+.canvas-wrap{position:relative;width:min(100%,calc((100vh - 372px)*1.7778));aspect-ratio:16/9;max-height:100%;}
+.canvas{
+  position:absolute;inset:0;border-radius:4px;overflow:hidden;
+  background:
+    radial-gradient(120% 90% at 75% 15%,rgba(110,135,175,.6) 0%,rgba(0,0,0,0) 55%),
+    radial-gradient(70% 60% at 15% 90%,rgba(190,140,90,.3) 0%,rgba(0,0,0,0) 60%),
+    linear-gradient(180deg,#0b0d12 0%,#151820 50%,#04050a 100%);
+}
+.canvas .title-in{
+  position:absolute;left:8%;bottom:18%;
+  font-size:clamp(18px,3.2vw,42px);font-weight:400;letter-spacing:-1.2px;line-height:1.0;color:#fff;
+  outline:1px solid rgba(255,255,255,.85);outline-offset:14px;
+}
+.canvas .grade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.15),rgba(0,0,0,0) 30%,rgba(0,0,0,.35));pointer-events:none;}
+.stage-hud{position:absolute;top:16px;left:20px;right:20px;display:flex;justify-content:space-between;pointer-events:none;}
+.hud-chip{font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:0;background:rgba(3,3,3,.7);border:1px solid var(--border);border-radius:4px;padding:4px 8px;}
+.transport{height:48px;border-top:1px solid var(--border);background:var(--deep);display:flex;align-items:center;gap:4px;padding:0 14px;}
+.tbtn{width:32px;height:32px;border-radius:4px;display:grid;place-items:center;color:var(--slate);font-size:13px;}
+.tbtn.play{color:var(--white);}
+.timecode{font-family:var(--mono);font-size:12px;color:var(--white);letter-spacing:0;margin:0 10px;}
+.timecode .dur{color:var(--muted);}
+.transport .spacer{flex:1;}
+
+/* ---------- TIMELINE（弱化占位） ---------- */
+.timeline{border-top:1px solid var(--border);background:var(--deep);display:flex;flex-direction:column;min-height:0;}
+.tl-tools{height:44px;display:flex;align-items:center;gap:6px;padding:0 14px;border-bottom:1px solid var(--border);}
+.tl-body{flex:1;display:flex;min-height:0;}
+.tlabels{width:64px;border-right:1px solid var(--border);background:var(--deep);display:flex;flex-direction:column;flex:none;}
+.tlabels .tlabel{height:52px;border-bottom:1px solid var(--border);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;}
+.tlabel .nm{font-size:9.5px;font-weight:450;letter-spacing:0.35px;text-transform:uppercase;color:var(--slate);}
+.lanes{flex:1;position:relative;overflow:hidden;}
+.track{position:relative;height:52px;border-bottom:1px solid var(--border);}
+.clip{position:absolute;top:6px;bottom:6px;border-radius:4px;overflow:hidden;border:1px solid var(--border2);}
+.clip .cname{position:absolute;left:8px;top:5px;z-index:3;font-size:10px;font-weight:500;color:#fff;letter-spacing:-0.1px;text-shadow:0 1px 2px rgba(0,0,0,.8);white-space:nowrap;}
+.strip{position:absolute;inset:0;display:flex;}
+.strip i{flex:1;background:radial-gradient(80% 70% at 60% 30%,rgba(115,140,180,.5),rgba(0,0,0,0) 60%),linear-gradient(180deg,#10141c,#05070c);}
+.strip i:nth-child(2n){filter:brightness(.82) hue-rotate(8deg);}
+.clip.audio{background:#101318;}
+.clip.audio .wave{position:absolute;inset:14px 0 4px;height:auto;}
+.clip.text{background:#1a1a1a;}
+.clip.text .fill{position:absolute;inset:0;display:flex;align-items:center;padding:0 10px;}
+.clip.text .fill span{font-size:10px;color:var(--silver);letter-spacing:0.35px;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.clip.gone{opacity:.28;border-style:dashed;}
+.playhead{position:absolute;top:0;bottom:0;width:1px;background:var(--accent);z-index:10;pointer-events:none;}
+.playhead::before{content:"";position:absolute;top:0;left:50%;transform:translateX(-50%);width:11px;height:14px;background:var(--accent);clip-path:polygon(0 0,100% 0,100% 55%,50% 100%,0 55%);}
+
+/* ============================================================
+   RIGHT : AGENT CHAT PANEL（本稿主角）
+   ============================================================ */
+.right{border-left:1px solid var(--border);background:var(--deep);display:flex;flex-direction:column;min-height:0;}
+.chat-tabs{display:flex;border-bottom:1px solid var(--border);flex:none;}
+.chat-tab{flex:1;padding:13px 0 11px;text-align:center;font-size:11px;font-weight:450;letter-spacing:0.35px;text-transform:uppercase;color:var(--slate);border-bottom:1px solid transparent;margin-bottom:-1px;}
+.chat-tab:hover{color:var(--silver);}
+.chat-tab.on{color:var(--white);border-bottom-color:var(--white);}
+.chat-tab .n{font-family:var(--mono);font-size:9px;color:var(--muted);margin-left:4px;letter-spacing:0;}
+
+/* session meta */
+.sess{flex:none;padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;}
+.sess .id{font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:0;}
+.sess .live{width:6px;height:6px;border-radius:50%;background:var(--white);}
+.sess .spacer{flex:1;}
+.sess .act{font-size:11px;color:var(--slate);padding:4px 6px;border-radius:4px;}
+.sess .act:hover{color:var(--white);background:rgba(255,255,255,.06);}
+
+/* chat flow */
+.flow{flex:1;overflow:auto;padding:16px 14px 12px;display:flex;flex-direction:column;gap:14px;}
+.flow>*{flex:none;} /* 防卡片被 flex 压缩截断——滚动由 overflow 负责 */
+
+/* user bubble */
+.msg-user{align-self:flex-end;max-width:86%;background:var(--surface);border:1px solid var(--border2);border-radius:6px;padding:10px 12px;font-size:13px;line-height:1.45;letter-spacing:-0.1px;color:var(--white);}
+.msg-user .who,.msg-ai .who{font-size:9.5px;font-weight:450;letter-spacing:0.35px;text-transform:uppercase;color:var(--slate);margin-bottom:6px;}
+
+/* assistant text */
+.msg-ai{max-width:92%;font-size:13px;line-height:1.5;letter-spacing:-0.1px;color:var(--silver);}
+.msg-ai b{color:var(--white);font-weight:500;}
+
+/* ---------- tool call card ---------- */
+.tcard{border:1px solid var(--border);border-radius:6px;background:var(--raise);overflow:hidden;}
+.tcard .bar{width:2px;position:absolute;top:0;bottom:0;left:0;}
+.tcard{position:relative;}
+.tcard.run .bar{background:var(--white);}
+.tcard.done .bar{background:var(--border2);}
+.tcard.fail .bar{background:var(--accent);}
+.tcard.cut .bar{background:#3a3a40;}
+.tcard .head{display:flex;align-items:center;gap:8px;padding:9px 12px 8px 14px;}
+.tcard .tool{font-family:var(--mono);font-size:11px;color:var(--white);letter-spacing:0;}
+.tcard .tag{font-size:9px;font-weight:450;letter-spacing:0.35px;text-transform:uppercase;color:var(--slate);border:1px solid var(--border2);border-radius:3px;padding:1px 6px;}
+.tcard .tag.warn{color:var(--accent);border-color:rgba(229,72,77,.4);}
+.tcard .st{margin-left:auto;font-family:var(--mono);font-size:9.5px;color:var(--muted);letter-spacing:0;display:flex;align-items:center;gap:6px;}
+.spin{width:8px;height:8px;border:1px solid var(--border2);border-top-color:var(--white);border-radius:50%;animation:sp 1s linear infinite;}
+@keyframes sp{to{transform:rotate(360deg);}}
+.tcard .params{font-family:var(--mono);font-size:10.5px;color:var(--muted);letter-spacing:0;padding:0 12px 8px 14px;line-height:1.6;white-space:pre-wrap;}
+.tcard .params .k{color:var(--slate);}
+.tcard .params .v{color:var(--silver);}
+.tcard .foot{border-top:1px solid var(--border);padding:7px 12px 7px 14px;display:flex;align-items:center;gap:8px;}
+.tcard .foot .sum{font-size:11px;color:var(--muted);letter-spacing:0;}
+.tcard .foot .sum b{color:var(--silver);font-weight:500;}
+.tcard .foot .chip{margin-left:auto;font-family:var(--mono);font-size:9.5px;color:var(--slate);border:1px solid var(--border2);border-radius:3px;padding:2px 6px;letter-spacing:0;}
+/* progress（transcribe） */
+.prog{padding:0 12px 10px 14px;display:flex;flex-direction:column;gap:6px;}
+.prog .row{display:flex;justify-content:space-between;font-family:var(--mono);font-size:9.5px;color:var(--slate);letter-spacing:0;}
+.prog .bar2{height:2px;background:var(--border2);border-radius:1px;overflow:hidden;}
+.prog .bar2 i{display:block;height:100%;background:var(--silver);}
+/* error line */
+.tcard .err{border-top:1px solid var(--border);padding:7px 12px 7px 14px;font-size:11px;color:var(--accent);letter-spacing:0;display:flex;align-items:center;gap:10px;}
+.tcard .err .code{font-family:var(--mono);font-size:9.5px;border:1px solid rgba(229,72,77,.4);border-radius:3px;padding:1px 6px;letter-spacing:0;}
+.tcard .err .retry{margin-left:auto;font-size:11px;font-weight:600;color:var(--white);border:1px solid var(--border2);border-radius:4px;padding:4px 10px;}
+.tcard .err .retry:hover{border-color:var(--slate);}
+
+/* ---------- confirm card ---------- */
+.ccard{border:1px solid var(--white);border-radius:6px;background:var(--surface);overflow:hidden;}
+.ccard .head{display:flex;align-items:center;gap:8px;padding:10px 12px;border-bottom:1px solid var(--border);}
+.ccard .head .t{font-size:12px;font-weight:600;color:var(--white);}
+.ccard .head .tool{margin-left:auto;font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:0;}
+.ccard .list{padding:8px 12px;display:flex;flex-direction:column;gap:6px;}
+.ccard .li{display:flex;align-items:baseline;gap:8px;font-size:12px;color:var(--silver);letter-spacing:-0.1px;}
+.ccard .li .tc{font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:0;flex:none;}
+.ccard .li .txt{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.ccard.approved .li .txt{text-decoration:line-through;color:var(--slate);}
+.ccard .total{padding:0 12px 10px;font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:0;}
+.ccard .ops{border-top:1px solid var(--border);display:flex;gap:8px;padding:10px 12px;}
+.btn{font-size:12px;font-weight:600;border-radius:4px;padding:7px 14px;border:1px solid var(--border2);color:var(--silver);}
+.btn:hover{color:var(--white);border-color:var(--slate);}
+.btn.solid{background:var(--white);color:#000;border-color:var(--white);}
+.btn.solid:hover{color:#000;opacity:.9;}
+/* 已裁决后按钮退位为暗态，避免「可点」错觉 */
+.ccard.approved .btn,.ccard.rejected .btn{opacity:.32;pointer-events:none;}
+.ccard.approved .btn.solid{background:var(--border2);color:var(--muted);border-color:var(--border2);}
+.ccard.rejected{border-color:var(--border2);}
+.ccard.rejected .head .t{color:var(--muted);}
+.ccard .verdict{margin-left:auto;display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:9.5px;color:var(--silver);letter-spacing:0;}
+.ccard.rejected .verdict{color:var(--muted);}
+
+/* undo-all bar */
+.undo-bar{flex:none;margin:0 14px 10px;border:1px solid var(--border2);border-radius:6px;background:var(--raise);padding:9px 12px;display:flex;align-items:center;gap:10px;}
+.undo-bar .lbl{font-size:10px;}
+.undo-bar .steps{font-family:var(--mono);font-size:11px;color:var(--silver);letter-spacing:0;}
+.undo-bar button{margin-left:auto;display:flex;align-items:center;gap:7px;font-size:12px;font-weight:600;color:var(--white);border:1px solid var(--border2);border-radius:4px;padding:6px 12px;}
+.undo-bar button:hover{border-color:var(--slate);}
+
+/* ---------- composer ---------- */
+.composer{flex:none;border-top:1px solid var(--border);padding:12px 14px 14px;display:flex;flex-direction:column;gap:10px;background:var(--deep);}
+.composer .box{border:1px solid var(--border2);border-radius:6px;background:var(--raise);padding:10px 12px;display:flex;flex-direction:column;gap:8px;}
+.composer .box:focus-within{border-color:var(--slate);}
+.composer textarea{width:100%;background:none;border:none;outline:none;resize:none;font-size:13px;line-height:1.45;letter-spacing:-0.1px;color:var(--white);}
+.composer textarea::placeholder{color:var(--slate);}
+.composer .row{display:flex;align-items:center;gap:8px;}
+.mchip{display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:10px;color:var(--slate);border:1px solid var(--border2);border-radius:4px;padding:4px 8px;letter-spacing:0;white-space:nowrap;}
+.mchip:hover{color:var(--silver);}
+.hint{font-family:var(--mono);font-size:9.5px;color:var(--slate);letter-spacing:0;white-space:nowrap;}
+.send{margin-left:auto;display:flex;align-items:center;gap:8px;font-size:12px;font-weight:600;color:#000;background:var(--white);border-radius:4px;padding:7px 14px;white-space:nowrap;}
+.send:hover{opacity:.9;}
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<header class="topbar">
+  <div class="wordmark"><span class="dot"></span>MAGIC MAKER</div>
+  <nav class="topnav">
+    <a href="#">首页</a>
+    <a href="#" class="on">编辑器</a>
+  </nav>
+  <div class="proj-id">
+    <span class="name">城市夜行记</span>
+    <span class="saved">已自动保存</span>
+  </div>
+  <div class="spacer"></div>
+  <button class="tb-btn">AI 设置</button>
+  <button class="tb-line">保存</button>
+  <button class="tb-solid">导出</button>
+</header>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- CENTER -->
+  <div class="center">
+    <div class="stage">
+      <div class="stage-hud">
+        <span class="hud-chip">1920 × 1080 · 30 FPS</span>
+        <span class="hud-chip">AGENT 模式 · 每步可撤销</span>
+      </div>
+      <div class="canvas-wrap">
+        <div class="canvas"><div class="grade"></div><div class="title-in">城市夜行记<small>EP.03 — 深夜便利店的灯光学</small></div></div>
+      </div>
+    </div>
+    <div class="timeline">
+      <div class="tl-tools">
+        <span class="lbl">TIMELINE</span>
+      </div>
+      <div class="tl-body">
+        <div class="tlabels">
+          <div class="tlabel"><span class="nm">视频</span></div>
+          <div class="tlabel"><span class="nm">音频</span></div>
+          <div class="tlabel"><span class="nm">字幕</span></div>
+        </div>
+        <div class="lanes">
+          <div class="track">
+            <div class="clip" style="left:0%;width:26%"><div class="strip"><i></i><i></i><i></i><i></i></div><span class="cname">口播_v3</span></div>
+            <div class="clip gone" style="left:26.4%;width:8.5%"><div class="strip"><i></i><i></i><i></i><i></i></div><span class="cname">口误 01–03</span></div>
+            <div class="clip" style="left:35.2%;width:31%"><div class="strip"><i></i><i></i><i></i><i></i></div><span class="cname">口播_v3 · 续</span></div>
+            <div class="clip" style="left:66.5%;width:33.5%"><div class="strip"><i></i><i></i><i></i><i></i></div><span class="cname">口播_v3 · 尾</span></div>
+          </div>
+          <div class="track">
+            <div class="clip audio" style="left:0%;width:26%"><svg class="wave" viewBox="0 0 100 24" preserveAspectRatio="none"><path d="M0 12 L4 7 L8 15 L12 5 L16 18 L20 10 L24 14 L28 6 L32 16 L36 9 L40 13 L44 7 L48 15 L52 11 L56 17 L60 8 L64 14 L68 10 L72 16 L76 6 L80 13 L84 9 L88 15 L92 11 L96 14 L100 12" fill="none" stroke="#3d434d" stroke-width="1"/></svg></div>
+            <div class="clip audio gone" style="left:26.4%;width:8.5%"><svg class="wave" viewBox="0 0 100 24" preserveAspectRatio="none"><path d="M0 12 L6 8 L12 16 L18 9 L24 14 L30 7 L36 15 L42 10 L48 16 L54 8 L60 13 L66 9 L72 15 L78 11 L84 14 L90 8 L96 13 L100 12" fill="none" stroke="#3d434d" stroke-width="1"/></svg></div>
+            <div class="clip audio" style="left:35.2%;width:64.8%"><svg class="wave" viewBox="0 0 100 24" preserveAspectRatio="none"><path d="M0 12 L5 7 L10 15 L15 6 L20 17 L25 10 L30 14 L35 5 L40 16 L45 9 L50 13 L55 7 L60 15 L65 11 L70 17 L75 8 L80 14 L85 10 L90 16 L95 7 L100 12" fill="none" stroke="#3d434d" stroke-width="1"/></svg></div>
+          </div>
+          <div class="track">
+            <div class="clip text" style="left:1%;width:9%"><div class="fill"><span>大家好，我是…</span></div></div>
+            <div class="clip text" style="left:11%;width:14%"><div class="fill"><span>然后就是说…</span></div></div>
+            <div class="clip text" style="left:36.4%;width:12%"><div class="fill"><span>今天的主题…</span></div></div>
+          </div>
+          <div class="playhead" style="left:35.2%"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT : AGENT CHAT -->
+  <aside class="right">
+    <div class="chat-tabs">
+      <div class="chat-tab">属性</div>
+      <div class="chat-tab on">Agent<span class="n">S2</span></div>
+    </div>
+
+    <div class="sess">
+      <span class="live"></span>
+      <span class="id">会话 S2 · 城市夜行记</span>
+      <span class="spacer"></span>
+      <button class="act">新会话</button>
+      <button class="act">历史</button>
+    </div>
+
+    <div class="flow">
+
+      <!-- user -->
+      <div class="msg-user"><div class="who">你</div>开头有几句口误和「然后就是说」，帮我剪掉，整体压到 90 秒以内</div>
+
+      <!-- assistant -->
+      <div class="msg-ai">好，我先读一遍时间轴结构，再转写定位口误的具体区间。</div>
+
+      <!-- tool: query_timeline -->
+      <div class="tcard done">
+        <span class="bar"></span>
+        <div class="head">
+          <span class="tool">query_timeline</span>
+          <span class="tag">查询</span>
+          <span class="st">完成 · 0.1s</span>
+        </div>
+        <div class="params"><span class="k">tracks</span> <span class="v">视频 ×1 · 音频 ×1 · 文字 ×1</span>
+<span class="k">duration</span> <span class="v">02:04.0（3720 帧 @30fps）</span></div>
+        <div class="foot"><span class="sum">共 <b>9 个片段</b>，其中视频主轨 3 段</span></div>
+      </div>
+
+      <!-- tool: transcribe -->
+      <div class="tcard done">
+        <span class="bar"></span>
+        <div class="head">
+          <span class="tool">transcribe</span>
+          <span class="tag">写入</span>
+          <span class="st">完成 · 41s</span>
+        </div>
+        <div class="params"><span class="k">model</span> <span class="v">whisper-base（本地）</span>
+<span class="k">language</span> <span class="v">zh · device webgpu</span></div>
+        <div class="foot"><span class="sum">识别 <b>38 段</b>，字幕已上轨</span><span class="chip">48.2MB 已缓存</span></div>
+      </div>
+
+      <!-- assistant plan -->
+      <div class="msg-ai">转写完了。定位到 <b>3 处口误</b>和 <b>2 处口头禅</b>，分两个区间删除：<br>① 00:12.3–00:18.0（口误 3 句连着）<br>② 00:47.5–00:50.1（「然后就是说」×2）<br>删完预计 <b>02:04.0 → 01:55.9</b>，还不到 90 秒的话我再压缩后半段的停顿。</div>
+
+      <!-- confirm card (approved) -->
+      <div class="ccard approved">
+        <div class="head"><span class="t">确认删除</span><span class="tool">delete_range</span></div>
+        <div class="list">
+          <div class="li"><span class="tc">00:12.3–00:14.1</span><span class="txt">「那个…就是上次说的那个」</span></div>
+          <div class="li"><span class="tc">00:14.1–00:16.0</span><span class="txt">「等一下我捋一下」</span></div>
+          <div class="li"><span class="tc">00:16.0–00:18.0</span><span class="txt">「嗯……对对对」</span></div>
+        </div>
+        <div class="total">视频/音频波纹收拢 · 同步删 3 条字幕 · 缩短 00:05.7</div>
+        <div class="ops">
+          <button class="btn solid">执行</button>
+          <button class="btn">调整</button>
+          <button class="btn">取消</button>
+          <span class="verdict">✓ 已执行</span>
+        </div>
+      </div>
+
+      <!-- tool: delete_range done -->
+      <div class="tcard done">
+        <span class="bar"></span>
+        <div class="head">
+          <span class="tool">delete_range</span>
+          <span class="tag warn">破坏性</span>
+          <span class="st">完成 · 0.4s</span>
+        </div>
+        <div class="params"><span class="k">startSec</span> <span class="v">12.3</span>  <span class="k">endSec</span> <span class="v">18.0</span>
+<span class="k">ripple</span> <span class="v">true</span>  <span class="k">scope</span> <span class="v">全部轨道</span></div>
+        <div class="foot"><span class="sum">删除 <b>3 片段 · 3 字幕段</b>，缩短 <b>00:05.7</b></span><span class="chip">可撤销</span></div>
+      </div>
+
+      <!-- tool: delete_range #2 cancelled -->
+      <div class="tcard cut">
+        <span class="bar"></span>
+        <div class="head">
+          <span class="tool">delete_range</span>
+          <span class="tag warn">破坏性</span>
+          <span class="st">已取消</span>
+        </div>
+        <div class="params"><span class="k">startSec</span> <span class="v">47.5</span>  <span class="k">endSec</span> <span class="v">50.1</span></div>
+        <div class="foot"><span class="sum">你在确认卡选了「取消」</span></div>
+      </div>
+
+      <!-- assistant adjust -->
+      <div class="msg-ai">收到，00:47.5 这处我保留。目前总长 <b>01:58.3</b>，还想压到 90 秒内的话，我建议把 01:20 起的长停顿收紧 4 秒——要我继续吗？</div>
+
+    </div>
+
+    <!-- undo-all -->
+    <div class="undo-bar">
+      <span class="steps">本回合 4 步</span>
+      <span class="lbl">全部可撤销</span>
+      <button><span class="mono" style="font-size:11px">↩</span>一键全撤</button>
+    </div>
+
+    <!-- composer -->
+    <div class="composer">
+      <div class="box">
+        <textarea rows="2" placeholder="描述你要的剪辑，例如：把后半段语速停顿收紧一点…"></textarea>
+        <div class="row">
+          <button class="mchip">BYOK · gpt-4o-mini</button>
+          <span class="hint">⏎ 发送 / Shift+⏎ 换行</span>
+          <button class="send">发送 <span style="font-size:10px">↑</span></button>
+        </div>
+      </div>
+    </div>
+  </aside>
+</div>
+
+</body>
+</html>
