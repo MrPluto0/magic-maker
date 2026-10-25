@@ -13,7 +13,7 @@
       style="text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8)"
     >
       <i class="i-mdi-image mr-1.5 text-xs shrink-0"></i>
-      <span class="mr-4 shrink-0">{{ trackItem.name }}</span>
+      <span class="mr-4 min-w-0 truncate">{{ trackItem.name }}</span>
     </div>
     <Loading v-show="trackItem.loading" class="pl-12 bg-opacity-70" />
   </div>

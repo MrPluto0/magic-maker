@@ -4,7 +4,7 @@
 		<div
 			class="flex-none flex items-center gap-2 px-4 py-2.5 border-b border-[#e9ecf2] dark:border-[#27272a]"
 		>
-			<span class="w-1.5 h-1.5 rounded-full bg-white shrink-0" />
+			<span class="w-1.5 h-1.5 rounded-full bg-gray-900 dark:bg-white shrink-0" />
 			<button
 				class="font-mono text-[10px] text-gray-500 dark:text-[#767d88] truncate hover:text-gray-900 dark:hover:text-white"
 				title="会话历史"
@@ -19,13 +19,6 @@
 				@click="historyOpen = !historyOpen"
 			>
 				历史
-			</button>
-			<button
-				class="text-[11px] text-gray-500 dark:text-[#767d88] rounded px-1.5 py-1 hover:text-gray-900 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/6 shrink-0"
-				title="查看素材与 AI 生成"
-				@click="pageStore.editorLeftTab = 'asset'"
-			>
-				素材
 			</button>
 			<button
 				class="text-[11px] text-gray-500 dark:text-[#767d88] rounded px-1.5 py-1 hover:text-gray-900 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/6 shrink-0"
@@ -173,6 +166,12 @@
 					<span class="font-mono text-[9.5px] text-gray-500 dark:text-[#767d88] whitespace-nowrap">
 						{{ byokLabel }}
 					</span>
+					<button
+						class="font-mono text-[9.5px] text-gray-500 dark:text-[#767d88] whitespace-nowrap hover:text-gray-900 dark:hover:text-[#c9ccd1]"
+						@click="manualOpen = !manualOpen"
+					>
+						{{ manualOpen ? "▾ 手动工具" : "▸ 手动工具" }}
+					</button>
 					<span class="font-mono text-[9.5px] text-gray-500 dark:text-[#767d88] ml-auto whitespace-nowrap">
 						⏎ 发送 / Shift+⏎ 换行 / / 命令
 					</span>
@@ -193,33 +192,28 @@
 				{{ slashError }}
 			</div>
 
-			<!-- 手动工具触发（无需 LLM） -->
-			<div class="flex items-center gap-2">
-				<button
-					class="font-mono text-[10px] text-gray-500 dark:text-[#767d88] border border-gray-200 dark:border-[#2e2e33] rounded px-2 py-1 hover:text-gray-700 dark:text-[#c9ccd1] whitespace-nowrap"
-					@click="manualOpen = !manualOpen"
+			<!-- 手动工具触发展开区（无需 LLM）：开关已并入输入区信息行 -->
+			<div
+				v-if="manualOpen"
+				class="flex items-center gap-2"
+			>
+				<select
+					v-model="manualTool"
+					class="bg-white dark:bg-[#141414] border border-gray-200 dark:border-[#2e2e33] rounded px-1.5 py-1 font-mono text-[10px] text-gray-700 dark:text-[#c9ccd1] outline-none max-w-[130px]"
 				>
-					{{ manualOpen ? "▾ 手动工具" : "▸ 手动工具" }}
+					<option v-for="t in toolOptions" :key="t" :value="t">{{ t }}</option>
+				</select>
+				<input
+					v-model="manualParams"
+					class="flex-1 min-w-0 bg-white dark:bg-[#141414] border border-gray-200 dark:border-[#2e2e33] rounded px-2 py-1 font-mono text-[10px] text-gray-700 dark:text-[#c9ccd1] outline-none focus:border-gray-400 dark:focus:border-[#767d88]"
+					placeholder='{"startSec":12.3,"endSec":18,"ripple":true}'
+				/>
+				<button
+					class="text-[11px] font-semibold text-gray-900 dark:text-white border border-gray-200 dark:border-[#2e2e33] rounded px-2.5 py-1 hover:border-gray-400 dark:hover:border-[#767d88] whitespace-nowrap"
+					@click="onManualRun"
+				>
+					运行
 				</button>
-				<template v-if="manualOpen">
-					<select
-						v-model="manualTool"
-						class="bg-white dark:bg-[#141414] border border-gray-200 dark:border-[#2e2e33] rounded px-1.5 py-1 font-mono text-[10px] text-gray-700 dark:text-[#c9ccd1] outline-none max-w-[130px]"
-					>
-						<option v-for="t in toolOptions" :key="t" :value="t">{{ t }}</option>
-					</select>
-					<input
-						v-model="manualParams"
-						class="flex-1 min-w-0 bg-white dark:bg-[#141414] border border-gray-200 dark:border-[#2e2e33] rounded px-2 py-1 font-mono text-[10px] text-gray-700 dark:text-[#c9ccd1] outline-none focus:border-gray-400 dark:focus:border-[#767d88]"
-						placeholder='{"startSec":12.3,"endSec":18,"ripple":true}'
-					/>
-					<button
-						class="text-[11px] font-semibold text-gray-900 dark:text-white border border-gray-200 dark:border-[#2e2e33] rounded px-2.5 py-1 hover:border-gray-400 dark:hover:border-[#767d88] whitespace-nowrap"
-						@click="onManualRun"
-					>
-						运行
-					</button>
-				</template>
 			</div>
 		</div>
 	</div>

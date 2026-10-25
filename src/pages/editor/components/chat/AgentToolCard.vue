@@ -1,6 +1,6 @@
 <template>
 	<div
-		class="flex flex-col border border-gray-200 dark:border-[#2e2e33] dark:bg-white dark:bg-[#141414] rounded-md overflow-hidden shrink-0"
+		class="flex flex-col border border-gray-200 dark:border-[#2e2e33] bg-white dark:bg-[#141414] rounded-md overflow-hidden shrink-0"
 	>
 		<!-- 标题行：工具名 + danger 标签 + 状态 -->
 		<div class="flex items-center gap-2 px-3 py-2">
@@ -20,8 +20,8 @@
 			</span>
 		</div>
 
-		<!-- 参数摘要（mono 小字） -->
-		<div class="px-3 pb-2 font-mono text-[10.5px] leading-relaxed text-gray-500 dark:text-[#767d88] whitespace-pre-wrap break-all">
+		<!-- 参数摘要（mono 小字，单行紧凑 + 最多两行） -->
+		<div class="px-3 pb-2 font-mono text-[10.5px] leading-relaxed text-gray-500 dark:text-[#767d88] break-all line-clamp-2">
 			{{ paramsText }}
 		</div>
 
@@ -113,6 +113,6 @@ const paramsText = computed(
 		Object.entries(props.entry.params)
 			.filter(([k]) => k !== "confirmed")
 			.map(([k, v]) => `${k} ${typeof v === "object" ? JSON.stringify(v) : v}`)
-			.join("\n") || "无参数",
+			.join(" · ") || "无参数",
 );
 </script>

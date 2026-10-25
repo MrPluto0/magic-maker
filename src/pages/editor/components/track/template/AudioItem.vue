@@ -8,7 +8,7 @@
         class="i-mdi-volume-high"
         style="font-size: 12px; margin-right: 6px; flex-shrink: 0"
       ></i>
-      <span class="mr-4 shrink-0">{{ trackItem.name }}</span>
+      <span class="mr-4 min-w-0 truncate">{{ trackItem.name }}</span>
     </div>
 
     <div class="overflow-hidden bg-black/20 flex-1 relative">
