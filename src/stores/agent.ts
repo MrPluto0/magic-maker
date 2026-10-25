@@ -717,6 +717,9 @@ export const useAgentState = defineStore("agent", () => {
 		// 上下文治理：发送前把超预算的历史压缩成摘要（system/快照/最近回合保留）
 		conversation = compactConversation(conversation);
 		conversation.push({ role: "user", content: trimmed });
+		// 新会话首轮 runningTurn 为空，continueTurn 会直接 return（回合静默不启动）
+		// ——一次发送即一个回合（命令组），先落组再驱动
+		ensureGroup();
 		await continueTurn();
 	}
 

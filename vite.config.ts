@@ -60,6 +60,12 @@ export default defineConfig({
         rewrite: (path) => path.replace(/^\/api/, ""),
         changeOrigin: true,
       },
+      // 智谱 GLM（OpenAI 兼容）：浏览器直连被 CORS 拦，dev 走代理
+      "/bigmodel": {
+        target: "https://open.bigmodel.cn/api/paas/v4",
+        rewrite: (path) => path.replace(/^\/bigmodel/, ""),
+        changeOrigin: true,
+      },
     },
   },
 });
