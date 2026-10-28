@@ -66,6 +66,12 @@ export default defineConfig({
         rewrite: (path) => path.replace(/^\/bigmodel/, ""),
         changeOrigin: true,
       },
+      // GLM Coding Plan 专用端点（glm-5.3 完整版只在这条路开放）
+      "/glmcode": {
+        target: "https://open.bigmodel.cn/api/coding/paas/v4",
+        rewrite: (path) => path.replace(/^\/glmcode/, ""),
+        changeOrigin: true,
+      },
     },
   },
 });
