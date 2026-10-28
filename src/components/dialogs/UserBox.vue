@@ -167,7 +167,7 @@
               设置说明
             </h4>
             <ul class="text-xs text-gray-600 dark:text-gray-300 space-y-1">
-              <li>• 预设覆盖火山方舟 / DeepSeek / 通义千问 / Kimi / 智谱 / OpenRouter / Ollama 本地；任意 OpenAI 兼容服务选「自定义」手填</li>
+              <li>• 本机接入 GLM Coding Plan：baseUrl 与 Key 全部留空即可（自动读 ~/.hermes/.env 的 GLM_API_KEY 走 /glm 代理）；其他供应商选预设或「自定义」手填 BYOK</li>
               <li>
                 • 出于安全考虑，API
                 Key 仅保存在当前会话内存中，不会写入本地磁盘，刷新页面后需重新填写
@@ -291,8 +291,8 @@ async function testConnection() {
 		const { default: OpenAI } = await import("openai");
 		const client = new OpenAI({
 			dangerouslyAllowBrowser: true,
-			apiKey: s.apiKey || "no-key",
-			baseURL: s.baseUrl || location.origin + "/api",
+			apiKey: s.apiKey || "byok-proxy",
+			baseURL: s.baseUrl || location.origin + "/glm",
 		});
 		await client.chat.completions.create({
 			model: s.textModel,

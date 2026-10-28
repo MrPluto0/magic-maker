@@ -21,7 +21,7 @@ export const usePageState = defineStore(
 			// agent 对话（BYOK）：OpenAI 兼容协议 baseURL；空 = 站内 /api 代理
 			baseUrl: "",
 			apiKey: "",
-			textModel: "doubao-seed-1-6-flash-250715",
+			textModel: "glm-5.3",
 			imageModel: "doubao-seedream-3-0-t2i-250415",
 		});
 

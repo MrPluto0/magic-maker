@@ -536,9 +536,11 @@ export const useAgentState = defineStore("agent", () => {
 	}): AgentLLM {
 		const client = new OpenAI({
 			dangerouslyAllowBrowser: true,
-			apiKey: settings.apiKey,
-			// 空 baseURL = 站内 /api 代理（与 OpenAIService 同约定）
-			baseURL: settings.baseUrl || location.origin + "/api",
+			// 空 Key = 站内 /glm 代理注入 ~/.hermes/.env 的 GLM_API_KEY，
+			// 这里给占位符只为满足 SDK 非空校验
+			apiKey: settings.apiKey || "byok-proxy",
+			// 空 baseURL = 站内 /glm 代理（GLM Coding Plan，见 vite.config.ts）
+			baseURL: settings.baseUrl || location.origin + "/glm",
 		});
 		return {
 			async chat(messages, tools) {
@@ -699,13 +701,8 @@ export const useAgentState = defineStore("agent", () => {
 		const trimmed = text.trim();
 		if (!trimmed) return;
 		pushEntry({ kind: "user", text: trimmed });
-		if (!pageStore.aiSettings.apiKey) {
-			pushEntry({
-				kind: "system",
-				text: "尚未配置 API Key：请到「AI 设置」填写 Key 与模型 ID（BYOK，OpenAI 兼容协议）。填好后即可对话；不填也可以在下方手动触发工具。",
-			});
-			return;
-		}
+		// Key 可以为空：站内 /glm 代理会注入 ~/.hermes/.env 的 GLM_API_KEY；
+		// 填了 Key 则走 BYOK 直连用户自己的供应商。
 		activeLLM = createByokLlm(pageStore.aiSettings);
 		const system = await buildSystemMessage();
 		if (conversation.length === 0) {

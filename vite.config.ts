@@ -1,10 +1,58 @@
+import fs from "node:fs";
+import os from "node:os";
+import path from "node:path";
 import { fileURLToPath, URL } from "node:url";
 import UnoCSS from "unocss/vite";
 import vue from "@vitejs/plugin-vue";
 import AutoImport from "unplugin-auto-import/vite";
 import { ElementPlusResolver } from "unplugin-vue-components/resolvers";
 import Components from "unplugin-vue-components/vite";
-import { defineConfig } from "vite";
+import { defineConfig, type ProxyOptions } from "vite";
+
+// GLM Coding Plan 零配置接入：从 Hermes 的 .env 读 GLM_API_KEY，
+// 请求没带有效鉴权时代理自动注入——magic-maker 的 AI 设置里
+// baseUrl/Key 全留空即可用 glm-5.3，无需手工填钥匙。
+function hermesGlmKey(): string | undefined {
+  try {
+    const envPath = path.join(os.homedir(), ".hermes", ".env");
+    if (!fs.existsSync(envPath)) return undefined;
+    const line = fs
+      .readFileSync(envPath, "utf8")
+      .split("\n")
+      .find((l) => l.startsWith("GLM_API_KEY="));
+    if (!line) return undefined;
+    const value = line.slice("GLM_API_KEY=".length).trim();
+    return value.replace(/^["']|["']$/g, "") || undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+const GLM_CODE_BASE = "https://open.bigmodel.cn/api/coding/paas/v4";
+
+// 站内 GLM 代理：透传 BYOK 鉴权；没带鉴权（留空/占位符）时注入 Hermes 钥匙
+function glmProxy(): ProxyOptions {
+  return {
+    target: GLM_CODE_BASE,
+    changeOrigin: true,
+    rewrite: (p) => p.replace(/^\/glm/, ""),
+    configure: (proxy) => {
+      proxy.on("proxyReq", (proxyReq) => {
+        const auth = proxyReq.getHeader("authorization");
+        const key = hermesGlmKey();
+        if (!key) return;
+        const authText = typeof auth === "string" ? auth : "";
+        const usable =
+          !authText ||
+          authText === "Bearer no-key" ||
+          authText.includes("byok-proxy");
+        if (usable) {
+          proxyReq.setHeader("Authorization", `Bearer ${key}`);
+        }
+      });
+    },
+  };
+}
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -55,23 +103,14 @@ export default defineConfig({
   server: {
     port: 3001,
     proxy: {
+      // 火山方舟（豆包生图等，需 BYOK 自带方舟 Key）
       "/api": {
         target: "https://ark.cn-beijing.volces.com/api/v3",
         rewrite: (path) => path.replace(/^\/api/, ""),
         changeOrigin: true,
       },
-      // 智谱 GLM（OpenAI 兼容）：浏览器直连被 CORS 拦，dev 走代理
-      "/bigmodel": {
-        target: "https://open.bigmodel.cn/api/paas/v4",
-        rewrite: (path) => path.replace(/^\/bigmodel/, ""),
-        changeOrigin: true,
-      },
-      // GLM Coding Plan 专用端点（glm-5.3 完整版只在这条路开放）
-      "/glmcode": {
-        target: "https://open.bigmodel.cn/api/coding/paas/v4",
-        rewrite: (path) => path.replace(/^\/glmcode/, ""),
-        changeOrigin: true,
-      },
+      // GLM Coding Plan：agent 对话默认走这里，零配置（钥匙从 ~/.hermes/.env 注入）
+      "/glm": glmProxy(),
     },
   },
 });

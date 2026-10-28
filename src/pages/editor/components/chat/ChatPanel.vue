@@ -340,7 +340,7 @@ async function runSlash(text: string): Promise<string | null> {
 const byokLabel = computed(() =>
 	pageStore.aiSettings.apiKey
 		? `BYOK · ${pageStore.aiSettings.textModel}`
-		: "BYOK · 未配置 Key",
+		: `GLM 代理 · ${pageStore.aiSettings.textModel}`,
 );
 
 /** 最新一个可撤回合（渲染 undo-bar） */
