@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""magic-maker 无头回归（TEST_CHECKLIST 19 项）。
+"""magic-maker 无头回归（TEST_CHECKLIST 23 项）。
 
 用法：先在仓库起 `pnpm dev --port 5175 --strictPort`，然后 `python3 reg_stage1.py`。
 依赖：python3 + playwright（channel=chrome）+ ffmpeg（fixture 缺失时自动生成）。
@@ -217,6 +217,20 @@ def run():
         step(2, "新建项目", proj_name == "阶段一回归项目", f"name={proj_name}")
 
         page.evaluate("() => { location.hash = '#/editor'; }")
+        wait_stores(page, ["hasTrack", "hasPlayer", "hasResource"])
+
+        # W6 预热：whisper worker 首次加载会让 vite 按需优化 @huggingface/transformers，
+        # 可能触发整页 reload——在上传素材前（无状态阶段）让它发生，避免打断后续步骤
+        try:
+            page.evaluate("""
+              async () => {
+                const { whisperClient } = await import('/src/class/whisperClient.ts');
+                await whisperClient.selfTest();
+              }
+            """)
+        except Exception:
+            pass
+        wait_stable(page)
         wait_stores(page, ["hasTrack", "hasPlayer", "hasResource"])
 
         resources = page.evaluate(JS_UPLOAD, [
@@ -462,6 +476,87 @@ def run():
              dr["after"] != dr["before"] and dr["undone"]
              and dr["restored"] == dr["before"],
              json.dumps(dr, ensure_ascii=False))
+
+        # 20 W6：PCM 提取管线（OPFS → decodeAudioData → 16k mono Float32Array）
+        pcm = page.evaluate("""
+          async () => {
+            const { extractPcm16kMono } = await import('/src/utils/audio.ts');
+            const pinia = document.querySelector('#app').__vue_app__
+              .config.globalProperties.$pinia;
+            const rs = pinia._s.get('resource');
+            const audio = rs.resources.find(r => r.type === 'audio');
+            const pcm = await extractPcm16kMono(audio.opfsKey ?? audio.id);
+            return { len: pcm.length, isF32: pcm instanceof Float32Array };
+          }
+        """)
+        step(20, "PCM 管道（OPFS→decode→16k mono）",
+             pcm["isF32"] and 15000 < pcm["len"] < 17000, str(pcm))
+
+        # 21 W6：whisper worker 消息协议（asr 先于 load → E_NOT_LOADED 回包）
+        proto = page.evaluate("""
+          async () => {
+            const { whisperClient } = await import('/src/class/whisperClient.ts');
+            return await whisperClient.selfTest();
+          }
+        """)
+        step(21, "worker 协议（load/asr 消息双向可达）",
+             proto["ok"] and proto["code"] == "E_NOT_LOADED", str(proto))
+
+        # 22 W6：segments → 字幕行 TextTrack diff 同步（含全局样式联动）
+        sub = page.evaluate("""
+          async () => {
+            const pinia = document.querySelector('#app').__vue_app__
+              .config.globalProperties.$pinia;
+            const ss = pinia._s.get('subtitle');
+            const ts = pinia._s.get('track');
+            const subLine = () => ts.trackList.find(l => l.type === 'text' && l.isSubtitle === true);
+            const mk = (t, s, e) => ss.makeSegment(t, s, e);
+            ss.setSegments([mk('第一句字幕', 0, 60), mk('第二句字幕', 60, 120)]);
+            await new Promise(r => setTimeout(r, 150));
+            const line1 = subLine();
+            const state1 = line1 ? {
+              main: !!line1.main, isSubtitle: line1.isSubtitle,
+              n: line1.list.length,
+              segIds: line1.list.map(t => !!t.segmentId),
+              texts: line1.list.map(t => t.text),
+              spans: line1.list.map(t => [t.start, t.end]),
+            } : null;
+            ss.setStyle({ fontSize: 48 });
+            await new Promise(r => setTimeout(r, 150));
+            const state2 = subLine() ? subLine().list.map(t => t.fontSize) : [];
+            ss.setSegments([mk('只留一句', 0, 60)]);
+            await new Promise(r => setTimeout(r, 150));
+            const state3n = subLine() ? subLine().list.length : 0;
+            ss.setSegments([]);
+            await new Promise(r => setTimeout(r, 150));
+            return { state1, state2, state3n, removed: !subLine() };
+          }
+        """)
+        ok22 = (
+            sub["state1"] and sub["state1"]["main"] is False
+            and sub["state1"]["isSubtitle"] is True
+            and sub["state1"]["n"] == 2
+            and all(sub["state1"]["segIds"])
+            and sub["state1"]["texts"] == ["第一句字幕", "第二句字幕"]
+            and sub["state1"]["spans"] == [[0, 60], [60, 120]]
+            and sub["state2"] == [48, 48]
+            and sub["state3n"] == 1
+            and sub["removed"]
+        )
+        step(22, "字幕段 diff 上轨 + 样式联动 + 清空摘行",
+             ok22, json.dumps(sub, ensure_ascii=False))
+
+        # 23 W6：模型源探测（官方不通自动落镜像；两源均登记）
+        endpoint = page.evaluate("""
+          async () => {
+            const { resolveWhisperEndpoint } = await import('/src/class/whisperClient.ts');
+            const host = await resolveWhisperEndpoint('auto', true);
+            return host;
+          }
+        """)
+        step(23, "HF 端点探测（官方→镜像回退）",
+             endpoint in ("https://huggingface.co/", "https://hf-mirror.com/"),
+             str(endpoint))
 
         ls_bytes = page.evaluate(
             "() => Object.keys(localStorage).reduce((a, k) => a + localStorage[k].length, 0)")

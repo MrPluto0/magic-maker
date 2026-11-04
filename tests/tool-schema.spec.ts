@@ -13,6 +13,7 @@ import {
 const EXPECTED_TOOLS: Array<[string, string]> = [
 	["query_timeline", "query"],
 	["query_segments", "query"],
+	["transcribe", "query"],
 	["split_at", "write"],
 	["delete_range", "destructive"],
 	["move_segment", "write"],
@@ -22,7 +23,7 @@ const EXPECTED_TOOLS: Array<[string, string]> = [
 ];
 
 describe("工具注册表（单一事实源）", () => {
-	it("W5 落地 8 个工具，danger 标记与 PHASE2_TOOLS 清单一致", () => {
+	it("W5+W6 落地 9 个工具，danger 标记与工具清单一致", () => {
 		expect([...toolRegistry.keys()].sort()).toEqual(
 			EXPECTED_TOOLS.map(([n]) => n).sort(),
 		);

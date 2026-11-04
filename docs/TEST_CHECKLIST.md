@@ -1,10 +1,10 @@
 # 回归验证清单
 
 > 执行环境：无头 Chrome（Playwright 驱动，`channel="chrome"`），dev server `pnpm dev --port 5175 --strictPort`。
-> 最近执行：2026-10-24（阶段二 W4 收口，18 项全过）。脚本：`scripts/reg_stage1.py`（无头驱动，通过 pinia store 驱动剪辑动作 + 快捷键路径，导出经 stub `showSaveFilePicker` 捕获字节；fixture 由 ffmpeg 自动生成）。
-> 历史基线：2026-10-23（阶段一 W3 收口，17 项）；2026-10-13（P0-9，14 项 12 ✅）；2026-10-23 W1（19 项全过，D1 阻断 bug 修复）。
+> 最近执行：2026-11-05（阶段二 W6 收口，23 项全过，含真实模型 E2E 手测）。脚本：`scripts/reg_stage1.py`（无头驱动，通过 pinia store 驱动剪辑动作 + 快捷键路径，导出经 stub `showSaveFilePicker` 捕获字节；fixture 由 ffmpeg 自动生成）。
+> 历史基线：2026-10-24（W4 收口，18 项全过）；2026-10-23（阶段一 W3 收口，17 项）；2026-10-13（P0-9，14 项 12 ✅）；2026-10-23 W1（19 项全过，D1 阻断 bug 修复）。
 
-## 用例（18 项全过；#9/#10 随 Excalidraw 白板裁剪退役）
+## 用例（23 项全过；#9/#10 随 Excalidraw 白板裁剪退役）
 
 | # | 步骤 | 预期 | 结果 | 备注 |
 |---|------|------|------|------|
@@ -23,9 +23,24 @@
 | 6 | 保存（ctrl+s） | IDB 记录更新（3 资源/3 轨道线） | ✅ | W4 起 #18 的两次 undo 会回退掉文本轨，保存 3 线为预期 |
 | 7 | 刷新页面恢复 | 项目/资源/轨道从 IDB+OPFS 重建 | ✅ | res=3, lines=3 |
 | 5 | 剪辑：快进→分割(S)（快捷键路径） | 片段正确分裂 | ✅ | video 段数 1→2 |
-| 11 | localStorage 占用 < 100KB | | ✅ | 127 bytes |
+| 11 | localStorage 占用 < 100KB | | ✅ | 53 bytes |
 | 14 | 删除资源 | 列表移除 + OPFS 文件同步删除 | ✅ | |
 | 12 | grep 无 `/tos` 残留 | 无命中 | ✅ | src/vite.config/vercel.json 均 0 命中 |
+| 20 | PCM 提取管线（W6）：OPFS → decodeAudioData → 16k mono Float32Array | 1s wav 产出 16000 采样 | ✅ | `src/utils/audio.ts`，OfflineAudioContext 重采样 |
+| 21 | whisper worker 消息协议（W6）：asr 先于 load | 收到 `E_NOT_LOADED` 结构化回包（load/asr/cancel + progress/segments/error 双向可达） | ✅ | `whisperClient.selfTest()` 真起 worker 验证 |
+| 22 | 字幕段 diff 上轨（W6）：setSegments → 专用字幕行 | `type:'text' + main:false + isSubtitle` 行生成，TextTrack 挂 segmentId、文本/起止与段一致；改全局样式 fontSize 48 → 行内全部联动；段清空 → 行摘除 | ✅ | `src/class/subtitleView.ts` 幂等收敛 |
+| 23 | HF 端点探测（W6）：官方 → 镜像回退 | 返回两源之一（本机实测 `https://hf-mirror.com/`，官方直连超时） | ✅ | 24h 缓存 + 设置面板可钉死 |
+
+## W6 本地 whisper 转写——agent 的耳朵（2026-11-05）
+
+`transcribe()` 工具（query 类，无需确认）落进注册表（共 9 个工具），链路：OPFS 原文件 → `extractPcm16kMono`（OfflineAudioContext 16k mono，transferable 入 worker）→ `whisper.worker.ts`（transformers.js 4.3.2，30s 窗口切片 + 逐窗进度/取消检查点）→ 中文分段后处理（碎段合并 <2s / 长段逗号切分 >8s / 最小段宽 0.6s / **时间戳塌缩重建**：whisper-base 首窗长文本压进极短 chunk 时按 6 字/秒重估时长）→ `subtitleStore.setSegments` → diff 同步专用字幕行（`subtitleView.ts`）。Vitest 14 例锁后处理纯函数（`tests/subtitle-post.spec.ts`）。
+
+1. **中国网络三道保障**（均实测验证）：①模型源运行期探测 huggingface.co→hf-mirror.com（官方直连超时自动落镜像，24h 缓存，设置面板「模型源」可钉死）；②**模型下载经主线程 fetch 代理**——实测 hf-mirror 的 CDN 边缘对 worker 直发请求直接断连（net::ERR_FAILED、无响应），同 URL 主线程请求正常，故 worker 内 transformers.js 的 `env.fetch` 改道主线程代取回传（`{type:'fetch'}/{type:'fetch-result'}` 消息）；③ORT wasm 同源自托管——vite 插件把 onnxruntime-web 的 4 个 ort 文件挂 `/ort/`（dev 中间件流式读 + build 拷贝进 dist，并清理 bundler 冗余拷贝），worker 内抢先设 `ort.env.wasm.wasmPaths`（transformers.js 只在未设时才落 cdn.jsdelivr.net 默认，大陆不可达）。
+2. **真实模型 E2E（无头 Chrome + Playwright 驱动，非协议 stub）**：macOS `say` 生成 41s 中文口播 mp4 → 上传落轨 → `transcribe({lang:'zh'})` → whisper-base q8 真实下载（hf-mirror，~55s 含下载）→ 15 段带时间码字幕（首窗时间戳塌缩经后处理重建为 0-22s 十段合理时间）→ 字幕行 15 个 TextTrack 全部上轨（segmentId 反向引用、全局样式 fontSize 40）→ 导出 mp4 1.3MB（字幕参与合成）。WebGPU 探测在 headless 下可用性不稳定，按计划走 wasm 回退路径实测。
+3. **数据模型**：`SubtitleSegment + styleId`、全局 `SubtitleStyle`（承接并删除 `AudioTrack.subtitle: ISubtitle` 死配置与 AudioAttr 字幕面板、Decoder 的 EmbedSubtitlesClip 注释链路——不留两份事实）；subtitles 随项目 JSON 持久化（`saveProject/loadProject` 的 `subtitles` 字段，旧项目无此字段按空字幕处理）。
+4. **设置/进度 UI**：AI 设置新增「字幕模型」（base/small 档位）与「模型源」两项（明暗双主题截图自检通过）；对话面板工具卡 running 态显示下载/转写相位进度条（`toolProgress` 模块，transcribe 入口登记）；转写全文入 LLM 链经 agentRuntime 既有 `truncateForContext(8000)` 统一截断，无确认旁路。
+5. **dist 体积**：1664KB（W5 基线）→ 42430KB，其中 ORT wasm 自托管 39.3MB（wasm 推理必需，原本走 jsdelivr CDN 现同源化）；应用产物 2192KB（+528KB，whisper worker 懒加载 chunk 536KB 含 transformers.js，不进主包）。
+6. **已知边界**：whisper-base 中文输出繁体（whisper 特性，简繁转换留 W8）；30s 窗口边界词可能被切（后处理合并兜底）；重新转写=整体替换段落（覆盖此前对字幕段的命令层编辑）。
 
 ## W4 undo 序列化重建（2026-10-24，修 D2）
 

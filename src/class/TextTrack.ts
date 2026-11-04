@@ -25,10 +25,13 @@ export class TextTrack implements BaseTrack {
 	// 文本内容，下面的属性在改变后应该响应时更新
 	fill = "#ffffff";
 	stroke = "#000000";
+	strokeWidth = 4;
 	textBackgroundColor?: string;
 	fontSize = 24;
 	fontFamily = "Arial";
 	text = "";
+	/** 字幕段反向引用（W6 视图同步；普通文本轨为 undefined） */
+	segmentId?: string;
 	loading = false;
 
 	constructor(source: any, curFrame: number) {
@@ -121,7 +124,7 @@ export class TextTrack implements BaseTrack {
 		const color = this.fill;
 		const fontFamily = this.fontFamily;
 		const strokeColor = this.stroke;
-		const strokeWidth = 4;
+		const strokeWidth = this.strokeWidth;
 		const backgroundColor = this.textBackgroundColor;
 
 		const lines = text?.split("\n");

@@ -83,6 +83,7 @@
 </template>
 
 <script setup lang="ts">
+import { installSubtitleSync } from "@/class/subtitleView";
 import EditorTopbar from "@/components/layout/EditorTopbar.vue";
 import SplitLine from "@/components/SplitLine.vue";
 import { clearHotKey, initEditorHotKey } from "@/plugins/installHotKey";
@@ -119,6 +120,8 @@ function onResize() {
 
 onMounted(() => {
 	initEditorHotKey();
+	// 字幕「数据源 → 视图」同步（W6）：segments/style/trackList 变化 diff 收敛（幂等）
+	installSubtitleSync();
 	timer.value = setInterval(projectStore.saveProject, 60 * 1000);
 	clampTrackHeight();
 	window.addEventListener("resize", onResize);

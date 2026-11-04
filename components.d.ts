@@ -14,7 +14,6 @@ declare module 'vue' {
     ContactIcon: typeof import('./src/components/icons/ContactIcon.vue')['default']
     EditorTopbar: typeof import('./src/components/layout/EditorTopbar.vue')['default']
     ElButton: typeof import('element-plus/es')['ElButton']
-    ElColorPicker: typeof import('element-plus/es')['ElColorPicker']
     ElConfigProvider: typeof import('element-plus/es')['ElConfigProvider']
     ElDialog: typeof import('element-plus/es')['ElDialog']
     ElDrawer: typeof import('element-plus/es')['ElDrawer']

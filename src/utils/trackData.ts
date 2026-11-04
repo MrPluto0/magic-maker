@@ -42,6 +42,7 @@ export function plainifyTrackList(trackList: TrackLineItem[]): TrackLineData[] {
 	return trackList.map((line) => ({
 		type: line.type,
 		main: line.main,
+		isSubtitle: line.isSubtitle,
 		list: line.list.map(plainifyTrack),
 	}));
 }
@@ -97,7 +98,12 @@ export async function rebuildTrackList(
 		for (const item of line.list) {
 			list.push(await rebuildTrack(item, createTrack, resolveResource));
 		}
-		result.push({ type: line.type, main: line.main, list });
+		result.push({
+			type: line.type,
+			main: line.main,
+			isSubtitle: line.isSubtitle,
+			list,
+		});
 	}
 	return result;
 }

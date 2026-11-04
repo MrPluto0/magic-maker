@@ -1,3 +1,4 @@
+import type { SubtitleProjectData } from "@/stores/subtitle";
 import { Resource } from "./resource";
 import { TrackLineItem } from "./track";
 
@@ -9,6 +10,8 @@ export interface IProject {
 	updatedAt: string;
 	resources: Resource[];
 	trackData: TrackLineItem[];
+	/** 字幕段 + 全局样式（W6 起随项目 JSON 持久化；旧项目无此字段按空字幕处理） */
+	subtitles?: SubtitleProjectData;
 	version: string;
 }
 

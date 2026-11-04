@@ -12,6 +12,7 @@ import {
 	repoLoadProjects,
 	repoSaveProject,
 } from "@/db/projectRepo";
+import type { SubtitleSegment } from "@/stores/subtitle";
 import type { Resource } from "@/types/resource";
 import type { Track, TrackLineItem } from "@/types/track";
 import { createFileWriter, selectFile } from "@/utils/file";
@@ -60,12 +61,25 @@ export const useProjectState = defineStore("project", () => {
 			return;
 		}
 
+		// 字幕段 + 全局样式的可序列化快照（subtitle store 延迟 import，避免 store 循环）
+		const subtitleSnapshot = async () => {
+			const { useSubtitleState } = await import("./subtitle");
+			const ss = useSubtitleState();
+			return {
+				segments: JSON.parse(JSON.stringify(ss.segments)) as SubtitleSegment[],
+				style: { ...ss.style },
+			};
+		};
+
 		try {
 			const projectData: ProjectData = {
 				...project.value,
 				updatedAt: new Date().toISOString(),
 				resources: resourceStore.resources,
 				trackData: trackStore.trackList,
+				// 字幕段 + 全局样式（W6）：唯一事实源随项目 JSON 落库，
+				// 时间轴上的字幕行 TextTrack 只是视图（加载后由 diff 同步重建）
+				subtitles: await subtitleSnapshot(),
 			};
 
 			const index = projectList.value.findIndex((p) => p.id === projectData.id);
@@ -101,6 +115,15 @@ export const useProjectState = defineStore("project", () => {
 			// 加载轨道数据
 			await trackStore.loadTrackData(projectData.trackData || []);
 
+			// 恢复字幕段 + 全局样式（W6）：segment 是唯一事实源，
+			// 字幕行 TextTrack 若在 trackData 里已有则被 diff 同步对齐，缺则补建
+			const { useSubtitleState, DEFAULT_SUBTITLE_STYLE } = await import(
+				"./subtitle"
+			);
+			const ss = useSubtitleState();
+			ss.setSegments(projectData.subtitles?.segments ?? []);
+			ss.setStyle(projectData.subtitles?.style ?? DEFAULT_SUBTITLE_STYLE);
+
 			console.log("Loaded project", project.value);
 		} catch (error) {
 			console.error("Load project error:", error);
@@ -131,6 +154,10 @@ export const useProjectState = defineStore("project", () => {
 		project.value = newProject;
 		projectList.value.unshift(newProject);
 		persistProject(newProject);
+		// 新项目从空字幕开始（清掉上一个项目残留的段落，避免旧字幕落新时间轴）
+		import("./subtitle").then(({ useSubtitleState }) => {
+			useSubtitleState().setSegments([]);
+		});
 		return newProject;
 	};
 

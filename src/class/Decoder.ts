@@ -56,22 +56,8 @@ class Decoder {
 			clip = new MP4Clip(stream);
 		}
 
-		// 重新构建字幕切片
-		// const { subtitle, id } = this.resource;
-		// if (subtitle) {
-		//   const file = await readFileFromOPFS(id + "_s", subtitle);
-		//   const text = await file.text();
-		//   const playerStore = usePlayerState();
-		//   const trimText = trimPunctuation(text);
-
-		//   const subtitleClip = new EmbedSubtitlesClip(trimText, {
-		//     videoWidth: playerStore.playerWidth,
-		//     videoHeight: playerStore.playerHeight,
-		//     ...this.subtitle,
-		//   });
-		//   await subtitleClip.ready;
-		//   this.#subtitleClip = subtitleClip;
-		// }
+		// 旧版 EmbedSubtitlesClip 字幕嵌入链路已于 W6 正式废弃删除（不复活）：
+		// 字幕渲染走专用字幕行 TextTrack（subtitleStore → subtitleView 同步）。
 
 		await clip.ready;
 		this.clipMap.set(resourceId, clip);

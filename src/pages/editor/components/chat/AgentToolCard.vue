@@ -25,6 +25,33 @@
 			{{ paramsText }}
 		</div>
 
+		<!-- 长耗时工具的运行进度（W6 transcribe：模型下载/转写相位 + 百分比） -->
+		<div
+			v-if="entry.status === 'running' && progress"
+			class="border-t border-gray-200 dark:border-[#27272a] px-3 py-2 flex items-center gap-2.5"
+		>
+			<span class="font-mono text-[10px] whitespace-nowrap text-gray-500 dark:text-[#767d88]">
+				{{ progress.phase }}{{ progress.note ? ` · ${progress.note}` : "" }}
+			</span>
+			<div class="flex-1 h-1 rounded-full bg-gray-200 dark:bg-[#27272a] overflow-hidden">
+				<div
+					v-if="progress.value >= 0"
+					class="h-full bg-gray-900 dark:bg-white transition-[width] duration-200"
+					:style="{ width: `${Math.round(progress.value * 100)}%` }"
+				/>
+				<div
+					v-else
+					class="h-full w-1/3 bg-gray-400 dark:bg-[#767d88] animate-pulse"
+				/>
+			</div>
+			<span
+				v-if="progress.value >= 0"
+				class="font-mono text-[10px] text-gray-500 dark:text-[#767d88] shrink-0"
+			>
+				{{ Math.round(progress.value * 100) }}%
+			</span>
+		</div>
+
 		<!-- 影响范围 chips -->
 		<div
 			v-if="entry.affected || entry.resultSummary"
@@ -72,6 +99,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { toolRegistry } from "@/class/agentTools";
+import { activeToolProgress } from "@/class/toolProgress";
 import { useAgentState } from "@/stores/agent";
 import { usePageState } from "@/stores/page";
 import type { ChatEntry } from "@/types/agent";
@@ -80,6 +108,17 @@ const props = defineProps<{ entry: Extract<ChatEntry, { kind: "tool" }> }>();
 
 const agentStore = useAgentState();
 const pageStore = usePageState();
+
+/** 运行态进度（工具 execute 内经 toolProgress 登记；非运行态不显示） */
+const progress = computed(
+	() =>
+		(
+			activeToolProgress as Record<
+				string,
+				{ phase: string; value: number; note?: string } | undefined
+			>
+		)[props.entry.tool],
+);
 
 const danger = computed(
 	() => toolRegistry.get(props.entry.tool)?.danger ?? "write",

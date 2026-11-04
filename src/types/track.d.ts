@@ -1,4 +1,3 @@
-import type { ISubtitle } from "@/class/AudioTrack";
 import { AudioTrack } from "@/class/AudioTrack";
 import { ImageTrack } from "@/class/ImageTrack";
 import { TextTrack } from "@/class/TextTrack";
@@ -44,7 +43,6 @@ export interface TrackData extends BaseTrack {
 	loading?: boolean;
 	// audio
 	volume?: number;
-	subtitle?: ISubtitle;
 	// text
 	fill?: string;
 	stroke?: string;
@@ -52,12 +50,16 @@ export interface TrackData extends BaseTrack {
 	fontSize?: number;
 	fontFamily?: string;
 	text?: string;
+	/** 字幕行 TextTrack 反向引用的段落 id（W6 视图同步） */
+	segmentId?: string;
 }
 
 // 轨道线项目接口
 export interface TrackLineItem {
 	type: TrackType;
 	main?: boolean;
+	/** 专用字幕行（W6）：承载 segments → TextTrack 的视图同步，type 复用 "text" */
+	isSubtitle?: boolean;
 	list: Track[];
 }
 
@@ -65,5 +67,6 @@ export interface TrackLineItem {
 export interface TrackLineData {
 	type: TrackType;
 	main?: boolean;
+	isSubtitle?: boolean;
 	list: TrackData[];
 }

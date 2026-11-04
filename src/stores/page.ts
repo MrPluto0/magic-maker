@@ -25,6 +25,14 @@ export const usePageState = defineStore(
 			imageModel: "doubao-seedream-3-0-t2i-250415",
 		});
 
+		// 本地 whisper 转写设置（W6：agent 的耳朵，全部本地推理不上传）
+		const whisperSettings = ref({
+			// 模型档位：base（q8 约 40-80MB，默认）/ small（约 250MB，中文更准）
+			model: "base" as "base" | "small",
+			// 模型源：auto = 探测 huggingface.co→hf-mirror.com（大陆直连大概率走镜像）
+			hfEndpoint: "auto" as "auto" | "official" | "mirror",
+		});
+
 		// immediate：持久化恢复的 isDark 必须同步到 <html>（index.html 硬编码 class="dark"，
 		// 浅色用户刷新页面时若不立即执行，会一直停在暗色直到手动切换）
 		watch(
@@ -46,6 +54,7 @@ export const usePageState = defineStore(
 			trackScale,
 			editorLeftTab,
 			aiSettings,
+			whisperSettings,
 		};
 	},
 	{
@@ -59,6 +68,7 @@ export const usePageState = defineStore(
 				"resourceWidth",
 				"trackScale",
 				"editorLeftTab",
+				"whisperSettings",
 			],
 		},
 	},

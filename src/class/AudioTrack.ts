@@ -14,15 +14,9 @@ const DEFAULT_AUDIO_CONF = {
 	codec: "mp4a.40.2",
 } as const;
 
-export interface ISubtitle {
-	show: boolean;
-	fontSize: number;
-	fontColor: string;
-	strokeSize: number;
-	strokeColor: string;
-	bottomOffset: number;
-	fontFamily: string;
-}
+// 旧版 AudioTrack.subtitle: ISubtitle 字幕配置已于 W6 删除：
+// 字幕唯一事实源是 subtitleStore（segments + 全局 SubtitleStyle），
+// 渲染走专用字幕行 TextTrack（src/class/subtitleView.ts），不留两份事实。
 
 export class AudioTrack implements BaseTrack {
 	id: string;
@@ -38,15 +32,6 @@ export class AudioTrack implements BaseTrack {
 	volume = 1;
 	mute = false;
 	loading = false;
-	subtitle: ISubtitle = {
-		show: false,
-		fontSize: 40,
-		fontColor: "#ffffff",
-		strokeSize: 2,
-		strokeColor: "#fffff00",
-		bottomOffset: 30,
-		fontFamily: "Noto Sans SC",
-	};
 
 	constructor(resource: AudioResource, curFrame: number, volume: number = 1) {
 		this.id = nanoid();
@@ -66,22 +51,6 @@ export class AudioTrack implements BaseTrack {
 		this.offsetL = 0;
 		this.offsetR = 0;
 	}
-
-	// 绘制音频对应的字幕
-	// async draw(
-	//   ctx: OffscreenCanvasRenderingContext2D,
-	//   width: number,
-	//   height: number,
-	//   frameIndex: number
-	// ) {
-	//   const time =
-	//     Math.max(frameIndex - this.start + this.offsetL, 1) * UnitFrame2μs;
-	//   const { video } = await this.#subtitleClip.tick(time);
-	//   if (video) {
-	//     ctx.drawImage(video, 0, 0, width, height, 0, 0, width, height);
-	//     video?.close();
-	//   }
-	// }
 
 	// 播放音频数据
 	async play(ctx: AudioContext, frameIndex: number) {
