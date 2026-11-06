@@ -41,6 +41,9 @@ importers:
       openai:
         specifier: ^5.19.1
         version: 5.19.1(ws@8.18.0)
+      opencc-js:
+        specifier: ^1.4.2
+        version: 1.4.2
       opfs-tools:
         specifier: ^0.4.1
         version: 0.4.3
@@ -1929,6 +1932,9 @@ packages:
         optional: true
       zod:
         optional: true
+
+  opencc-js@1.4.2:
+    resolution: {integrity: sha512-EdcspgdROiCCZDM+jZR6Pa670xW+EW2QhctPBQ8gRjg6lrx4IHEl+2s+kt5izk/TkxVRgdWuFgaGkaEdIUfdaw==}
 
   opfs-tools@0.4.3:
     resolution: {integrity: sha512-tIg2uPhh7Ax5wAmdQYsjsJG8475vErs0kC6NZIWD7EOv3wADE4KB8b2USPRtqCLyEO3B51NNg9bSKtx8phq1Vw==}
@@ -4128,6 +4134,8 @@ snapshots:
   openai@5.19.1(ws@8.18.0):
     optionalDependencies:
       ws: 8.18.0
+
+  opencc-js@1.4.2: {}
 
   opfs-tools@0.4.3: {}
 

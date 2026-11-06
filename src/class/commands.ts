@@ -368,9 +368,11 @@ export class DeleteRangeCmd implements EditCommand {
 				// 保头部 [start, s)；跨区间字幕截断为头部（尾部折叠进头部段，不拆两条）
 				kept.push({ ...seg, endFrame: s });
 			} else if (keepTail) {
+				// 保尾部 [e, end)：起点是区间结束帧 e——ripple 时 e-gap===s 只是数值巧合
+				// （W6 修复：原实现记 s，非波纹模式下保留尾部会向前多出 gap 帧且早于段自身起点）
 				kept.push({
 					...seg,
-					startFrame: s,
+					startFrame: ripple ? e - gap : e,
 					endFrame: ripple ? seg.endFrame - gap : seg.endFrame,
 				});
 			}
@@ -752,6 +754,63 @@ export class UpdateSegmentTextCmd implements EditCommand {
 	}
 }
 
+/* ========================== ReplaceSegmentsCmd ========================== */
+
+export interface ReplaceSegmentsParams {
+	segments: SubtitleSegment[];
+	/** 人话原因（卡片摘要用），如「重新转写」 */
+	reason?: string;
+}
+
+/**
+ * 整体替换字幕段（重转写落段，W6 修：原实现直接 setSegments 静默覆盖、
+ * 不可撤销）。undo 完整恢复替换前的全部段落（含命令层编辑过的文本/时间）。
+ */
+export class ReplaceSegmentsCmd implements EditCommand {
+	readonly label = "替换字幕段";
+	readonly intent =
+		"整体替换全部字幕段（重转写落段），替换前的段落（含编辑）完整可撤销";
+	private inverse?: { prev: SubtitleSegment[] };
+
+	constructor(
+		private ctx: CommandContext,
+		private params: ReplaceSegmentsParams,
+	) {}
+
+	async do(): Promise<CommandEffect> {
+		this.inverse = {
+			prev: this.ctx.subtitleSegments.map((s) => ({ ...s })),
+		};
+		this.ctx.setSubtitleSegments(this.params.segments);
+		const reason = this.params.reason ? `（${this.params.reason}）` : "";
+		return {
+			clipIds: [],
+			segmentIds: this.params.segments.map((s) => s.id),
+			summary: `字幕整体替换为 ${this.params.segments.length} 段（原 ${
+				this.inverse.prev.length
+			} 段${reason}，可撤销）`,
+		};
+	}
+
+	async undo(): Promise<void> {
+		if (!this.inverse) {
+			throw new ToolError(E.UNDO_STALE, "命令尚未执行，无法撤销");
+		}
+		this.ctx.setSubtitleSegments(this.inverse.prev);
+	}
+
+	toJSON(): EditCommandJSON {
+		return { cmd: "replace_segments@1", params: { ...this.params } };
+	}
+
+	static fromJSON(ctx: CommandContext, json: EditCommandJSON) {
+		return new ReplaceSegmentsCmd(
+			ctx,
+			json.params as unknown as ReplaceSegmentsParams,
+		);
+	}
+}
+
 /* ============================ 命令注册表 ============================ */
 
 type CommandFactory = (
@@ -769,6 +828,7 @@ export const commandRegistry = new Map<string, CommandFactory>([
 		"set_segment_text@1",
 		(ctx, json) => UpdateSegmentTextCmd.fromJSON(ctx, json),
 	],
+	["replace_segments@1", (ctx, json) => ReplaceSegmentsCmd.fromJSON(ctx, json)],
 ]);
 
 export function commandFromJSON(

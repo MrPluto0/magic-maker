@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-11-04T16:07:41.895Z",
+  "generatedAt": "2026-11-06T16:17:00.344Z",
   "tools": [
     {
       "name": "query_timeline",
@@ -25,7 +25,7 @@
     {
       "name": "transcribe",
       "intent": "本地 whisper 转写时间轴上的音频/视频（数据不出浏览器），产出带时间码的字幕段落并自动上字幕轨",
-      "danger": "query",
+      "danger": "write",
       "schema": {
         "type": "object",
         "properties": {

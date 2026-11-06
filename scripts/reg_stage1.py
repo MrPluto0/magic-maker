@@ -477,6 +477,67 @@ def run():
              and dr["restored"] == dr["before"],
              json.dumps(dr, ensure_ascii=False))
 
+        # 24 W6 修：重转写=整体替换可撤销（命令层一键全撤 + 快照层 Cmd+Z 双路径）
+        # 模拟转写落段（ReplaceSegmentsCmd）→ 命令层改字 → 重转写再替换：
+        #  - 重转写前 countSegmentEdits() 应报 1（覆盖提示数据源）
+        #  - undoCurrentGroup() 应完整恢复「编辑后」段落（含命令层编辑）
+        #  - 再次替换后 ts._undo()（快照层/Cmd+Z 语义，字幕并入轨道快照栈）同样恢复
+        sub_undo = page.evaluate(f"""
+          async () => {{
+            const pinia = {pin};
+            const ss = pinia._s.get('subtitle');
+            const ts = pinia._s.get('track');
+            const ag = pinia._s.get('agent');
+            const {{ ReplaceSegmentsCmd, UpdateSegmentTextCmd }} = await import('/src/class/commands.ts');
+            const {{ createCommandContext }} = await import('/src/class/commandContext.ts');
+            const ctx = await createCommandContext();
+
+            // G1：首次「转写」落段 + 命令层改字（模拟用户/LLM 编辑字幕）
+            const first = [ss.makeSegment('第一句原始转写', 0, 60),
+                           ss.makeSegment('第二句原文', 60, 120)];
+            await ag.runCommand(new ReplaceSegmentsCmd(ctx, {{ segments: first, reason: '转写' }}));
+            ss.markTranscribeBaseline(first);
+            await ag.runCommand(new UpdateSegmentTextCmd(ctx, {{
+              segmentId: first[0].id, text: '第一句被改过的文字' }}));
+            await ag.endTurn();
+
+            // 重转写前的编辑差异检测（覆盖提示「将覆盖 N 处字幕编辑」的数据源）
+            const editsBefore = ss.countSegmentEdits();
+
+            // G2：重转写整体替换
+            const second = [ss.makeSegment('重转写第一段', 0, 90)];
+            await ag.runCommand(new ReplaceSegmentsCmd(ctx, {{ segments: second, reason: '重新转写' }}));
+            const afterReplace = ss.segments.map(s => s.text);
+            await ag.endTurn();
+
+            // 命令层：一键全撤 G2 → 恢复「编辑后」段落
+            const undone = await ag.undoCurrentGroup();
+            const afterGroupUndo = ss.segments.map(s => s.text);
+
+            // 快照层：再替换一次（G3），ts._undo() = Cmd+Z 语义 → 同样恢复
+            const third = [ss.makeSegment('又一次重转写', 0, 80)];
+            await ag.runCommand(new ReplaceSegmentsCmd(ctx, {{ segments: third, reason: '重新转写' }}));
+            await ag.endTurn();
+            await ts._undo();
+            await new Promise(r => setTimeout(r, 300));
+            const afterSnapUndo = ss.segments.map(s => s.text);
+
+            // 收尾清场（不污染后续步骤）
+            ss.setSegments([]);
+            ss.markTranscribeBaseline([]);
+            return {{ editsBefore, afterReplace, undone, afterGroupUndo, afterSnapUndo }};
+          }}
+        """)
+        ok24 = (
+            sub_undo["editsBefore"] == 1
+            and sub_undo["afterReplace"] == ["重转写第一段"]
+            and sub_undo["undone"]
+            and sub_undo["afterGroupUndo"] == ["第一句被改过的文字", "第二句原文"]
+            and sub_undo["afterSnapUndo"] == ["第一句被改过的文字", "第二句原文"]
+        )
+        step(24, "重转写整体替换 → 可撤销（命令层+快照层）+ 覆盖差异检测",
+             ok24, json.dumps(sub_undo, ensure_ascii=False))
+
         # 20 W6：PCM 提取管线（OPFS → decodeAudioData → 16k mono Float32Array）
         pcm = page.evaluate("""
           async () => {

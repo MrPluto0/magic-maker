@@ -12,6 +12,7 @@ import { plainifyTrackList, rebuildTrackList } from "@/utils/trackData";
 import { usePageState } from "./page";
 import { usePlayerState } from "./player";
 import { useResourceState } from "./resource";
+import { type SubtitleSegment, useSubtitleState } from "./subtitle";
 
 export const useTrackState = defineStore(
 	"track",
@@ -319,13 +320,27 @@ export const useTrackState = defineStore(
 			// trackScale 已收敛到 page store，撤销栈只跟踪轨道数据。
 			// W4：栈里只存 TrackData 纯数据 JSON（不再 cloneDeep 类实例快照），
 			// 恢复经 loadTrackData 重建类实例（$patch 会丢原型、方法变 undefined）
+			// W6 修：字幕段并入同一快照栈——Cmd+Z 一次回退轨道+字幕，
+			// 两类状态不拆栈（拆了会各自回退到不同时刻，段与画面错位）。
+			// subtitle store 无自身订阅快照，段落变更要么走命令（组级 _snap），
+			// 要么与 trackList 变更同帧发生，由本栈统一捕获。
 			watch: ["trackList"],
 			serializer: {
 				serialize: (trackList: TrackLineItem[]) =>
-					JSON.stringify(plainifyTrackList(trackList)),
+					JSON.stringify({
+						trackList: plainifyTrackList(trackList),
+						subtitles: useSubtitleState().segments.map((s) => ({ ...s })),
+					}),
 				deserialize: (json: string) => JSON.parse(json),
 				restore: async (store, value) => {
-					await store.loadTrackData(value.trackList);
+					// applySnapshot 按 watch 键包了一层：value.trackList 才是上面的
+					// { trackList, subtitles } 复合快照
+					const snap = value.trackList as {
+						trackList: TrackLineData[];
+						subtitles?: SubtitleSegment[];
+					};
+					await store.loadTrackData(snap.trackList);
+					useSubtitleState().setSegments(snap.subtitles ?? []);
 				},
 			},
 		},

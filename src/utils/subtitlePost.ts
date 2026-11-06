@@ -1,6 +1,8 @@
 /**
  * 转写结果 → 字幕段的中文后处理（W6 纯函数，Vitest 锁定）。
  *
+ * 第 0 步 繁→简（opencc-js 懒加载，W6 修：whisper 中文输出是繁体）：
+ *    转写原文先整体转简体再进规则管线；
  * 三条规则（docs/BIG_ITERATION_PLAN §3.4）：
  * ① 按标点合并 <2s 碎段：短且不以句末标点收尾的碎段向前并；
  * ② >8s 长段在逗号处二次切分：时间按字符占比线性内插；
@@ -29,6 +31,44 @@ export const MIN_SEGMENT_SEC = 0.6;
 const SENTENCE_END = /[。！？!?…」』"”』】)）]$/;
 const CLAUSE_BREAK = /[，,、；;：:]/;
 const CJK = /[\u4e00-\u9fff\u3040-\u30ff]/;
+
+/* ---------------- 简繁转换（W6 修：whisper 中文输出繁体） ---------------- */
+
+/** 繁→简转换器单例（opencc-js/t2cn 纯 JS，动态 import 不进主包） */
+let t2sConvert: ((text: string) => string) | null = null;
+
+async function getT2s(): Promise<(text: string) => string> {
+	if (!t2sConvert) {
+		// t2cn 子集构建：只含繁→简词典（约 109KB），比 full（1.2MB）小一个量级
+		const OpenCC = await import("opencc-js/t2cn");
+		t2sConvert = OpenCC.Converter({ from: "t", to: "cn" });
+	}
+	return t2sConvert;
+}
+
+/**
+ * 转写原文 繁→简（单段文本）。无 CJK 的文本原样返回；
+ * opencc-js 加载失败（理论上不可能——已随构建打包）时退回原文。
+ */
+export async function toSimplifiedText(text: string): Promise<string> {
+	if (!CJK.test(text)) return text;
+	try {
+		return (await getT2s())(text);
+	} catch {
+		return text;
+	}
+}
+
+/** 转写段落批量 繁→简（时间码不动，仅文本） */
+export async function toSimplifiedSegments(
+	segs: RawSegment[],
+): Promise<RawSegment[]> {
+	if (!segs.some((s) => CJK.test(s.text))) return segs;
+	const convert = await getT2s();
+	return segs.map((s) =>
+		CJK.test(s.text) ? { ...s, text: convert(s.text) } : s,
+	);
+}
 
 /** 中文口播参考语速（字/秒），用于时间戳塌缩重建 */
 export const SPEECH_CPS = 6;

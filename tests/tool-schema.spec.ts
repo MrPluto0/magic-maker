@@ -13,7 +13,7 @@ import {
 const EXPECTED_TOOLS: Array<[string, string]> = [
 	["query_timeline", "query"],
 	["query_segments", "query"],
-	["transcribe", "query"],
+	["transcribe", "write"],
 	["split_at", "write"],
 	["delete_range", "destructive"],
 	["move_segment", "write"],

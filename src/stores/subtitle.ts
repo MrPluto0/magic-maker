@@ -55,6 +55,50 @@ export const useSubtitleState = defineStore(
 		const segments = ref<SubtitleSegment[]>([]);
 		const style = ref<SubtitleStyle>({ ...DEFAULT_SUBTITLE_STYLE });
 
+		/**
+		 * 最近一次转写落段时的基线快照（W6 修：重转写覆盖提示用）。
+		 * 会话内存活、不持久化——重启后无基线视为「无编辑差异」，
+		 * 不影响可撤销性（撤销走命令层/快照层）。
+		 */
+		const transcribeBaseline = ref<SubtitleSegment[] | null>(null);
+
+		/** 转写落段后登记基线（缺省 = 当前 segments 的浅拷贝） */
+		function markTranscribeBaseline(segs?: SubtitleSegment[]) {
+			transcribeBaseline.value = (segs ?? segments.value).map((s) => ({
+				...s,
+			}));
+		}
+
+		/**
+		 * 当前 segments 相对转写基线的编辑数（改动/新增/删除各计 1）。
+		 * 无基线（从未转写/重启后）= 0。O(n) id 索引 diff，段落量级几十条。
+		 */
+		function countSegmentEdits(): number {
+			const base = transcribeBaseline.value;
+			if (!base) return 0;
+			const baseById = new Map(base.map((s) => [s.id, s]));
+			const curIds = new Set(segments.value.map((s) => s.id));
+			let edits = 0;
+			for (const cur of segments.value) {
+				const b = baseById.get(cur.id);
+				if (!b) {
+					edits += 1; // 新增
+					continue;
+				}
+				if (
+					b.text !== cur.text ||
+					b.startFrame !== cur.startFrame ||
+					b.endFrame !== cur.endFrame
+				) {
+					edits += 1; // 文本/时间被改
+				}
+			}
+			for (const b of base) {
+				if (!curIds.has(b.id)) edits += 1; // 被删
+			}
+			return edits;
+		}
+
 		/** 整体替换（transcribe 落段 / 命令 undo 还原 / 项目恢复） */
 		function setSegments(next: SubtitleSegment[]) {
 			segments.value.splice(
@@ -84,7 +128,16 @@ export const useSubtitleState = defineStore(
 			};
 		}
 
-		return { segments, style, setSegments, setStyle, makeSegment };
+		return {
+			segments,
+			style,
+			setSegments,
+			setStyle,
+			makeSegment,
+			transcribeBaseline,
+			markTranscribeBaseline,
+			countSegmentEdits,
+		};
 	},
 	{
 		// 段落数据随项目草稿持久化（saveProject 的 subtitles 字段）；

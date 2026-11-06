@@ -276,6 +276,58 @@ describe("DeleteRangeCmd（波纹删除）", () => {
 		expect(ctx.trackList[0].list.some((c) => c.id === b.id)).toBe(true);
 	});
 
+	it("keep-tail（W6 遗留疑点）：片段起点在区间内、尾部跨出区间，保留尾部起点应为 e", async () => {
+		// 场景：字幕段 [50,200)，删 [10,100)——keepHead=false（50 ≥ 10）、
+		// keepTail=true（200 > 100）。保留的尾部应是 [100,200)，不是 [10,200)
+		const segments: SubtitleSegment[] = [
+			{ id: "s1", text: "跨尾部段", startFrame: 50, endFrame: 200 },
+		];
+		const ctx = makeCtx([[makeClip(0, 300)]], segments);
+		const cmd = new DeleteRangeCmd(ctx, {
+			startFrame: 10,
+			endFrame: 100,
+			ripple: false,
+		});
+		await cmd.do();
+		expect(ctx.subtitleSegments).toHaveLength(1);
+		expect(ctx.subtitleSegments[0]).toMatchObject({
+			id: "s1",
+			startFrame: 100,
+			endFrame: 200,
+		});
+		await cmd.undo();
+		expect(ctx.subtitleSegments[0]).toMatchObject({
+			id: "s1",
+			startFrame: 50,
+			endFrame: 200,
+		});
+	});
+
+	it("keep-tail 波纹模式：尾部 = [e-gap, end-gap)（起点 s 与 e-gap 重合是巧合不是语义）", async () => {
+		// 同上场景开波纹：期望 [10, 110)（e-gap=10, 200-90=110）
+		const segments: SubtitleSegment[] = [
+			{ id: "s1", text: "跨尾部段", startFrame: 50, endFrame: 200 },
+		];
+		const ctx = makeCtx([[makeClip(0, 300)]], segments);
+		const cmd = new DeleteRangeCmd(ctx, {
+			startFrame: 10,
+			endFrame: 100,
+			ripple: true,
+		});
+		await cmd.do();
+		expect(ctx.subtitleSegments[0]).toMatchObject({
+			id: "s1",
+			startFrame: 10,
+			endFrame: 110,
+		});
+		await cmd.undo();
+		expect(ctx.subtitleSegments[0]).toMatchObject({
+			id: "s1",
+			startFrame: 50,
+			endFrame: 200,
+		});
+	});
+
 	it("toJSON 版本化 cmd 名", () => {
 		const ctx = makeCtx([[makeClip(0, 90)]]);
 		const cmd = new DeleteRangeCmd(ctx, {

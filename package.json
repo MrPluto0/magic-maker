@@ -35,6 +35,7 @@
     "nanoid": "^5.0.9",
     "onnxruntime-web": "1.31.0-dev.20260914-8d85527a0",
     "openai": "^5.19.1",
+    "opencc-js": "^1.4.2",
     "opfs-tools": "^0.4.1",
     "pinia": "^4.1.0",
     "pinia-plugin-persistedstate": "^4.7.1",

@@ -1,10 +1,10 @@
 # 回归验证清单
 
 > 执行环境：无头 Chrome（Playwright 驱动，`channel="chrome"`），dev server `pnpm dev --port 5175 --strictPort`。
-> 最近执行：2026-11-05（阶段二 W6 收口，23 项全过，含真实模型 E2E 手测）。脚本：`scripts/reg_stage1.py`（无头驱动，通过 pinia store 驱动剪辑动作 + 快捷键路径，导出经 stub `showSaveFilePicker` 捕获字节；fixture 由 ffmpeg 自动生成）。
+> 最近执行：2026-11-07（W6 三遗留修复，24 项全过 + 真模型 E2E：base/small 对比、t2s、重转写撤销链路）。脚本：`scripts/reg_stage1.py`（无头驱动，通过 pinia store 驱动剪辑动作 + 快捷键路径，导出经 stub `showSaveFilePicker` 捕获字节；fixture 由 ffmpeg 自动生成）。
 > 历史基线：2026-10-24（W4 收口，18 项全过）；2026-10-23（阶段一 W3 收口，17 项）；2026-10-13（P0-9，14 项 12 ✅）；2026-10-23 W1（19 项全过，D1 阻断 bug 修复）。
 
-## 用例（23 项全过；#9/#10 随 Excalidraw 白板裁剪退役）
+## 用例（24 项全过；#9/#10 随 Excalidraw 白板裁剪退役）
 
 | # | 步骤 | 预期 | 结果 | 备注 |
 |---|------|------|------|------|
@@ -30,6 +30,13 @@
 | 21 | whisper worker 消息协议（W6）：asr 先于 load | 收到 `E_NOT_LOADED` 结构化回包（load/asr/cancel + progress/segments/error 双向可达） | ✅ | `whisperClient.selfTest()` 真起 worker 验证 |
 | 22 | 字幕段 diff 上轨（W6）：setSegments → 专用字幕行 | `type:'text' + main:false + isSubtitle` 行生成，TextTrack 挂 segmentId、文本/起止与段一致；改全局样式 fontSize 48 → 行内全部联动；段清空 → 行摘除 | ✅ | `src/class/subtitleView.ts` 幂等收敛 |
 | 23 | HF 端点探测（W6）：官方 → 镜像回退 | 返回两源之一（本机实测 `https://hf-mirror.com/`，官方直连超时） | ✅ | 24h 缓存 + 设置面板可钉死 |
+| **24** | **重转写整体替换可撤销（W6 修）**：ReplaceSegmentsCmd 落段 → 命令层改字 → 重转写再替换 → `undoCurrentGroup()` / `ts._undo()`（快照层，字幕并入轨道快照栈）双路径恢复；替换前 `countSegmentEdits()` 应报差异处数 | 双路径均完整恢复「编辑后」段落（含命令层编辑）；差异检测 = 1 | ✅ | `editsBefore=1, afterGroupUndo/afterSnapUndo=编辑后文本`；transcribe 工具卡另带「将覆盖 N 处字幕编辑（可撤销）」进度提示与 `overwrittenEdits` 结果字段 |
+
+## W6 后续修复——三个验收遗留（2026-11-07）
+
+1. **中文繁体输出 → 简繁转换**：转写链路在分段后处理前加 t2s（`src/utils/subtitlePost.ts` 的 `toSimplifiedSegments`，opencc-js **t2cn 子集构建**——只含繁→简词典约 109KB，动态 import 懒加载不进主包；无 CJK 文本跳过；加载失败退回原文）。后处理单测补 4 例繁→简用例（含实测形态「視頻裡的時間軸→视频里的时间轴」与端到端管线无繁体断言）。真模型 E2E（say 15.3s 中文口播）：base/small 输出均为繁体、t2s 后全简体；错字对比 base 3 处（對急/反體字/簡機工具）vs small 1 处（對極，即「对齐」），small 明显更准（详见回报）。设置面板 base/small 档位 W6 已齐备（设置项、worker MODEL_REPO、工具 schema 三处一致），本轮无补全项。
+2. **重转写静默覆盖 → 可撤销 + 覆盖提示**：落段改走命令层 `ReplaceSegmentsCmd`（`replace_segments@1` 入注册表，undo 完整恢复替换前段落含命令层编辑）；subtitle store 增转写基线（`markTranscribeBaseline`/`countSegmentEdits`，会话内存活不持久化，O(n) id diff）；有编辑差异时工具卡进度行明示「将覆盖 N 处字幕编辑（可撤销）」、结果带 `overwrittenEdits`。快照层同步扩展：track store 的 undo serializer 把 `subtitles` 并入同一快照栈（`{trackList, subtitles}` 复合快照），Cmd+Z 一次回退轨道+字幕、不拆栈。transcribe 工具 danger query→write（工具卡「只读」→「可撤销」徽标，语义如实）。不做智能合并（明确不做）。
+3. **DeleteRangeCmd keep-tail startFrame 真 bug 修复**：原实现保留尾部 `startFrame: s`，ripple 模式下因 `e-gap===s` 数值巧合掩盖了错误；**ripple=false（留空隙）模式下保留尾部起点错误地落在区间起点 s**（比正确值 e 提前 gap 帧，且可能早于段自身起点）。修复为 `startFrame: ripple ? e - gap : e`，失败单测复现后转绿（tests/delete-range.spec.ts 2 例：非波纹/波纹各一，undo 恢复一并锁定）。兄弟分支核过：keep-head（endFrame:s）、整删（remove）、区间右侧波纹左移（`startFrame>=e` 分支）公式均正确无同款问题。
 
 ## W6 本地 whisper 转写——agent 的耳朵（2026-11-05）
 

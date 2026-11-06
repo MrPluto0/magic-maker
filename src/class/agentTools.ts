@@ -4,6 +4,7 @@ import {
 	DeleteRangeCmd,
 	findClipInList,
 	MoveSegmentCmd,
+	ReplaceSegmentsCmd,
 	SplitAtCmd,
 	UpdateSegmentTextCmd,
 } from "./commands";
@@ -299,7 +300,7 @@ register({
 	name: "transcribe",
 	intent:
 		"本地 whisper 转写时间轴上的音频/视频（数据不出浏览器），产出带时间码的字幕段落并自动上字幕轨",
-	danger: "query",
+	danger: "write",
 	schema: {
 		type: "object",
 		properties: {
@@ -324,9 +325,10 @@ register({
 		},
 		additionalProperties: false,
 	},
-	// 查询类：无需确认直接执行，但耗时长（首次需下载模型）——
+	// write（W6 修：落段会整体替换字幕段——经 ReplaceSegmentsCmd 可撤销，无需
+	// 确认卡但工具卡会明示「覆盖 N 处字幕编辑」）。耗时长（首次需下载模型），
 	// 进度经 toolProgress 登记到对话工具卡 running 态；结果入 LLM 链时由
-	// agentRuntime 的 truncateForContext(8000) 统一截断（无独立确认旁路）。
+	// agentRuntime 的 truncateForContext(8000) 统一截断。
 	async execute(params) {
 		assertSchema(toolRegistry.get("transcribe")!.schema, params);
 		const tool = "transcribe";
@@ -384,9 +386,11 @@ register({
 			);
 			const { extractPcm16kMono } = await import("@/utils/audio");
 			const { whisperClient } = await import("./whisperClient");
-			const { postprocessTranscription, formatTranscript } = await import(
-				"@/utils/subtitlePost"
-			);
+			const {
+				formatTranscript,
+				postprocessTranscription,
+				toSimplifiedSegments,
+			} = await import("@/utils/subtitlePost");
 			const { usePageState } = await import("@/stores/page");
 			const { useSubtitleState } = await import("@/stores/subtitle");
 
@@ -396,10 +400,18 @@ register({
 			const endpointMode = usePageState().whisperSettings.hfEndpoint;
 			const lang = (params.lang as "zh" | "auto") ?? "zh";
 
+			// 重转写覆盖提示（W6 修）：相对上次转写基线有编辑差异时，
+			// 在转写开始的工具卡进度行明示「将覆盖 N 处字幕编辑」，结果再带一次
+			const ss = useSubtitleState();
+			const editedBefore = ss.countSegmentEdits();
+
 			setToolProgress(tool, {
 				phase: "prepare",
 				value: -1,
-				note: "提取音频 PCM",
+				note:
+					editedBefore > 0
+						? `提取音频 PCM · 将覆盖 ${editedBefore} 处字幕编辑（可撤销）`
+						: undefined,
 			});
 			const resourceKey = ((src.resource as { opfsKey?: string }).opfsKey ??
 				src.resource.id) as string;
@@ -421,28 +433,40 @@ register({
 
 			// 时间码换算到项目时间轴：PCM 相对素材原点，加上片段起点与左裁剪
 			const offsetFrame = src.start + srcOffsetL;
-			const timed = postprocessTranscription(raw, ctx.fps).map((t) => ({
+			// 第 0 步 繁→简（whisper 中文输出繁体，opencc-js 懒加载）
+			const simplified = await toSimplifiedSegments(raw);
+			const timed = postprocessTranscription(simplified, ctx.fps).map((t) => ({
 				...t,
 				startFrame: t.startFrame + offsetFrame,
 				endFrame: Math.min(t.endFrame + offsetFrame, src.end),
 			}));
 
-			const ss = useSubtitleState();
 			const segments = timed
 				.filter((t) => t.endFrame > t.startFrame)
 				.map((t) => ss.makeSegment(t.text, t.startFrame, t.endFrame));
-			ss.setSegments(segments); // 重新转写 = 整体替换（字幕行经 diff 同步自动重建）
+			// 重转写 = 整体替换，但必须可撤销（W6 修）：走命令层 ReplaceSegmentsCmd
+			// （一键全撤/Cmd+Z 均可恢复替换前的段落，含命令层编辑），再登记新基线
+			const replaceEffect = await runWriteCommand(
+				new ReplaceSegmentsCmd(ctx, {
+					segments,
+					reason: "重新转写",
+				}),
+			);
+			ss.markTranscribeBaseline(segments); // 字幕行经 diff 同步自动重建
 
 			const fullText = formatTranscript(segments, ctx.fps);
 			const totalSec = segments.length
 				? segments[segments.length - 1].endFrame / ctx.fps
 				: 0;
+			const overwriteNote =
+				editedBefore > 0 ? `已覆盖 ${editedBefore} 处字幕编辑（可撤销）` : "";
 			return {
 				segmentCount: segments.length,
 				lang,
 				model,
 				audioSec: Math.round(audioSec * 10) / 10,
 				subtitleEndSec: Math.round(totalSec * 10) / 10,
+				overwrittenEdits: editedBefore,
 				fullText,
 				segments: segments.map((s) => ({
 					id: s.id,
@@ -450,7 +474,9 @@ register({
 					startSec: s.startFrame / ctx.fps,
 					endSec: s.endFrame / ctx.fps,
 				})),
-				summary: `转写完成：${segments.length} 段 · 时长 ${totalSec.toFixed(1)}s（字幕已上轨）`,
+				summary: `转写完成：${segments.length} 段 · 时长 ${totalSec.toFixed(1)}s（字幕已上轨${
+					overwriteNote ? ` · ${overwriteNote}` : ""
+				}） · ${replaceEffect.summary}`,
 			};
 		} catch (error) {
 			const code =
