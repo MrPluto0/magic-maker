@@ -1,10 +1,10 @@
 # 回归验证清单
 
 > 执行环境：无头 Chrome（Playwright 驱动，`channel="chrome"`），dev server `pnpm dev --port 5175 --strictPort`。
-> 最近执行：2026-11-07（W6 三遗留修复，24 项全过 + 真模型 E2E：base/small 对比、t2s、重转写撤销链路）。脚本：`scripts/reg_stage1.py`（无头驱动，通过 pinia store 驱动剪辑动作 + 快捷键路径，导出经 stub `showSaveFilePicker` 捕获字节；fixture 由 ffmpeg 自动生成）。
-> 历史基线：2026-10-24（W4 收口，18 项全过）；2026-10-23（阶段一 W3 收口，17 项）；2026-10-13（P0-9，14 项 12 ✅）；2026-10-23 W1（19 项全过，D1 阻断 bug 修复）。
+> 最近执行：2026-11-07（W6 本地 ASR 链路整体移除，回归瘦身至 20 项全过，dist 43532KB→1700KB）。脚本：`scripts/reg_stage1.py`（无头驱动，通过 pinia store 驱动剪辑动作 + 快捷键路径，导出经 stub `showSaveFilePicker` 捕获字节；fixture 由 ffmpeg 自动生成）。
+> 历史基线：2026-11-07 早（W6 三遗留修复，24 项全过 + 真模型 E2E）；2026-10-24（W4 收口，18 项全过）；2026-10-23（阶段一 W3 收口，17 项）；2026-10-13（P0-9，14 项 12 ✅）；2026-10-23 W1（19 项全过，D1 阻断 bug 修复）。
 
-## 用例（24 项全过；#9/#10 随 Excalidraw 白板裁剪退役）
+## 用例（20 项全过；#9/#10 随 Excalidraw 白板裁剪退役；#20/#21/#23/#24 随本地 ASR 移除下线）
 
 | # | 步骤 | 预期 | 结果 | 备注 |
 |---|------|------|------|------|
@@ -26,19 +26,25 @@
 | 11 | localStorage 占用 < 100KB | | ✅ | 53 bytes |
 | 14 | 删除资源 | 列表移除 + OPFS 文件同步删除 | ✅ | |
 | 12 | grep 无 `/tos` 残留 | 无命中 | ✅ | src/vite.config/vercel.json 均 0 命中 |
-| 20 | PCM 提取管线（W6）：OPFS → decodeAudioData → 16k mono Float32Array | 1s wav 产出 16000 采样 | ✅ | `src/utils/audio.ts`，OfflineAudioContext 重采样 |
-| 21 | whisper worker 消息协议（W6）：asr 先于 load | 收到 `E_NOT_LOADED` 结构化回包（load/asr/cancel + progress/segments/error 双向可达） | ✅ | `whisperClient.selfTest()` 真起 worker 验证 |
-| 22 | 字幕段 diff 上轨（W6）：setSegments → 专用字幕行 | `type:'text' + main:false + isSubtitle` 行生成，TextTrack 挂 segmentId、文本/起止与段一致；改全局样式 fontSize 48 → 行内全部联动；段清空 → 行摘除 | ✅ | `src/class/subtitleView.ts` 幂等收敛 |
-| 23 | HF 端点探测（W6）：官方 → 镜像回退 | 返回两源之一（本机实测 `https://hf-mirror.com/`，官方直连超时） | ✅ | 24h 缓存 + 设置面板可钉死 |
-| **24** | **重转写整体替换可撤销（W6 修）**：ReplaceSegmentsCmd 落段 → 命令层改字 → 重转写再替换 → `undoCurrentGroup()` / `ts._undo()`（快照层，字幕并入轨道快照栈）双路径恢复；替换前 `countSegmentEdits()` 应报差异处数 | 双路径均完整恢复「编辑后」段落（含命令层编辑）；差异检测 = 1 | ✅ | `editsBefore=1, afterGroupUndo/afterSnapUndo=编辑后文本`；transcribe 工具卡另带「将覆盖 N 处字幕编辑（可撤销）」进度提示与 `overwrittenEdits` 结果字段 |
+| 22 | 字幕段 diff 上轨（W6）：setSegments → 专用字幕行 | `type:'text' + main:false + isSubtitle` 行生成，TextTrack 挂 segmentId、文本/起止与段一致；改全局样式 fontSize 48 → 行内全部联动；段清空 → 行摘除 | ✅ | `src/class/subtitleView.ts` 幂等收敛（字幕体系保留，为云端 ASR 预留） |
 
-## W6 后续修复——三个验收遗留（2026-11-07）
+## W6 本地 ASR 链路移除（2026-11-07，转写暂缓待云端方案）
+
+用户决策：禁止前端 ASR 推理，W6/W6b 本地 whisper 链路整体下线；转写功能暂时不可用，未来接云端 ASR 再重建（不在本轮射程）。
+
+1. **下线回归用例**：#20（PCM 提取管线）、#21（whisper worker 协议）、#23（HF 端点探测）随 `src/utils/audio.ts`、`src/class/whisperClient.ts`、`src/workers/` 删除而移除；#24（重转写可撤销）随 transcribe 工具移除（重转写入口不存在）——被测对象全部消失，非跳过。#22 字幕段上轨**保留**（subtitle store/字幕轨视图仍在役）。
+2. **删除清单**：依赖 `@huggingface/transformers`/`onnxruntime-web`/`opencc-js`（t2s 繁→简为转写专用）；vite `selfhost-ort-wasm` 插件与 `dist/ort/`；`src/workers/whisper.worker.ts`、`src/class/whisperClient.ts`、`src/utils/audio.ts`（PCM 管线，无其他调用方）、`src/class/toolProgress.ts`（transcribe 进度登记，AgentToolCard 进度条一并移除）；agentTools 的 `transcribe` 工具（注册表 9→8，tools.json 重生成）；设置面板 base/small 档位与模型源（`whisperSettings`）；subtitlePost 的 t2s（`toSimplifiedText`/`toSimplifiedSegments` + 4 例单测）。
+3. **保留清单（「文字即视频」地基 / 云 ASR 第一块砖）**：subtitle store segments 体系与转写基线（`ReplaceSegmentsCmd`/`markTranscribeBaseline`/`countSegmentEdits`，单测 tests/replace-segments.spec.ts 锁定）、subtitleView 字幕轨 diff 同步、subtitlePost 分段合并管线（碎段合并/长段切分/最小段宽/时间戳重建 + formatTranscript）、AudioAttr/字幕样式联动。
+4. **回归脚本加固**：原 whisper worker 预热在无状态阶段消化了 vite 冷启动的按需优化 reload；移除后冷缓存首跑的导出预热 reload 会清掉未持久化内存态——脚本补「轨道被清空则重建素材/轨道」守卫（冷缓存 + 热缓存均 20/20 实测）。
+5. **dist 体积**：43532KB（W6 含 ORT wasm 自托管 39.3MB）→ 1700KB（-96%），回到 W5 基线量级（1664KB）。
+
+## W6 后续修复——三个验收遗留（2026-11-07）【历史记录，其中的本地转写链路已于同日移除，见上节】
 
 1. **中文繁体输出 → 简繁转换**：转写链路在分段后处理前加 t2s（`src/utils/subtitlePost.ts` 的 `toSimplifiedSegments`，opencc-js **t2cn 子集构建**——只含繁→简词典约 109KB，动态 import 懒加载不进主包；无 CJK 文本跳过；加载失败退回原文）。后处理单测补 4 例繁→简用例（含实测形态「視頻裡的時間軸→视频里的时间轴」与端到端管线无繁体断言）。真模型 E2E（say 15.3s 中文口播）：base/small 输出均为繁体、t2s 后全简体；错字对比 base 3 处（對急/反體字/簡機工具）vs small 1 处（對極，即「对齐」），small 明显更准（详见回报）。设置面板 base/small 档位 W6 已齐备（设置项、worker MODEL_REPO、工具 schema 三处一致），本轮无补全项。
 2. **重转写静默覆盖 → 可撤销 + 覆盖提示**：落段改走命令层 `ReplaceSegmentsCmd`（`replace_segments@1` 入注册表，undo 完整恢复替换前段落含命令层编辑）；subtitle store 增转写基线（`markTranscribeBaseline`/`countSegmentEdits`，会话内存活不持久化，O(n) id diff）；有编辑差异时工具卡进度行明示「将覆盖 N 处字幕编辑（可撤销）」、结果带 `overwrittenEdits`。快照层同步扩展：track store 的 undo serializer 把 `subtitles` 并入同一快照栈（`{trackList, subtitles}` 复合快照），Cmd+Z 一次回退轨道+字幕、不拆栈。transcribe 工具 danger query→write（工具卡「只读」→「可撤销」徽标，语义如实）。不做智能合并（明确不做）。
 3. **DeleteRangeCmd keep-tail startFrame 真 bug 修复**：原实现保留尾部 `startFrame: s`，ripple 模式下因 `e-gap===s` 数值巧合掩盖了错误；**ripple=false（留空隙）模式下保留尾部起点错误地落在区间起点 s**（比正确值 e 提前 gap 帧，且可能早于段自身起点）。修复为 `startFrame: ripple ? e - gap : e`，失败单测复现后转绿（tests/delete-range.spec.ts 2 例：非波纹/波纹各一，undo 恢复一并锁定）。兄弟分支核过：keep-head（endFrame:s）、整删（remove）、区间右侧波纹左移（`startFrame>=e` 分支）公式均正确无同款问题。
 
-## W6 本地 whisper 转写——agent 的耳朵（2026-11-05）
+## W6 本地 whisper 转写——agent 的耳朵（2026-11-05）【历史记录，该链路已于 2026-11-07 整体移除，见上】
 
 `transcribe()` 工具（query 类，无需确认）落进注册表（共 9 个工具），链路：OPFS 原文件 → `extractPcm16kMono`（OfflineAudioContext 16k mono，transferable 入 worker）→ `whisper.worker.ts`（transformers.js 4.3.2，30s 窗口切片 + 逐窗进度/取消检查点）→ 中文分段后处理（碎段合并 <2s / 长段逗号切分 >8s / 最小段宽 0.6s / **时间戳塌缩重建**：whisper-base 首窗长文本压进极短 chunk 时按 6 字/秒重估时长）→ `subtitleStore.setSegments` → diff 同步专用字幕行（`subtitleView.ts`）。Vitest 14 例锁后处理纯函数（`tests/subtitle-post.spec.ts`）。
 

@@ -6,12 +6,7 @@ import {
 	mergeFragments,
 	postprocessTranscription,
 	splitLongSegments,
-	toSimplifiedSegments,
-	toSimplifiedText,
 } from "../src/utils/subtitlePost";
-
-/** 常用繁体独有字集（测试断言「输出无繁体」用） */
-const TRAD_CHARS = /[繁體們後時間東車馬鳥語風飛雲書長門問電頭髮愛樂園國圖書館學視頻軸裡雜錯簡]/;
 
 describe("cleanText", () => {
 	it("压缩空白并去首尾", () => {
@@ -172,44 +167,5 @@ describe("formatTranscript", () => {
 			30,
 		);
 		expect(text).toBe("[00:00.0-00:01.5] 你好\n[00:03.0-00:05.0] 世界");
-	});
-});
-
-describe("繁→简转换（opencc-js，W6 修：whisper 中文输出繁体）", () => {
-	it("whisper-base 实测形态的繁体输出转简体", async () => {
-		// W6 E2E 实测样例形态：視頻/時間軸/頭髮/長頸鹿 一类繁体正字
-		expect(await toSimplifiedText("視頻裡的時間軸")).toBe("视频里的时间轴");
-		expect(await toSimplifiedText("頭髮和長頸鹿")).toBe("头发和长颈鹿");
-		expect(await toSimplifiedText("軟體裡的面条")).toBe("软体里的面条");
-	});
-
-	it("已是简体 / 无中文文本原样返回", async () => {
-		expect(await toSimplifiedText("已经全是简体字")).toBe("已经全是简体字");
-		expect(await toSimplifiedText("hello world 123")).toBe("hello world 123");
-	});
-
-	it("批量段落仅转文本，时间码不动；纯英文段落整段跳过", async () => {
-		const out = await toSimplifiedSegments([
-			{ text: "繁體中文的段落", startSec: 1.5, endSec: 3.2 },
-			{ text: "english only", startSec: 3.5, endSec: 5 },
-		]);
-		expect(out[0]).toEqual({ text: "繁体中文的段落", startSec: 1.5, endSec: 3.2 });
-		expect(out[1].text).toBe("english only");
-	});
-
-	it("繁体转写原文经完整管线（t2s → ①②③）后输出无繁体字", async () => {
-		const raw = [
-			{ text: "視頻剪輯的字幕功能。", startSec: 0, endSec: 2.5 },
-			{ text: "時間軸會自動對齊。", startSec: 2.6, endSec: 5 },
-		];
-		const out = postprocessTranscription(
-			await toSimplifiedSegments(raw),
-			30,
-		);
-		expect(out.length).toBeGreaterThan(0);
-		for (const seg of out) {
-			expect(TRAD_CHARS.test(seg.text), seg.text).toBe(false);
-		}
-		expect(out[0].text).toBe("视频剪辑的字幕功能。");
 	});
 });

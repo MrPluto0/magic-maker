@@ -145,30 +145,6 @@
                 </template>
               </el-input>
             </el-form-item>
-
-            <el-form-item label="字幕模型：">
-              <el-select v-model="pageStore.whisperSettings.model" class="w-full">
-                <el-option
-                  label="whisper-base（约 40-80MB，推荐）"
-                  value="base"
-                />
-                <el-option
-                  label="whisper-small（约 250MB，中文更准）"
-                  value="small"
-                />
-              </el-select>
-            </el-form-item>
-
-            <el-form-item label="模型源：">
-              <el-select v-model="pageStore.whisperSettings.hfEndpoint" class="w-full">
-                <el-option
-                  label="自动探测（官方 → hf-mirror.com 镜像）"
-                  value="auto"
-                />
-                <el-option label="huggingface.co（官方直连）" value="official" />
-                <el-option label="hf-mirror.com（镜像，大陆推荐）" value="mirror" />
-              </el-select>
-            </el-form-item>
           </el-form>
 
           <div class="flex items-center gap-3 mt-1">
@@ -200,10 +176,6 @@
               <li>
                 • 文本模型用于对话生成、文本扩写等功能；图片模型用于 AI
                 绘图功能；其他模型尚未支持。
-              </li>
-              <li>
-                • 字幕模型（whisper）在本机浏览器内推理，音频不出本地；
-                首次转写需下载模型（下载进度显示在对话工具卡），之后离线可用。
               </li>
             </ul>
           </div>

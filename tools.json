@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-11-06T16:17:00.344Z",
+  "generatedAt": "2026-11-06T18:02:33.142Z",
   "tools": [
     {
       "name": "query_timeline",
@@ -19,39 +19,6 @@
       "schema": {
         "type": "object",
         "properties": {},
-        "additionalProperties": false
-      }
-    },
-    {
-      "name": "transcribe",
-      "intent": "本地 whisper 转写时间轴上的音频/视频（数据不出浏览器），产出带时间码的字幕段落并自动上字幕轨",
-      "danger": "write",
-      "schema": {
-        "type": "object",
-        "properties": {
-          "trackId": {
-            "type": "string",
-            "description": "要转写的音频/视频片段 id；缺省 = 第一条视频轨的片段，无视频轨则第一条音频轨"
-          },
-          "lang": {
-            "type": "string",
-            "enum": [
-              "zh",
-              "auto"
-            ],
-            "default": "zh",
-            "description": "音频语言：zh 中文（更快更准）/ auto 自动检测"
-          },
-          "model": {
-            "type": "string",
-            "enum": [
-              "base",
-              "small"
-            ],
-            "default": "base",
-            "description": "whisper 档位：base 约 40-80MB（默认）/ small 约 250MB（更准，首次下载慢）"
-          }
-        },
         "additionalProperties": false
       }
     },
