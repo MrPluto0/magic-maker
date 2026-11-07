@@ -13,7 +13,6 @@
     "ci": "biome ci src packages/excalidraw/types",
     "typecheck": "vue-tsc --noEmit",
     "prepare": "simple-git-hooks",
-    "deploy": "gh-pages -d dist -b gh-pages",
     "test": "vitest run",
     "gen:tools": "tsx scripts/gen-tool-schema.ts"
   },
